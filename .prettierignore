@@ -1,0 +1,21 @@
+node_modules
+dist
+build
+coverage
+.next
+.nuxt
+.vite
+.cache
+
+# Playwright
+test-results
+playwright-report
+
+# Build outputs
+*.min.js
+*.min.css
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

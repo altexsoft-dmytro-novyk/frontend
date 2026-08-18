@@ -1,0 +1,19 @@
+{
+  "home": {
+    "title": "Home",
+    "description": "Welcome to the starter. Replace this page with your own content."
+  },
+  "error": {
+    "title": "Application Error",
+    "description": "An unexpected error occurred.",
+    "errorDetails": "Error details:",
+    "reload": "Back to Home",
+    "footer": "If the problem persists, please contact support or try refreshing the page."
+  },
+  "common": {
+    "notAvailable": "Not available"
+  },
+  "sidebar": {
+    "home": "Home"
+  }
+}
