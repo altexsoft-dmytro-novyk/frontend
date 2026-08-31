@@ -11,9 +11,295 @@
     "footer": "If the problem persists, please contact support or try refreshing the page."
   },
   "common": {
-    "notAvailable": "Not available"
+    "notAvailable": "Not available",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "search": "Search",
+    "none": "None",
+    "unknown": "Unknown",
+    "yes": "Yes",
+    "no": "No",
+    "readOnly": "Read only",
+    "noPermission": "You don't have permission to do that.",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "requiredField": "This field is required"
   },
   "sidebar": {
     "home": "Home"
+  },
+  "nav": {
+    "people": "People",
+    "myProfile": "My profile",
+    "roles": "Roles & access",
+    "signOut": "Sign out",
+    "openMenu": "Open menu",
+    "commandHint": "Search people"
+  },
+  "auth": {
+    "signInTitle": "Sign in",
+    "signInSubtitle": "We'll email you a secure link to sign in — no password needed.",
+    "emailLabel": "Work email",
+    "emailPlaceholder": "you@company.example",
+    "sendLink": "Email me a link",
+    "sending": "Sending…",
+    "linkSentTitle": "Check your inbox",
+    "linkSentBody": "If {{email}} matches an active account, a sign-in link is on its way. The link is valid for 15 minutes.",
+    "devHint": "The link opens this app directly.",
+    "backToSignIn": "Use a different email",
+    "callbackWorking": "Signing you in…",
+    "callbackFailedTitle": "That link didn't work",
+    "callbackFailedBody": "It may have expired or already been used. Request a fresh sign-in link.",
+    "requestNewLink": "Request a new link",
+    "invalidEmail": "Enter a valid email address"
+  },
+  "directory": {
+    "title": "People",
+    "subtitle": "{{count}} people",
+    "searchPlaceholder": "Filter by name, position, location…",
+    "tabActive": "Active",
+    "tabDismissed": "Dismissed",
+    "columns": {
+      "name": "Name",
+      "position": "Position",
+      "location": "Location",
+      "workEmail": "Work email",
+      "workPhone": "Work phone",
+      "birthday": "Birthday",
+      "joined": "Joined",
+      "status": "Status"
+    },
+    "filters": {
+      "title": "Filters",
+      "country": "Country",
+      "city": "City",
+      "position": "Position",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "workEmail": "Work email",
+      "clear": "Clear all"
+    },
+    "tenure": "{{years}}y",
+    "empty": "No people match these filters.",
+    "loadError": "Couldn't load the directory.",
+    "exportCsv": "Export CSV",
+    "page": "Page {{page}}",
+    "prev": "Previous",
+    "next": "Next",
+    "savedViews": {
+      "all": "All people",
+      "save": "Save view",
+      "saveTitle": "Save this view",
+      "nameLabel": "View name",
+      "namePlaceholder": "e.g. Engineers in Poland",
+      "rename": "Rename",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "deleteConfirm": "Delete the \"{{name}}\" view?"
+    }
+  },
+  "profile": {
+    "notFoundTitle": "Profile unavailable",
+    "notFoundBody": "This person doesn't exist, or you don't have access to their profile.",
+    "backToDirectory": "Back to people",
+    "header": {
+      "manager": "Manager",
+      "peoplePartner": "People partner",
+      "mentor": "Mentor",
+      "department": "Department",
+      "noManager": "No manager",
+      "noPeoplePartner": "No people partner",
+      "noMentor": "No mentor",
+      "changePhoto": "Change photo",
+      "uploading": "Uploading…",
+      "photoUpdated": "Photo updated",
+      "photoError": "Couldn't upload that photo — use a PNG, JPEG or WebP under 5 MB"
+    },
+    "status": {
+      "active": "Active",
+      "dismissed": "Dismissed"
+    },
+    "sectionError": "Couldn't load this section.",
+    "you": "You"
+  },
+  "sections": {
+    "identity": {
+      "title": "Identity card",
+      "position": "Position",
+      "country": "Country",
+      "city": "City",
+      "workEmail": "Work email",
+      "workPhone": "Work phone",
+      "birthDay": "Birth day",
+      "birthMonth": "Birth month",
+      "companyJoinDate": "Company start date",
+      "editTitle": "Edit identity card",
+      "emailConflict": "That work email is already in use."
+    },
+    "employment": {
+      "title": "Employment",
+      "grade": "Grade",
+      "position": "Position",
+      "status": "Employment status",
+      "noGrade": "No grade set"
+    },
+    "personalContacts": {
+      "title": "Personal contacts",
+      "personalPhone": "Personal phone",
+      "personalEmail": "Personal email",
+      "messengers": "Messengers",
+      "residentialAddress": "Residential address",
+      "currentPlaceOfStay": "Current place of stay"
+    },
+    "emergencyContacts": {
+      "title": "Emergency contacts",
+      "contactPerson": "Contact person",
+      "relationship": "Relationship",
+      "contactPhone": "Phone"
+    },
+    "documents": {
+      "title": "Documents",
+      "type": "Type",
+      "name": "Title",
+      "addTitle": "Add a document",
+      "certificateOnlyHint": "You can add certificates to your own profile.",
+      "empty": "No documents."
+    },
+    "risks": {
+      "title": "Risks",
+      "currentLevel": "Current level",
+      "description": "Description",
+      "history": "History",
+      "addTitle": "Log a risk update",
+      "level": "Level",
+      "empty": "No risk records.",
+      "trendUp": "Higher than before",
+      "trendDown": "Lower than before"
+    },
+    "notes": {
+      "title": "Management notes",
+      "body": "Note",
+      "visibleForEmployee": "Visible to employee",
+      "addTitle": "Add a note",
+      "empty": "No notes."
+    },
+    "feedbacks": {
+      "title": "Feedback",
+      "body": "Feedback",
+      "sharedWithEmployee": "Shared with employee",
+      "addTitle": "Add feedback",
+      "empty": "No feedback records."
+    },
+    "careerTimeline": {
+      "title": "Career timeline",
+      "system": "System",
+      "manual": "Manual",
+      "addTitle": "Add a backfill entry",
+      "type": "Event type",
+      "date": "Date",
+      "detailsTitle": "Title",
+      "empty": "No career events yet.",
+      "deleteConfirm": "Delete this event?",
+      "restrictedHint": "Only the direct manager or assigned people partner can add or remove events."
+    },
+    "leaves": {
+      "title": "Leaves & absences",
+      "managedInTimetracker": "Leaves are managed in the timetracker.",
+      "openTimetracker": "Open the timetracker"
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "Not assigned to any project."
+    },
+    "cds": {
+      "title": "Career development (CDS)",
+      "skillsMatrix": "Skills matrix",
+      "openSkillsMatrix": "Open skills matrix",
+      "cycle": "Current cycle",
+      "idp": "Individual development plan",
+      "markComplete": "Mark my IDP complete",
+      "completed": "Completed {{date}}",
+      "noCycle": "No cycle recorded"
+    },
+    "mentorship": {
+      "title": "Mentorship",
+      "openToMentoring": "Open to mentoring",
+      "openToMentoringHint": "Show up in the company mentor pool.",
+      "pairs": "Pairs",
+      "asMentor": "Mentor",
+      "asMentee": "Mentee",
+      "assignTitle": "Assign a mentee",
+      "menteeLabel": "Mentee",
+      "empty": "No mentorship pairs."
+    },
+    "actionItems": {
+      "title": "Action items",
+      "addTitle": "Add an action item",
+      "titleLabel": "Title",
+      "markComplete": "Mark complete",
+      "statusOpen": "Open",
+      "statusCompleted": "Completed",
+      "empty": "No action items."
+    },
+    "requestHistory": {
+      "title": "Request history",
+      "empty": "No resourcing history."
+    },
+    "customFields": {
+      "title": "Custom fields",
+      "empty": "No custom fields visible to you."
+    }
+  },
+  "relationships": {
+    "title": "Organisational relationships",
+    "changeManager": "Change manager",
+    "changePeoplePartner": "Change people partner",
+    "changeDepartmentManager": "Change department manager",
+    "pickPerson": "Select a person",
+    "clear": "Clear (no one)",
+    "selfAssign": "You can't assign yourself to this role.",
+    "conflict": "Someone else changed this while you were editing. Reload and try again.",
+    "changed": "Relationship updated.",
+    "gatedHint": "Requires the \"change organisational relationships\" permission."
+  },
+  "departure": {
+    "title": "Record a departure",
+    "trigger": "Record departure",
+    "effectiveDate": "Effective date",
+    "reason": "Reason",
+    "submit": "Record departure",
+    "recorded": "Departure recorded for {{date}}.",
+    "blockedTitle": "Re-parent first",
+    "blockedBody": "This person still manages people or a department, or is someone's people partner. Reassign those relationships before recording their departure.",
+    "pending": "A departure is already scheduled for this person.",
+    "invalidDate": "Choose a valid effective date"
+  },
+  "roles": {
+    "title": "Roles & access",
+    "subtitle": "Functional roles and who holds them.",
+    "roleName": "Role",
+    "holders": "Holders",
+    "holderCount": "{{count}} holder",
+    "holderCount_other": "{{count}} holders",
+    "revoke": "Revoke",
+    "revokeConfirm": "Revoke \"{{role}}\" from {{email}}?",
+    "revoked": "Access revoked.",
+    "noHolders": "No holders.",
+    "loadError": "Couldn't load roles.",
+    "readOnlyNotice": "Creating roles and granting them is not yet available from the API — this screen shows the catalog and can revoke existing holders."
+  },
+  "commandPalette": {
+    "placeholder": "Search people or jump to…",
+    "peopleGroup": "People",
+    "navGroup": "Go to",
+    "empty": "No results.",
+    "openDirectory": "All people",
+    "openMyProfile": "My profile",
+    "openRoles": "Roles & access"
   }
 }

@@ -2,35 +2,39 @@
  * Main router configuration
  */
 
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { AppLayout } from '@/components/AppLayout/AppLayout'
-import { HomePage } from '@/pages/HomePage/HomePage'
+import { RequireAuth } from '@/components/RequireAuth/RequireAuth'
 import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
+import { LoginPage } from '@/pages/LoginPage/LoginPage'
+import { AuthCallbackPage } from '@/pages/AuthCallbackPage/AuthCallbackPage'
+import { PeoplePage } from '@/pages/PeoplePage/PeoplePage'
+import { PersonProfilePage } from '@/pages/PersonProfilePage/PersonProfilePage'
+import { RolesPage } from '@/pages/RolesPage/RolesPage'
+import { MeRedirect } from '@/pages/MeRedirect/MeRedirect'
 
 const router = createBrowserRouter([
-  // Standalone error page (rendered outside the main layout)
-  {
-    path: '/app-error',
-    element: <ErrorPage />,
-  },
+  { path: '/login', element: <LoginPage /> },
+  { path: '/auth/callback', element: <AuthCallbackPage /> },
+  { path: '/app-error', element: <ErrorPage /> },
 
-  // Application routes wrapped in the main layout
   {
     path: '/',
-    element: <AppLayout />,
+    element: (
+      <RequireAuth>
+        <AppLayout />
+      </RequireAuth>
+    ),
     children: [
-      {
-        index: true,
-        element: <HomePage />,
-      },
+      { index: true, element: <Navigate to="/people" replace /> },
+      { path: 'people', element: <PeoplePage /> },
+      { path: 'people/:id', element: <PersonProfilePage /> },
+      { path: 'me', element: <MeRedirect /> },
+      { path: 'admin/roles', element: <RolesPage /> },
     ],
   },
 
-  // Catch-all route
-  {
-    path: '*',
-    element: <Navigate to="/" replace />,
-  },
+  { path: '*', element: <Navigate to="/" replace /> },
 ])
 
 export const Router = () => {
