@@ -7,6 +7,7 @@ import { AppLayout } from '@/components/AppLayout/AppLayout'
 import { RequireAuth } from '@/components/RequireAuth/RequireAuth'
 import { HomePage } from '@/pages/HomePage/HomePage'
 import { EmployeesPage } from '@/pages/EmployeesPage/EmployeesPage'
+import { EmployeeImportPage } from '@/pages/EmployeeImportPage/EmployeeImportPage'
 import { EmployeeProfilePage } from '@/pages/EmployeeProfilePage/EmployeeProfilePage'
 import { EmployeeOrganisationPage } from '@/pages/EmployeeOrganisationPage/EmployeeOrganisationPage'
 import { EmployeeDeparturePage } from '@/pages/EmployeeDeparturePage/EmployeeDeparturePage'
@@ -48,6 +49,12 @@ const router = createBrowserRouter([
           {
             path: 'employees',
             element: <EmployeesPage />,
+          },
+          {
+            // Static segment — React Router ranks it above `employees/:id`
+            // regardless of declaration order; kept first and adjacent for clarity.
+            path: 'employees/import',
+            element: <EmployeeImportPage />,
           },
           {
             path: 'employees/:id',

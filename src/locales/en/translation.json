@@ -28,6 +28,7 @@
     "applyFilters": "Apply filters",
     "clearFilters": "Clear filters",
     "backToFirstPage": "Back to first page",
+    "importPopulation": "Import population",
     "tableCaption": "Employees",
     "loading": "Loading employees…",
     "filters": {
@@ -69,6 +70,10 @@
       "title": "No employees match these filters",
       "body": "Adjust or clear the filters to see more people."
     },
+    "emptyUnfiltered": {
+      "title": "No employees yet",
+      "body": "Nobody has been imported into the platform. Import the seeded population to get started."
+    },
     "badRequest": {
       "title": "That filter value isn't valid",
       "body": "One of the filters isn't a valid value — adjust it and apply again."
@@ -81,6 +86,53 @@
     "forbidden": {
       "title": "You don't have access to the employee directory",
       "body": "The directory is available to HR administrators only."
+    }
+  },
+  "import": {
+    "eyebrow": "Employees",
+    "provenanceTag": "Access per request",
+    "directoryLink": "View the directory",
+    "title": "Import population",
+    "lead": "Upload the seeded population export to load everyone into the platform. Good rows are created or updated; problem rows are skipped and listed in the summary.",
+    "fileLabel": "Population file",
+    "expectedFileHint": "A semicolon-delimited export from the timetracker (docs/Accounts_template.csv is the sample). The file is uploaded as-is — no parsing or column mapping happens here.",
+    "selectedFile": "Selected: {{name}}",
+    "csvHint": "That file doesn't end in .csv — upload it anyway if it's the timetracker export; the server checks the contents.",
+    "emptyFileHint": "That file is empty. Choose the populated timetracker export.",
+    "submit": "Import",
+    "submitting": "Importing…",
+    "importAnother": "Import another file",
+    "permissionNotice": "You don't have permission to import the population. This is available to HR administrators only.",
+    "fileError": {
+      "fallback": "The file was rejected. Check that it's the semicolon-delimited timetracker export and try again."
+    },
+    "serverError": "The import didn't complete. Nothing was imported — try again.",
+    "serverErrorTooLarge": "That file is too large. Nothing was imported.",
+    "confirm": {
+      "title": "Import from {{name}}?",
+      "body": "This creates and updates employee records in bulk. Existing employees matched by work email will be updated.",
+      "confirm": "Import",
+      "cancel": "Cancel"
+    },
+    "counts": {
+      "created": "Created",
+      "updated": "Updated",
+      "departmentsCreated": "Departments created",
+      "skipped": "Skipped"
+    },
+    "result": {
+      "titleClean": "Import complete",
+      "titlePartial": "Import complete — some rows skipped",
+      "descriptionClean": "Every row was imported.",
+      "descriptionPartial": "Skipped rows were not imported. Everything else was applied — review the skipped rows below."
+    },
+    "copySkipped": "Copy skipped rows",
+    "copySkippedDone": "Copied",
+    "errors": {
+      "caption": "Rows skipped during the import",
+      "line": "Line",
+      "email": "Email",
+      "reason": "Reason"
     }
   },
   "shell": {

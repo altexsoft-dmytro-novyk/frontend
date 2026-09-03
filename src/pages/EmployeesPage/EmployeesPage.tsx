@@ -1,5 +1,15 @@
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LockKeyhole, SearchX, ShieldAlert, SlidersHorizontal, TriangleAlert } from 'lucide-react'
+import {
+  LockKeyhole,
+  SearchX,
+  ShieldAlert,
+  SlidersHorizontal,
+  TriangleAlert,
+  Upload,
+  UsersRound,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmployeeFilters } from './components/EmployeeFilters/EmployeeFilters'
 import { EmployeePager } from './components/EmployeePager/EmployeePager'
@@ -36,19 +46,34 @@ export const EmployeesPage = () => {
   return (
     <div className="space-y-6">
       <div className="border-t-[length:var(--page-band-tick)] border-t-primary border-b border-b-border pb-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="font-mono text-[0.7rem] font-medium tracking-[0.08em] text-muted-foreground uppercase">
-            {t('employees.eyebrow')}
-          </p>
-          <span className="inline-flex items-center gap-1.5 border-l-2 border-provenance-access pl-1.5 font-mono text-[0.65rem] font-medium tracking-[0.06em] text-provenance-access uppercase">
-            <ShieldAlert className="h-3 w-3" aria-hidden="true" />
-            {t('employees.provenanceTag')}
-          </span>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="font-mono text-[0.7rem] font-medium tracking-[0.08em] text-muted-foreground uppercase">
+                {t('employees.eyebrow')}
+              </p>
+              <span className="inline-flex items-center gap-1.5 border-l-2 border-provenance-access pl-1.5 font-mono text-[0.65rem] font-medium tracking-[0.06em] text-provenance-access uppercase">
+                <ShieldAlert className="h-3 w-3" aria-hidden="true" />
+                {t('employees.provenanceTag')}
+              </span>
+            </div>
+            <h1
+              className="mt-2 text-xl font-semibold text-foreground"
+              data-testid="employees-title"
+            >
+              {t('employees.title')}
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">{t('employees.lead')}</p>
+          </div>
+          {status !== 'forbidden' && status !== 'loading' && (
+            <Button asChild size="sm" variant="outline" data-testid="employees-import-link">
+              <Link to="/employees/import">
+                <Upload className="h-3.5 w-3.5" aria-hidden="true" />
+                {t('employees.importPopulation')}
+              </Link>
+            </Button>
+          )}
         </div>
-        <h1 className="mt-2 text-xl font-semibold text-foreground" data-testid="employees-title">
-          {t('employees.title')}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t('employees.lead')}</p>
       </div>
 
       {status === 'forbidden' ? (
@@ -105,13 +130,26 @@ export const EmployeesPage = () => {
                   ))}
                 </div>
               ) : status === 'empty' ? (
-                <StatePanel
-                  icon={SearchX}
-                  title={t('employees.empty.title')}
-                  body={t('employees.empty.body')}
-                  actions={emptyStateActions}
-                  testId="employees-empty"
-                />
+                hasActiveFilters ? (
+                  <StatePanel
+                    icon={SearchX}
+                    title={t('employees.empty.title')}
+                    body={t('employees.empty.body')}
+                    actions={emptyStateActions}
+                    testId="employees-empty"
+                  />
+                ) : (
+                  <StatePanel
+                    icon={UsersRound}
+                    title={t('employees.emptyUnfiltered.title')}
+                    body={t('employees.emptyUnfiltered.body')}
+                    link={{
+                      label: t('employees.importPopulation'),
+                      to: '/employees/import',
+                    }}
+                    testId="employees-empty-unfiltered"
+                  />
+                )
               ) : (
                 <EmployeeTable rows={rows} isStale={isFetching} />
               )}

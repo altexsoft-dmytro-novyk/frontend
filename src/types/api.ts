@@ -325,3 +325,31 @@ export interface ReparentingResult {
   }
   remainingExternalBlockers: number
 }
+
+/**
+ * Seeded-population import (`services/backend` Story 1.1 — `POST /users/import`,
+ * AD-16). Upload-only: one `multipart/form-data` file part named `file` (the
+ * semicolon-delimited timetracker CSV); the summary is returned synchronously.
+ */
+
+// One per-row skip in the `200` summary — mirrors backend `ImportError`
+// (`user-management/domain/services/population-import.service.ts`). Row-level
+// problems (missing required field, unparseable date, in-file duplicate email)
+// never fail the whole import; each becomes an entry here.
+export interface ImportRowError {
+  line: number
+  email: string | null
+  reason: string
+}
+
+// `POST /users/import` → `200` body — mirrors backend `ImportSummary`. A `200`
+// is a partial-success outcome: `skipped > 0` (even `created: 0`) is normal and
+// NOT an error. A file-level failure is a `400` with a `message`, nothing
+// written — never a summary.
+export interface ImportSummary {
+  created: number
+  updated: number
+  departmentsCreated: number
+  skipped: number
+  errors: ImportRowError[]
+}
