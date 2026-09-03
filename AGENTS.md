@@ -1,5 +1,5 @@
 <!-- bmad:context -->
-<!-- Verified 2026-09-02 against d06b977. Managed by bmad-project-context; edits inside this block are replaced on refresh. Keep anything you want preserved outside the markers. -->
+<!-- Verified 2026-09-03 against f5a7662. Managed by bmad-project-context; edits inside this block are replaced on refresh. Keep anything you want preserved outside the markers. -->
 
 ## frontend (React)
 
