@@ -175,3 +175,70 @@ export interface CreateCareerEventPayload {
   eventDate: string
   details?: Record<string, unknown>
 }
+
+/**
+ * Organisational relationships (`services/backend` Epic 4 — the dedicated
+ * organisational-relationship screen). Only the fully-operable slice is wired:
+ * first manager assignment, People-Partner assign/replace/remove, and the
+ * access-journal read. Department membership / department manager /
+ * manager reassignment stay deferred (`deferred-work.md`) — no read endpoint
+ * backs them yet.
+ */
+
+// The `kind` discriminator on an access-journal row — mirrors the backend
+// `AccessJournal.kind` enum (`access-journal.response.ts`). This screen only
+// derives from `manager` / `people_partner`; the rest render as plain history.
+export type AccessJournalKind =
+  | 'manager'
+  | 'people_partner'
+  | 'department_membership'
+  | 'department_manager'
+  | 'full_profile_grant'
+  | 'full_profile_revoke'
+  | 'shared_link_access'
+
+// One `GET /users/:id/access-journal` row — mirrors backend
+// `AccessJournalRowResponse`. Append-only: the envelope carries no `canEdit`.
+// `before` / `after` are opaque snapshots (`{ relationshipId, userId, type,
+// reportsToUserId }` for `manager` / `people_partner` rows, or `null`).
+export interface AccessJournalRow {
+  id: string
+  /** ISO-8601 timestamp. */
+  occurredAt: string
+  actorUserId: string
+  subjectUserId: string | null
+  subjectDepartmentId?: string
+  kind: AccessJournalKind
+  before: unknown
+  after: unknown
+}
+
+// `GET /users/:id/access-journal` success body — newest-first, no `canEdit`.
+export interface AccessJournalResponse {
+  data: AccessJournalRow[]
+}
+
+// The bare relationship edge returned by `POST /users/:id/relationships` and
+// `PUT /users/:id/relationships/people-partner` — mirrors backend
+// `RelationshipResponse`. Not a `{ data }` envelope.
+export interface RelationshipEdge {
+  id: string
+  userId: string
+  type: string
+  reportsToUserId: string | null
+}
+
+// `POST /users/:id/relationships` body (Story 4.1). `type` is `'direct'` only —
+// project edges are TimeTracker-sync-owned, PP has its own `PUT` route.
+export interface AssignManagerPayload {
+  type: 'direct'
+  targetId: string
+}
+
+// `PUT /users/:id/relationships/people-partner` body (Story 4.2). The optimistic
+// -concurrency token `expectedCurrentTargetId` is intentionally omitted — it
+// needs a current-PP read the backend does not expose yet, so the UI does an
+// unconditional replace (`deferred-work.md`).
+export interface ChangePeoplePartnerPayload {
+  targetId: string
+}

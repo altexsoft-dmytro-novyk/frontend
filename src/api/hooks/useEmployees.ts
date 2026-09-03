@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { getEmployeesApiCall } from '@/api/employees'
+import { httpStatus } from '@/lib/http'
 import type { EmployeeListParams } from '@/types/api'
 
 /**
@@ -21,10 +21,7 @@ export const useEmployees = (params: EmployeeListParams) => {
       if (failureCount >= 1) {
         return false
       }
-      if (!isAxiosError(error)) {
-        return true
-      }
-      const status = error.response?.status
+      const status = httpStatus(error)
       return status === undefined || status >= 500
     },
   })

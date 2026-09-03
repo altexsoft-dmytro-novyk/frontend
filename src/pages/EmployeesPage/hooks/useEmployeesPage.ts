@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { isAxiosError } from 'axios'
 import { useEmployees } from '@/api/hooks/useEmployees'
+import { httpStatus } from '@/lib/http'
 import type { EmployeeListItem, EmployeeListParams } from '@/types/api'
 
 const PAGE_SIZE = 25
@@ -110,7 +110,7 @@ export const useEmployeesPage = () => {
   const query = useEmployees(params)
 
   const rows: EmployeeListItem[] = query.data?.items ?? []
-  const errorStatus = isAxiosError(query.error) ? query.error.response?.status : undefined
+  const errorStatus = httpStatus(query.error)
 
   let status: EmployeesPageStatus
   if (query.isError) {

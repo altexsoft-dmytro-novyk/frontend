@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { getEmployeeApiCall } from '@/api/profile'
+import { httpStatus } from '@/lib/http'
 
 /**
  * `GET /users/:id` — the S1 identity card + the `canEdit` write hint.
@@ -18,10 +18,7 @@ export const useEmployee = (id: string) => {
       if (failureCount >= 1) {
         return false
       }
-      if (!isAxiosError(error)) {
-        return true
-      }
-      const status = error.response?.status
+      const status = httpStatus(error)
       return status === undefined || status >= 500
     },
   })

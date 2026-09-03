@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, TriangleAlert, UserX } from 'lucide-react'
+import { ArrowLeft, Network, TriangleAlert, UserX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { StatePanel } from '@/components/StatePanel/StatePanel'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -23,14 +23,26 @@ export const EmployeeProfilePage = () => {
             {t('profile.provenanceTag')}
           </span>
         </div>
-        <Link
-          to="/employees"
-          className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-          data-testid="profile-back-link"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          {t('profile.backToDirectory')}
-        </Link>
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+          <Link
+            to="/employees"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+            data-testid="profile-back-link"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            {t('profile.backToDirectory')}
+          </Link>
+          {status === 'ready' ? (
+            <Link
+              to={`/employees/${routeId}/organisation`}
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+              data-testid="profile-organisation-link"
+            >
+              <Network className="h-3.5 w-3.5" />
+              {t('profile.organisationLink')}
+            </Link>
+          ) : null}
+        </div>
       </div>
 
       {status === 'loading' ? (

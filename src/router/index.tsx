@@ -8,6 +8,7 @@ import { RequireAuth } from '@/components/RequireAuth/RequireAuth'
 import { HomePage } from '@/pages/HomePage/HomePage'
 import { EmployeesPage } from '@/pages/EmployeesPage/EmployeesPage'
 import { EmployeeProfilePage } from '@/pages/EmployeeProfilePage/EmployeeProfilePage'
+import { EmployeeOrganisationPage } from '@/pages/EmployeeOrganisationPage/EmployeeOrganisationPage'
 import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
 import { LoginPage } from '@/pages/LoginPage/LoginPage'
 import { ConsumeMagicLinkPage } from '@/pages/ConsumeMagicLinkPage/ConsumeMagicLinkPage'
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
           {
             path: 'employees/:id',
             element: <EmployeeProfilePage />,
+          },
+          {
+            path: 'employees/:id/organisation',
+            element: <EmployeeOrganisationPage />,
           },
         ],
       },

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { getCareerEventsApiCall } from '@/api/profile'
+import { httpStatus } from '@/lib/http'
 
 /**
  * `GET /users/:id/events` — the career timeline + its own `canEdit` hint.
@@ -19,10 +19,7 @@ export const useCareerEvents = (id: string) => {
       if (failureCount >= 1) {
         return false
       }
-      if (!isAxiosError(error)) {
-        return true
-      }
-      const status = error.response?.status
+      const status = httpStatus(error)
       return status === undefined || status >= 500
     },
   })

@@ -1,0 +1,586 @@
+import { test, expect, type Page } from '@playwright/test'
+import { mockOrganisation, readStoredToken, seedSession } from './helpers'
+import {
+  journalResponse,
+  JOURNAL_ROWS,
+  MANAGER_ONLY_ROWS,
+  OTHER_TARGET_USER_ID,
+  SUBJECT_USER_ID,
+  TARGET_USER_ID,
+  type AccessJournalRow,
+} from './fixtures'
+
+const ORG_URL = `/employees/${SUBJECT_USER_ID}/organisation`
+
+const open = async (page: Page) => {
+  await seedSession(page)
+  await page.goto(ORG_URL)
+}
+
+const pickInDialog = (page: Page, name: RegExp) =>
+  page.getByRole('dialog').getByRole('button', { name }).click()
+
+const managerRow = (targetId: string): AccessJournalRow => ({
+  id: 'evt-mgr',
+  occurredAt: '2026-02-15T09:00:00.000Z',
+  actorUserId: 'actor',
+  subjectUserId: SUBJECT_USER_ID,
+  kind: 'manager',
+  before: null,
+  after: {
+    relationshipId: 'rel',
+    userId: SUBJECT_USER_ID,
+    type: 'direct',
+    reportsToUserId: targetId,
+  },
+})
+
+test.describe('Organisational relationships', () => {
+  test('renders the journal newest-first with formatted cells and derives the manager / PP hints', async ({
+    page,
+  }) => {
+    await mockOrganisation(page)
+    await open(page)
+
+    const rows = page.getByTestId('organisation-journal-table').locator('tbody tr')
+    await expect(rows).toHaveCount(3)
+    await expect(rows.first()).toContainText('People Partner')
+
+    // The `manager` row: "When" is a locale date (not the raw ISO), "Before" is
+    // the em dash, "After" carries the edge target.
+    const mgrRow = rows.filter({ hasText: 'Manager' }).first()
+    await expect(mgrRow).toContainText('2026')
+    await expect(mgrRow).not.toContainText('T09:00:00')
+    const cells = mgrRow.locator('td')
+    await expect(cells.nth(3)).toHaveText('—')
+    await expect(cells.nth(4)).toContainText('dddddddd-dddd-4ddd-8ddd-dddddddddddd')
+
+    await expect(page.getByTestId('organisation-manager-derived-assigned')).toContainText(
+      'dddddddd-dddd-4ddd-8ddd-dddddddddddd'
+    )
+    await expect(page.getByTestId('organisation-manager-derived-assigned')).toContainText(
+      /from change history/i
+    )
+    await expect(page.getByTestId('organisation-pp-derived-assigned')).toContainText(
+      'cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+    )
+  })
+
+  test('shows the loading state for the derived value while the journal is in flight', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, {
+      journal: async () => {
+        await new Promise(resolve => setTimeout(resolve, 500))
+        return {}
+      },
+    })
+    await open(page)
+
+    await expect(page.getByTestId('organisation-manager-derived-loading')).toBeVisible()
+    await expect(page.getByTestId('organisation-manager-derived-assigned')).toBeVisible()
+  })
+
+  test('the subject header shows the person name when the S1 card is readable', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, {
+      subjectCard: {
+        body: {
+          data: {
+            id: SUBJECT_USER_ID,
+            firstName: 'Sam',
+            lastName: 'Rivera',
+            photo: null,
+            position: 'Software Engineer',
+            country: 'Spain',
+            city: 'Madrid',
+            workEmail: 'sam.rivera@example.com',
+            workPhone: null,
+            birthDay: 1,
+            birthMonth: 6,
+            companyJoinDate: '2022-01-10',
+          },
+          canEdit: false,
+        },
+      },
+    })
+    await open(page)
+
+    await expect(page.getByTestId('organisation-subject-name')).toHaveText('Sam Rivera')
+  })
+
+  test('a journal 403 shows the explanatory panel once and the sections fall back to "not available"', async ({
+    page,
+  }) => {
+    const probe = await mockOrganisation(page, {
+      journal: { status: 403, body: { statusCode: 403, message: 'Forbidden' } },
+    })
+    await open(page)
+
+    await expect(page.getByTestId('organisation-journal-forbidden')).toContainText(
+      /visible only to this person's current manager or People Partner/i
+    )
+    await expect(page.getByTestId('organisation-manager-derived-unknown')).toBeVisible()
+    await expect(page.getByTestId('organisation-pp-derived-unknown')).toBeVisible()
+    await expect(page.getByTestId('organisation-assign-manager')).toBeVisible()
+
+    await page.waitForLoadState('networkidle')
+    expect(probe.journalRequests()).toHaveLength(1)
+  })
+
+  test('a journal 404 shows a non-retryable "not found" panel', async ({ page }) => {
+    const probe = await mockOrganisation(page, {
+      journal: { status: 404, body: { statusCode: 404, message: 'Not Found' } },
+    })
+    await open(page)
+
+    await expect(page.getByTestId('organisation-not-found')).toBeVisible()
+    await expect(page.getByTestId('organisation-manager')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /try again/i })).toHaveCount(0)
+    await page.waitForLoadState('networkidle')
+    expect(probe.journalRequests()).toHaveLength(1)
+  })
+
+  test('a malformed journal body (200, no data array) renders the error panel, not the empty state', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, { journal: { body: { unexpected: true } } })
+    await open(page)
+
+    await expect(page.getByTestId('organisation-journal-error')).toBeVisible()
+    await expect(page.getByTestId('organisation-journal-empty')).toHaveCount(0)
+  })
+
+  test('an empty journal (200, data: []) shows the empty state and "none recorded" hints', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, { journal: { body: journalResponse([]) } })
+    await open(page)
+
+    await expect(page.getByTestId('organisation-journal-empty')).toBeVisible()
+    await expect(page.getByTestId('organisation-manager-derived-none')).toBeVisible()
+    await expect(page.getByTestId('organisation-pp-derived-none')).toBeVisible()
+  })
+
+  test('a journal 500 renders the error panel and retry refetches', async ({ page }) => {
+    let attempt = 0
+    await mockOrganisation(page, {
+      journal: () => {
+        attempt += 1
+        return attempt <= 2 ? { status: 500, body: { message: 'boom' } } : {}
+      },
+    })
+    await open(page)
+
+    await expect(page.getByTestId('organisation-journal-error')).toBeVisible()
+    await page.getByRole('button', { name: /try again/i }).click()
+    await expect(page.getByTestId('organisation-journal-table')).toBeVisible()
+  })
+
+  test('assigns a manager: POST body is exactly { type, targetId } and the journal refetches', async ({
+    page,
+  }) => {
+    let rows = [...JOURNAL_ROWS]
+    const probe = await mockOrganisation(page, {
+      journal: () => ({ body: journalResponse(rows) }),
+      assignManager: () => {
+        rows = [managerRow(TARGET_USER_ID), ...rows]
+        return { status: 201, body: { id: 'rel-new' } }
+      },
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-manager')).toContainText(/just assigned/i)
+    expect(probe.lastAssignManagerBody()).toEqual({ type: 'direct', targetId: TARGET_USER_ID })
+    await expect.poll(() => probe.journalRequests().length).toBeGreaterThan(1)
+  })
+
+  test('the person picker excludes the subject and the current manager', async ({ page }) => {
+    await mockOrganisation(page, {
+      journal: { body: journalResponse([managerRow(OTHER_TARGET_USER_ID)]) },
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    const list = page.getByTestId('person-picker-list')
+    await expect(list.getByRole('button', { name: /Nadia Okoro/ })).toBeVisible()
+    await expect(list.getByRole('button', { name: /Sam Rivera/ })).toHaveCount(0)
+    await expect(list.getByRole('button', { name: /Piotr/ })).toHaveCount(0)
+  })
+
+  test('a plain 409 on manager assignment shows the "already has a manager" copy', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, {
+      assignManager: () => ({ status: 409, body: { statusCode: 409, message: 'Conflict' } }),
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-manager-error')).toContainText(
+      /already has a manager; reassignment isn't available yet/i
+    )
+  })
+
+  test('a 409 target_has_scheduled_departure on manager assignment shows its own copy', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, {
+      assignManager: () => ({ status: 409, body: { error: 'target_has_scheduled_departure' } }),
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-manager-error')).toContainText(
+      /scheduled departure and can't take on reports/i
+    )
+  })
+
+  test('a non-self 400 on manager assignment shows the generic copy, not the self copy', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, {
+      assignManager: () => ({ status: 400, body: { statusCode: 400, message: 'Bad Request' } }),
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-manager-error')).toContainText(
+      /couldn't assign the manager/i
+    )
+    await expect(page.getByTestId('organisation-manager-error')).not.toContainText(/their own/i)
+  })
+
+  test('a transport failure on manager assignment shows the network copy and does not refetch the journal', async ({
+    page,
+  }) => {
+    const probe = await mockOrganisation(page, { assignManager: () => ({ abort: true }) })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-manager-error')).toContainText(
+      /couldn't reach the server/i
+    )
+    await page.waitForLoadState('networkidle')
+    expect(probe.journalRequests()).toHaveLength(1)
+  })
+
+  test('assigns a first People Partner (no current one): no confirm, PUT body { targetId }, journal refetches', async ({
+    page,
+  }) => {
+    let rows = [...MANAGER_ONLY_ROWS]
+    const probe = await mockOrganisation(page, {
+      journal: () => ({ body: journalResponse(rows) }),
+      changePeoplePartner: () => {
+        rows = [
+          {
+            id: 'evt-pp',
+            occurredAt: '2026-05-01T10:00:00.000Z',
+            actorUserId: 'actor',
+            subjectUserId: SUBJECT_USER_ID,
+            kind: 'people_partner',
+            before: null,
+            after: {
+              relationshipId: 'r',
+              userId: SUBJECT_USER_ID,
+              type: 'people_partner',
+              reportsToUserId: TARGET_USER_ID,
+            },
+          },
+          ...rows,
+        ]
+        return { status: 200, body: { id: 'rel-pp-new' } }
+      },
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-pp').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-people-partner')).toContainText(/just assigned/i)
+    expect(probe.lastChangePpBody()).toEqual({ targetId: TARGET_USER_ID })
+    await expect.poll(() => probe.journalRequests().length).toBeGreaterThan(1)
+  })
+
+  test('replacing an existing People Partner routes through a confirm step', async ({ page }) => {
+    const probe = await mockOrganisation(page, {
+      changePeoplePartner: () => ({ status: 200, body: { id: 'rel-pp-new' } }),
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-pp').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    const confirm = page.getByRole('alertdialog')
+    await expect(confirm).toContainText(/Replace the current People Partner/i)
+    await expect(confirm).toContainText(/Nadia Okoro/)
+    expect(probe.changePpRequests()).toHaveLength(0)
+
+    await confirm.getByRole('button', { name: /^replace$/i }).click()
+    await expect(page.getByTestId('organisation-people-partner')).toContainText(/just assigned/i)
+    expect(probe.lastChangePpBody()).toEqual({ targetId: TARGET_USER_ID })
+  })
+
+  test('cancelling the People Partner replace confirm sends no PUT', async ({ page }) => {
+    const probe = await mockOrganisation(page)
+    await open(page)
+
+    await page.getByTestId('organisation-assign-pp').click()
+    await pickInDialog(page, /Nadia Okoro/)
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: /^cancel$/i })
+      .click()
+
+    await expect(page.getByRole('alertdialog')).toHaveCount(0)
+    expect(probe.changePpRequests()).toHaveLength(0)
+  })
+
+  test('removes a People Partner: DELETE is sent and the section shows none', async ({ page }) => {
+    const probe = await mockOrganisation(page, { removePeoplePartner: { status: 200 } })
+    await open(page)
+
+    await page.getByTestId('organisation-remove-pp').click()
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: /^remove$/i })
+      .click()
+
+    await expect(page.getByTestId('organisation-pp-removed')).toBeVisible()
+    expect(probe.removePpRequests()).toHaveLength(1)
+    expect(probe.removePpRequests()[0].method).toBe('DELETE')
+  })
+
+  test('cancelling the People Partner remove confirm sends no DELETE', async ({ page }) => {
+    const probe = await mockOrganisation(page)
+    await open(page)
+
+    await page.getByTestId('organisation-remove-pp').click()
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: /^cancel$/i })
+      .click()
+
+    await expect(page.getByRole('alertdialog')).toHaveCount(0)
+    expect(probe.removePpRequests()).toHaveLength(0)
+  })
+
+  test('a 404 on People Partner removal explains there is nothing to remove', async ({ page }) => {
+    await mockOrganisation(page, {
+      removePeoplePartner: { status: 404, body: { statusCode: 404, message: 'Not Found' } },
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-remove-pp').click()
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: /^remove$/i })
+      .click()
+
+    await expect(page.getByTestId('organisation-pp-error')).toContainText(
+      /no People Partner to remove/i
+    )
+  })
+
+  test.describe('People Partner assignment errors (no current PP — no confirm)', () => {
+    test('404 → unknown-target copy', async ({ page }) => {
+      await mockOrganisation(page, {
+        journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
+        changePeoplePartner: () => ({ status: 404, body: { statusCode: 404 } }),
+      })
+      await open(page)
+      await page.getByTestId('organisation-assign-pp').click()
+      await pickInDialog(page, /Nadia Okoro/)
+      await expect(page.getByTestId('organisation-pp-error')).toContainText(/couldn't be found/i)
+    })
+
+    test('422 → inactive-target copy', async ({ page }) => {
+      await mockOrganisation(page, {
+        journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
+        changePeoplePartner: () => ({ status: 422, body: { statusCode: 422 } }),
+      })
+      await open(page)
+      await page.getByTestId('organisation-assign-pp').click()
+      await pickInDialog(page, /Nadia Okoro/)
+      await expect(page.getByTestId('organisation-pp-error')).toContainText(
+        /isn't an active employee/i
+      )
+    })
+
+    test('plain 409 → generic copy', async ({ page }) => {
+      await mockOrganisation(page, {
+        journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
+        changePeoplePartner: () => ({ status: 409, body: { statusCode: 409 } }),
+      })
+      await open(page)
+      await page.getByTestId('organisation-assign-pp').click()
+      await pickInDialog(page, /Nadia Okoro/)
+      await expect(page.getByTestId('organisation-pp-error')).toContainText(
+        /couldn't update the People Partner/i
+      )
+    })
+
+    test('409 target_has_scheduled_departure → its own copy', async ({ page }) => {
+      await mockOrganisation(page, {
+        journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
+        changePeoplePartner: () => ({
+          status: 409,
+          body: { error: 'target_has_scheduled_departure' },
+        }),
+      })
+      await open(page)
+      await page.getByTestId('organisation-assign-pp').click()
+      await pickInDialog(page, /Nadia Okoro/)
+      await expect(page.getByTestId('organisation-pp-error')).toContainText(
+        /scheduled departure and can't be assigned/i
+      )
+    })
+
+    test('non-self 400 → generic copy, not the self copy', async ({ page }) => {
+      await mockOrganisation(page, {
+        journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
+        changePeoplePartner: () => ({ status: 400, body: { statusCode: 400 } }),
+      })
+      await open(page)
+      await page.getByTestId('organisation-assign-pp').click()
+      await pickInDialog(page, /Nadia Okoro/)
+      await expect(page.getByTestId('organisation-pp-error')).toContainText(
+        /couldn't update the People Partner/i
+      )
+      await expect(page.getByTestId('organisation-pp-error')).not.toContainText(/their own/i)
+    })
+
+    test('transport failure → network copy', async ({ page }) => {
+      await mockOrganisation(page, {
+        journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
+        changePeoplePartner: () => ({ abort: true }),
+      })
+      await open(page)
+      await page.getByTestId('organisation-assign-pp').click()
+      await pickInDialog(page, /Nadia Okoro/)
+      await expect(page.getByTestId('organisation-pp-error')).toContainText(
+        /couldn't reach the server/i
+      )
+    })
+  })
+
+  test('a write 403 on the manager POST disables both sections and shows the permission notice', async ({
+    page,
+  }) => {
+    await mockOrganisation(page, {
+      assignManager: () => ({ status: 403, body: { statusCode: 403, message: 'Forbidden' } }),
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-manager-permission-notice')).toBeVisible()
+    await expect(page.getByTestId('organisation-pp-permission-notice')).toBeVisible()
+    await expect(page.getByTestId('organisation-assign-manager')).toHaveCount(0)
+    await expect(page.getByTestId('organisation-assign-pp')).toHaveCount(0)
+    await expect(page.getByTestId('organisation-remove-pp')).toHaveCount(0)
+    await expect(page.getByTestId('organisation-journal-table')).toBeVisible()
+  })
+
+  test('a write 403 on the People Partner PUT disables both sections', async ({ page }) => {
+    await mockOrganisation(page, {
+      journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
+      changePeoplePartner: () => ({ status: 403, body: { statusCode: 403 } }),
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-pp').click()
+    await pickInDialog(page, /Nadia Okoro/)
+
+    await expect(page.getByTestId('organisation-manager-permission-notice')).toBeVisible()
+    await expect(page.getByTestId('organisation-pp-permission-notice')).toBeVisible()
+    await expect(page.getByTestId('organisation-assign-pp')).toHaveCount(0)
+  })
+
+  test('a write 403 on the People Partner DELETE disables both sections', async ({ page }) => {
+    await mockOrganisation(page, {
+      removePeoplePartner: { status: 403, body: { statusCode: 403 } },
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-remove-pp').click()
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: /^remove$/i })
+      .click()
+
+    await expect(page.getByTestId('organisation-manager-permission-notice')).toBeVisible()
+    await expect(page.getByTestId('organisation-pp-permission-notice')).toBeVisible()
+    await expect(page.getByTestId('organisation-remove-pp')).toHaveCount(0)
+  })
+
+  test('a 403 from the directory disables the person picker', async ({ page }) => {
+    await mockOrganisation(page, {
+      directory: { status: 403, body: { statusCode: 403, message: 'Forbidden' } },
+    })
+    await open(page)
+
+    await page.getByTestId('organisation-assign-manager').click()
+    await expect(page.getByTestId('person-picker-forbidden')).toBeVisible()
+  })
+
+  test('a 401 anywhere triggers the global redirect to /login', async ({ page }) => {
+    await mockOrganisation(page, {
+      journal: { status: 401, body: { statusCode: 401, message: 'Unauthorized' } },
+    })
+    await open(page)
+
+    await expect(page).toHaveURL('/login')
+    expect(await readStoredToken(page)).toBeNull()
+  })
+
+  test('the profile screen links through to the Organisation screen and shows the name', async ({
+    page,
+  }) => {
+    await page.route(/\/users\/[^/]+\/events(?:\?.*)?$/, route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: [], canEdit: false }),
+      })
+    )
+    const card = {
+      data: {
+        id: SUBJECT_USER_ID,
+        firstName: 'Sam',
+        lastName: 'Rivera',
+        photo: null,
+        position: 'Software Engineer',
+        country: 'Spain',
+        city: 'Madrid',
+        workEmail: 'sam.rivera@example.com',
+        workPhone: null,
+        birthDay: 1,
+        birthMonth: 6,
+        companyJoinDate: '2022-01-10',
+      },
+      canEdit: false,
+    }
+    await mockOrganisation(page, { subjectCard: { body: card } })
+    await seedSession(page)
+    await page.goto(`/employees/${SUBJECT_USER_ID}`)
+
+    await page.getByTestId('profile-organisation-link').click()
+    await expect(page).toHaveURL(ORG_URL)
+    await expect(page.getByTestId('organisation-subject-name')).toHaveText('Sam Rivera')
+    await expect(page.getByTestId('organisation-journal-table')).toBeVisible()
+  })
+})

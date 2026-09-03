@@ -96,6 +96,7 @@
     "eyebrow": "Employee",
     "provenanceTag": "Profile",
     "backToDirectory": "All employees",
+    "organisationLink": "Organisation",
     "loading": "Loading profile…",
     "unavailable": {
       "title": "This profile isn't available",
@@ -198,6 +199,115 @@
         "description": "This removes the event from the timeline. You can re-add it later.",
         "confirm": "Delete",
         "cancel": "Cancel"
+      }
+    }
+  },
+  "organisation": {
+    "eyebrow": "Employee",
+    "provenanceTag": "Organisation",
+    "backToProfile": "Back to profile",
+    "lead": "Reporting line and People Partner for this employee, plus the access-change history. Only the actions the platform can perform today are shown here.",
+    "currentLabel": "Current",
+    "subjectFallback": "Identity details aren't visible to you.",
+    "permissionNotice": "You don't have permission to change organisational relationships.",
+    "notFound": {
+      "title": "Employee not found",
+      "body": "There's no employee at this address, or it was removed.",
+      "backToDirectory": "Back to all employees"
+    },
+    "derived": {
+      "loading": "Loading the current value…",
+      "unavailable": "Current value not available — the change history isn't visible to you.",
+      "none": "None recorded in the change history.",
+      "fromHistory": "From change history",
+      "justAssigned": "Just assigned"
+    },
+    "picker": {
+      "filterLabel": "Filter loaded people by name or email",
+      "filterPlaceholder": "Filter by name or email…",
+      "loading": "Loading people…",
+      "empty": "No people match that filter.",
+      "forbidden": "Directory access is required to choose a person.",
+      "error": "Couldn't load the people directory. Try again.",
+      "truncated": "Showing the first {{shown}} of {{total}} people. Narrow by exact first name, last name or work email.",
+      "exact": {
+        "firstName": "Exact first name",
+        "lastName": "Exact last name",
+        "workEmail": "Exact work email"
+      }
+    },
+    "manager": {
+      "title": "Manager",
+      "assign": "Assign manager",
+      "hint": "Only a first assignment is available. Reassigning or removing a manager isn't supported yet.",
+      "pickerTitle": "Assign a manager",
+      "pickerDescription": "Choose the person this employee reports to.",
+      "error": {
+        "self": "An employee can't be their own manager.",
+        "alreadyAssigned": "This employee already has a manager; reassignment isn't available yet.",
+        "targetDeparting": "That person has a scheduled departure and can't take on reports.",
+        "network": "Couldn't reach the server. Try again.",
+        "generic": "Couldn't assign the manager. Try again."
+      }
+    },
+    "peoplePartner": {
+      "title": "People Partner",
+      "assign": "Assign / replace",
+      "remove": "Remove",
+      "removedNow": "None — the People Partner was removed.",
+      "pickerTitle": "Assign a People Partner",
+      "pickerDescription": "Choose this employee's People Partner. Assigning replaces any current one.",
+      "replaceDialog": {
+        "title": "Replace the current People Partner?",
+        "description": "This replaces the current People Partner with {{name}}.",
+        "confirm": "Replace",
+        "cancel": "Cancel"
+      },
+      "removeDialog": {
+        "title": "Remove the People Partner?",
+        "description": "This clears the People Partner for this employee.",
+        "confirm": "Remove",
+        "cancel": "Cancel"
+      },
+      "error": {
+        "self": "An employee can't be their own People Partner.",
+        "unknownTarget": "That person couldn't be found.",
+        "inactiveTarget": "That person isn't an active employee.",
+        "targetDeparting": "That person has a scheduled departure and can't be assigned.",
+        "noneToRemove": "There is no People Partner to remove.",
+        "network": "Couldn't reach the server. Try again.",
+        "generic": "Couldn't update the People Partner. Try again."
+      }
+    },
+    "journal": {
+      "title": "Access journal",
+      "loading": "Loading the access journal…",
+      "caption": "Organisational access changes for this employee, newest first.",
+      "empty": "No organisational changes recorded.",
+      "columns": {
+        "occurredAt": "When",
+        "kind": "Change",
+        "actor": "Actor",
+        "before": "Before",
+        "after": "After"
+      },
+      "kind": {
+        "manager": "Manager",
+        "peoplePartner": "People Partner",
+        "departmentMembership": "Department membership",
+        "departmentManager": "Department manager",
+        "fullProfileGrant": "Full-profile access granted",
+        "fullProfileRevoke": "Full-profile access revoked",
+        "sharedLinkAccess": "Shared-link access"
+      },
+      "forbidden": {
+        "title": "The access history isn't visible to you",
+        "body": "The access history is visible only to this person's current manager or People Partner."
+      },
+      "error": {
+        "title": "Couldn't load the access journal",
+        "body": "The request failed. Check your connection and try again.",
+        "retry": "Try again"
       }
     }
   },

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
-import { isAxiosError } from 'axios'
 import { useEmployee } from '@/api/hooks/useEmployee'
 import { useAuth } from '@/contexts/AuthContext'
+import { httpStatus } from '@/lib/http'
 import type { S1IdentityCard } from '@/types/api'
 
 export type EmployeeProfileStatus = 'loading' | 'ready' | 'unavailable' | 'error'
@@ -29,7 +29,7 @@ export const useEmployeeProfilePage = (): EmployeeProfilePageState => {
   const { userId } = useAuth()
   const query = useEmployee(id)
 
-  const errorStatus = isAxiosError(query.error) ? query.error.response?.status : undefined
+  const errorStatus = httpStatus(query.error)
   const card = query.data?.data ?? null
 
   let status: EmployeeProfileStatus
