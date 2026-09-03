@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/AppLayout/AppLayout'
 import { RequireAuth } from '@/components/RequireAuth/RequireAuth'
 import { HomePage } from '@/pages/HomePage/HomePage'
+import { EmployeesPage } from '@/pages/EmployeesPage/EmployeesPage'
 import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
 import { LoginPage } from '@/pages/LoginPage/LoginPage'
 import { ConsumeMagicLinkPage } from '@/pages/ConsumeMagicLinkPage/ConsumeMagicLinkPage'
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <HomePage />,
+          },
+          {
+            path: 'employees',
+            element: <EmployeesPage />,
           },
         ],
       },

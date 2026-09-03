@@ -1,5 +1,5 @@
 import type { ParseKeys } from 'i18next'
-import { Home, type LucideIcon } from 'lucide-react'
+import { Home, Users, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useLayout } from '@/contexts/LayoutContext'
 import { SideMenuItem } from './components/SideMenuItem/SideMenuItem'
@@ -26,12 +26,19 @@ interface NavSection {
 }
 
 /**
- * G1 renders only the Home item, in the untitled top group. Grouped sections are
- * wired so later epics (directory, admin screens) drop a `title` + items in
- * without a refactor — the sidebar only ever shows live nav items, never placeholders.
+ * The untitled top group holds the live product screens. Grouped sections are
+ * wired so later epics (admin screens) drop a `title` + items in without a
+ * refactor — the sidebar only ever shows live nav items, never placeholders.
+ * "All Employees" is always rendered for an authenticated user; the directory
+ * screen enforces the HR-Admin-only access itself via its `403` state.
  */
 const NAV_SECTIONS: NavSection[] = [
-  { items: [{ icon: Home, labelKey: 'sidebar.home', path: '/', end: true }] },
+  {
+    items: [
+      { icon: Home, labelKey: 'sidebar.home', path: '/', end: true },
+      { icon: Users, labelKey: 'sidebar.employees', path: '/employees' },
+    ],
+  },
 ]
 
 export const SideMenu = ({ collapsible = true, expanded }: SideMenuProps) => {

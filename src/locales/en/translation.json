@@ -16,7 +16,72 @@
     "notAvailable": "Not available"
   },
   "sidebar": {
-    "home": "Home"
+    "home": "Home",
+    "employees": "All Employees"
+  },
+  "employees": {
+    "eyebrow": "Employees",
+    "provenanceTag": "Access per request",
+    "title": "All Employees",
+    "lead": "Everyone in the company. Every request resolves what you're allowed to see.",
+    "exactMatchHint": "Filters are exact matches — type a full value, not a fragment.",
+    "applyFilters": "Apply filters",
+    "clearFilters": "Clear filters",
+    "backToFirstPage": "Back to first page",
+    "tableCaption": "Employees",
+    "loading": "Loading employees…",
+    "filters": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "position": "Position",
+      "country": "Country",
+      "city": "City",
+      "workEmail": "Work email",
+      "workPhone": "Work phone",
+      "birthDay": "Birth day",
+      "birthMonth": "Birth month",
+      "companyJoinDate": "Join date",
+      "employmentStatus": "Employment status",
+      "statusAny": "Any"
+    },
+    "columns": {
+      "employee": "Employee",
+      "position": "Position",
+      "country": "Country",
+      "city": "City",
+      "workEmail": "Work email",
+      "workPhone": "Work phone",
+      "birthday": "Birthday",
+      "companyJoinDate": "Join date",
+      "employmentStatus": "Status"
+    },
+    "statusActive": "Active",
+    "statusDismissed": "Dismissed",
+    "statusPlaceholder": "Status: active",
+    "footerCount_one": "{{count}} employee · sorted by last name, first name",
+    "footerCount_other": "{{count}} employees · sorted by last name, first name",
+    "pager": {
+      "previous": "Previous",
+      "next": "Next",
+      "position": "Page {{page}} of {{totalPages}}"
+    },
+    "empty": {
+      "title": "No employees match these filters",
+      "body": "Adjust or clear the filters to see more people."
+    },
+    "badRequest": {
+      "title": "That filter value isn't valid",
+      "body": "One of the filters isn't a valid value — adjust it and apply again."
+    },
+    "error": {
+      "title": "Couldn't load the employee directory",
+      "body": "The request failed. Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "forbidden": {
+      "title": "You don't have access to the employee directory",
+      "body": "The directory is available to HR administrators only."
+    }
   },
   "shell": {
     "brand": "PeoplePlatform",
