@@ -16,10 +16,10 @@ import type { EmployeeListItem } from '@/types/api'
 import {
   DASH,
   formatBirthday,
-  formatJoinDate,
+  formatIsoDate,
   fullName,
   getInitials,
-} from './helpers/employeeFormatters'
+} from '@/lib/employeeFormatters'
 
 interface EmployeeTableProps {
   rows: EmployeeListItem[]
@@ -83,7 +83,7 @@ export const EmployeeTable = ({ rows, isStale = false }: EmployeeTableProps) => 
                 {formatBirthday(employee.birthDay, employee.birthMonth)}
               </TableCell>
               <TableCell className="font-mono text-xs">
-                {formatJoinDate(employee.companyJoinDate)}
+                {formatIsoDate(employee.companyJoinDate)}
               </TableCell>
               <TableCell>
                 <Badge

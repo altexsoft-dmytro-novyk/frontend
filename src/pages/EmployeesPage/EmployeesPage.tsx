@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmployeeFilters } from './components/EmployeeFilters/EmployeeFilters'
 import { EmployeePager } from './components/EmployeePager/EmployeePager'
 import { EmployeeTable } from './components/EmployeeTable/EmployeeTable'
-import { EmployeesStatePanel } from './components/EmployeesStatePanel/EmployeesStatePanel'
+import { StatePanel } from '@/components/StatePanel/StatePanel'
 import { useEmployeesPage } from './hooks/useEmployeesPage'
 
 const SKELETON_ROWS = Array.from({ length: 8 }, (_, index) => index)
@@ -52,7 +52,7 @@ export const EmployeesPage = () => {
       </div>
 
       {status === 'forbidden' ? (
-        <EmployeesStatePanel
+        <StatePanel
           icon={LockKeyhole}
           title={t('employees.forbidden.title')}
           body={t('employees.forbidden.body')}
@@ -68,7 +68,7 @@ export const EmployeesPage = () => {
           />
 
           {status === 'badRequest' ? (
-            <EmployeesStatePanel
+            <StatePanel
               icon={SlidersHorizontal}
               title={t('employees.badRequest.title')}
               body={t('employees.badRequest.body')}
@@ -76,7 +76,7 @@ export const EmployeesPage = () => {
               testId="employees-badrequest"
             />
           ) : status === 'error' ? (
-            <EmployeesStatePanel
+            <StatePanel
               icon={TriangleAlert}
               title={t('employees.error.title')}
               body={t('employees.error.body')}
@@ -105,7 +105,7 @@ export const EmployeesPage = () => {
                   ))}
                 </div>
               ) : status === 'empty' ? (
-                <EmployeesStatePanel
+                <StatePanel
                   icon={SearchX}
                   title={t('employees.empty.title')}
                   body={t('employees.empty.body')}

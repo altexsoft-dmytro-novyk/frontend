@@ -1,5 +1,3 @@
-import type { EmployeeListItem } from '@/types/api'
-
 const DASH = '—'
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -33,8 +31,11 @@ export const formatBirthday = (day: number | null, month: number | null): string
   return `${day} ${monthName}`
 }
 
-/** `YYYY-MM-DD` (date-only, no timezone) rendered in the viewer's locale. */
-export const formatJoinDate = (isoDate: string): string => {
+/**
+ * A `YYYY-MM-DD` (date-only, no timezone) value rendered in the viewer's locale.
+ * Used for the directory join-date column and career-event dates alike.
+ */
+export const formatIsoDate = (isoDate: string): string => {
   if (!ISO_DATE.test(isoDate)) {
     return isoDate
   }
@@ -49,7 +50,7 @@ export const formatJoinDate = (isoDate: string): string => {
   }).format(new Date(year, month - 1, day))
 }
 
-export const fullName = (employee: Pick<EmployeeListItem, 'firstName' | 'lastName'>): string =>
-  `${employee.firstName} ${employee.lastName}`.trim()
+export const fullName = (person: { firstName: string; lastName: string }): string =>
+  `${person.firstName} ${person.lastName}`.trim()
 
 export { DASH }

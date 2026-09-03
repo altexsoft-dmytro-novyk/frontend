@@ -1,4 +1,5 @@
 import { LogOut, User } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/contexts/AuthContext'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -12,12 +13,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 /**
- * Header avatar + dropdown. G1 has no employee name/profile, so the avatar is a
- * generic glyph and the menu just shows "Signed in" + "Sign out".
+ * Header avatar + dropdown. "My profile" points at `/employees/:id` for the
+ * current user (the JWT `sub`); it is only shown once that id is known.
  */
 export const AccountMenu = () => {
   const { t } = useTranslation()
-  const { logout } = useAuth()
+  const { logout, userId } = useAuth()
 
   return (
     <DropdownMenu>
@@ -35,6 +36,14 @@ export const AccountMenu = () => {
       <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuLabel>{t('shell.signedIn')}</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {userId ? (
+          <DropdownMenuItem asChild data-testid="my-profile">
+            <Link to={`/employees/${userId}`}>
+              <User className="h-4 w-4" />
+              {t('shell.myProfile')}
+            </Link>
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem onClick={logout} data-testid="sign-out">
           <LogOut className="h-4 w-4" />
           {t('shell.signOut')}

@@ -89,7 +89,117 @@
     "notifications": "Notifications",
     "accountMenu": "Account menu",
     "signedIn": "Signed in",
+    "myProfile": "My profile",
     "signOut": "Sign out"
+  },
+  "profile": {
+    "eyebrow": "Employee",
+    "provenanceTag": "Profile",
+    "backToDirectory": "All employees",
+    "loading": "Loading profile…",
+    "unavailable": {
+      "title": "This profile isn't available",
+      "body": "You may not have access to it, or it no longer exists.",
+      "backToDirectory": "Back to all employees"
+    },
+    "error": {
+      "title": "Couldn't load this profile",
+      "body": "The request failed. Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "header": {
+      "uploadPhoto": "Change photo",
+      "uploading": "Uploading…",
+      "photoError": {
+        "type": "Choose a JPEG, PNG, or WebP image.",
+        "size": "That image is larger than 5 MB.",
+        "upload": "Couldn't upload the photo. Try again.",
+        "storage": "Photo storage is temporarily unavailable — try again."
+      }
+    },
+    "card": {
+      "title": "Identity card",
+      "edit": "Edit",
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "position": "Position",
+        "country": "Country",
+        "city": "City",
+        "workEmail": "Work email",
+        "workPhone": "Work phone",
+        "birthday": "Birthday",
+        "birthDay": "Birth day",
+        "birthMonth": "Birth month",
+        "companyJoinDate": "Company join date",
+        "employeeId": "Employee ID"
+      }
+    },
+    "edit": {
+      "save": "Save changes",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "error": {
+        "required": "This field is required.",
+        "email": "Enter a valid email address.",
+        "emailConflict": "That work email is already in use.",
+        "birthDayRange": "Enter a day between 1 and 31.",
+        "birthMonthRange": "Enter a month between 1 and 12.",
+        "birthdayPair": "Set both the birth day and month, or clear both.",
+        "birthdayCleared": "Birthday can't be cleared here — leave the existing value.",
+        "date": "Enter a valid date.",
+        "permission": "Your access to this profile changed — reload the page.",
+        "network": "Couldn't reach the server. Try again.",
+        "generic": "Couldn't save your changes. Check the fields and try again."
+      }
+    },
+    "timeline": {
+      "title": "Career timeline",
+      "loading": "Loading timeline…",
+      "empty": "No timeline events yet",
+      "forbidden": "Not available at your access level",
+      "noDetails": "—",
+      "sourceManual": "Manual",
+      "sourceSystem": "System",
+      "addEvent": "Add event",
+      "deleteRow": "Delete event",
+      "deleteError": {
+        "permission": "That event is already gone, or your access changed — refresh the list.",
+        "transient": "Couldn't delete that event. Try again."
+      },
+      "error": {
+        "title": "Couldn't load the timeline",
+        "body": "The request failed. Try again.",
+        "retry": "Try again"
+      },
+      "dialog": {
+        "title": "Add a timeline event",
+        "description": "Events can't be edited. To fix one, delete it and add a new one.",
+        "typeLabel": "Event type",
+        "typePlaceholder": "e.g. position_change",
+        "dateLabel": "Event date",
+        "detailsLabel": "Details (optional JSON)",
+        "detailsPlaceholder": "{ \"from\": \"Engineer\", \"to\": \"Senior Engineer\" }",
+        "submit": "Add event",
+        "submitting": "Adding…",
+        "cancel": "Cancel",
+        "error": {
+          "typeRequired": "Enter an event type.",
+          "dateRequired": "Choose a date.",
+          "detailsJson": "Details must be valid JSON.",
+          "detailsObject": "Details must be a JSON object.",
+          "permission": "Your access to this timeline changed — reload the page.",
+          "network": "Couldn't reach the server. Try again.",
+          "generic": "Couldn't add the event. Check the fields and try again."
+        }
+      },
+      "deleteDialog": {
+        "title": "Delete this event?",
+        "description": "This removes the event from the timeline. You can re-add it later.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      }
+    }
   },
   "auth": {
     "provenanceTag": "PLATFORM",
