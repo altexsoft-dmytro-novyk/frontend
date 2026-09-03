@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import type { DerivedCurrent } from '../../helpers/journalDerived'
 import { DerivedValue } from '../DerivedValue/DerivedValue'
 import { PermissionNotice } from '../PermissionNotice/PermissionNotice'
-import { PersonPicker } from '../PersonPicker/PersonPicker'
+import { PersonPicker } from '@/components/PersonPicker/PersonPicker'
 import { SectionCard } from '../SectionCard/SectionCard'
 import { useManagerSection } from './hooks/useManagerSection'
 

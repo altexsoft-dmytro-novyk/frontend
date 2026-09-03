@@ -97,6 +97,7 @@
     "provenanceTag": "Profile",
     "backToDirectory": "All employees",
     "organisationLink": "Organisation",
+    "departureLink": "Departure",
     "loading": "Loading profile…",
     "unavailable": {
       "title": "This profile isn't available",
@@ -306,6 +307,128 @@
       },
       "error": {
         "title": "Couldn't load the access journal",
+        "body": "The request failed. Check your connection and try again.",
+        "retry": "Try again"
+      }
+    }
+  },
+  "departure": {
+    "eyebrow": "Employee",
+    "provenanceTag": "Departure",
+    "backToProfile": "Back to profile",
+    "subjectFallback": "Identity details aren't visible to you.",
+    "subjectHeaderFallback": "Employee",
+    "lead": "Record this employee's departure: an effective date and a reason. If they still hold responsibilities, you'll reassign those first.",
+    "permissionNotice": "You don't have permission to record a departure for this employee.",
+    "confirm": {
+      "title": "Record this departure?",
+      "body": "This records a departure for {{name}}, effective {{date}}. It can't be undone here.",
+      "cancel": "Cancel",
+      "confirm": "Record departure"
+    },
+    "form": {
+      "title": "Record a departure",
+      "description": "The departure is applied automatically at the start of the effective date.",
+      "effectiveDateLabel": "Effective date",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "Why this employee is leaving",
+      "submit": "Record departure",
+      "submitting": "Recording…",
+      "error": {
+        "reasonRequired": "Enter a reason.",
+        "reasonTooLong": "Keep the reason under 2000 characters.",
+        "dateInvalid": "Enter a valid date.",
+        "dateNotFuture": "The effective date must be in the future.",
+        "dateRejected": "The server rejected that effective date. Pick a later date.",
+        "alreadyScheduled": "This employee already has a scheduled departure.",
+        "keyMismatch": "The form changed since the last attempt — reload the page and resubmit.",
+        "badRequest": "Couldn't record the departure. Check the fields and try again.",
+        "generic": "Couldn't record the departure. Try again.",
+        "noId": "The departure was recorded but its reference is missing. Reload the page to see its status.",
+        "network": "Couldn't reach the server. Try again."
+      }
+    },
+    "blockers": {
+      "title": "Responsibilities are blocking this departure",
+      "description": "Reassign these before the departure can be recorded.",
+      "kind": {
+        "direct_report": "Direct reports",
+        "department_manager": "Department manager",
+        "people_partner": "People Partner assignments"
+      },
+      "reparentToDefault": "Re-parent everything to {{name}}",
+      "reparentToDefaultManager": "Re-parent everything to this employee's manager",
+      "chooseSomeoneElse": "Choose someone else",
+      "backToForm": "Change the departure details",
+      "pickerTitle": "Choose a re-parent target",
+      "pickerDescription": "Every blocking responsibility moves to this person.",
+      "cleared": "Blockers cleared — record the departure now.",
+      "recordNow": "Record the departure now",
+      "reassignedPrefix": "Reassigned:",
+      "reassigned": {
+        "directReports_one": "{{count}} direct report",
+        "directReports_other": "{{count}} direct reports",
+        "peoplePartner_one": "{{count}} People Partner assignment",
+        "peoplePartner_other": "{{count}} People Partner assignments",
+        "departmentManager": "department manager"
+      },
+      "externalRemaining_one": "{{count}} external (timetracker) blocker remains — resolve it in the source system.",
+      "externalRemaining_other": "{{count}} external (timetracker) blockers remain — resolve them in the source system.",
+      "error": {
+        "selfTarget": "The re-parent target can't be the departing employee.",
+        "unknownTarget": "That person couldn't be found.",
+        "inactiveTarget": "That person isn't an active employee.",
+        "versionStale": "The situation changed — the blockers below have been reloaded. Review them and re-parent again.",
+        "stillBlocked": "Some blockers are still present — review the list and re-parent again.",
+        "alreadyScheduled": "This employee already has a scheduled departure.",
+        "network": "Couldn't reach the server. Try again."
+      }
+    },
+    "status": {
+      "title": "Scheduled departure",
+      "loading": "Loading the departure status…",
+      "state": {
+        "scheduled": "Scheduled",
+        "processing": "Processing",
+        "retry_wait": "Retry pending",
+        "applied": "Applied"
+      },
+      "field": {
+        "effectiveDate": "Effective date",
+        "dueAt": "Runs at",
+        "effectiveTimeZone": "Time zone",
+        "reason": "Reason",
+        "createdAt": "Recorded",
+        "attempts": "Attempts",
+        "lastError": "Last error",
+        "appliedAt": "Applied at"
+      },
+      "lastErrorNone": "None",
+      "retryAdvisory": "This departure is still retrying. If it doesn't apply soon, it may need attention.",
+      "applied": {
+        "body": "This employee's departure has been applied. There's nothing more to do here."
+      },
+      "retry": {
+        "now": "Retry now",
+        "retrying": "Retrying…",
+        "requested": "Retry requested — refreshing the status.",
+        "notRetryable": "This departure can no longer be retried — its state just changed.",
+        "forbidden": "You no longer have permission to retry this departure.",
+        "gone": "This departure is no longer available.",
+        "failed": "Couldn't request a retry. Try again."
+      },
+      "gone": {
+        "title": "This departure is no longer available",
+        "body": "It may have been removed. Start again from the record form.",
+        "backToForm": "Back to the record form"
+      },
+      "forbidden": {
+        "title": "You can't view this departure",
+        "body": "Recording and viewing a departure needs the departure capability, which you don't hold.",
+        "back": "Back to profile"
+      },
+      "error": {
+        "title": "Couldn't load the departure status",
         "body": "The request failed. Check your connection and try again.",
         "retry": "Try again"
       }

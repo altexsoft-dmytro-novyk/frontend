@@ -242,3 +242,86 @@ export interface AssignManagerPayload {
 export interface ChangePeoplePartnerPayload {
   targetId: string
 }
+
+/**
+ * Departure workflow (`services/backend` Epic 5 — `POST /users/:id/departures`,
+ * blocker re-parenting, status, retry). Mirrors the AD-20 "concrete shapes"
+ * (`api-conventions.md` §Departure) and the backend `DepartureView` /
+ * `buildBlockedResponse` / `DepartureReparentingResponse`.
+ */
+
+// The lifecycle states the worker moves a departure through. `scheduled` until
+// `dueAt`; `processing` / `retry_wait` while the worker runs; `applied` is
+// terminal.
+export type DepartureState = 'scheduled' | 'processing' | 'retry_wait' | 'applied'
+
+// `GET /users/:id/departures/:departureId` (and the record `201`) body — the
+// bare projection, no envelope. `attempts` / `lastError` are present only for a
+// non-`scheduled` state; `appliedAt` only once `applied`. Never carries
+// `leaseToken` / `requestHash` / `idempotencyKey` / `nextAttemptAt`.
+export interface DepartureView {
+  departureId: string
+  userId: string
+  state: DepartureState
+  /** `YYYY-MM-DD` (date-only). */
+  effectiveDate: string
+  effectiveTimeZone: string
+  /** ISO-8601 timestamp — `00:00` on `effectiveDate` in `effectiveTimeZone`. */
+  dueAt: string
+  reason: string
+  createdAt: string
+  attempts?: number
+  lastError?: string | null
+  appliedAt?: string | null
+}
+
+// The `kind` discriminator on a blocking responsibility.
+export type DepartureBlockerKind = 'direct_report' | 'department_manager' | 'people_partner'
+
+// One entry of the `409 departure_blocked_by_responsibilities` `blockers[]`.
+// `targets` is present for `direct_report` / `people_partner`; `departmentId` /
+// `departmentName` for `department_manager`.
+export interface DepartureBlocker {
+  kind: DepartureBlockerKind
+  summary: string
+  targets?: { userId: string; name: string }[]
+  departmentId?: string
+  departmentName?: string
+}
+
+// `POST /users/:id/departures` → `409` body when active responsibilities block
+// the departure. `expectedBlockerVersion` is an opaque server digest echoed
+// verbatim into the re-parenting command.
+export interface BlockedDepartureResponse {
+  error: 'departure_blocked_by_responsibilities'
+  blockers: DepartureBlocker[]
+  expectedBlockerVersion: string
+  defaultReparentTargetId?: string
+}
+
+// `POST /users/:id/departures` body (AD-20). Client-validated: `effectiveDate` a
+// real future date, `reason` non-empty.
+export interface RecordDeparturePayload {
+  /** `YYYY-MM-DD`. */
+  effectiveDate: string
+  reason: string
+}
+
+// `POST /users/:id/departure-reparenting` body. `expectedBlockerVersion` is
+// echoed verbatim from the blocker response.
+export interface ReparentDeparturePayload {
+  targetId: string
+  expectedBlockerVersion: string
+}
+
+// `POST /users/:id/departure-reparenting` → `200` body. `remainingExternalBlockers`
+// is the count of timetracker-owned PM/DM blockers that re-parenting cannot
+// clear (currently always `0` from the backend, but contractual — branch on it).
+export interface ReparentingResult {
+  reassigned: {
+    directReports: number
+    departmentManager: boolean
+    peoplePartnerAssignments: number
+  }
+  remainingExternalBlockers: number
+}

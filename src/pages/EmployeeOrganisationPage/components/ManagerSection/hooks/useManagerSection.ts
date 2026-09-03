@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAssignManager } from '@/api/hooks/useAssignManager'
 import { errorCode, httpStatus } from '@/lib/http'
-import type { PickerPerson } from '../../PersonPicker/hooks/usePersonPicker'
+import type { PickerPerson } from '@/components/PersonPicker/hooks/usePersonPicker'
 
 interface UseManagerSectionArgs {
   routeId: string

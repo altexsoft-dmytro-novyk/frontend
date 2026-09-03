@@ -26,3 +26,11 @@ export const errorCode = (error: unknown): string | undefined => {
   }
   return undefined
 }
+
+/**
+ * The parsed response body of a failed request, or `undefined` for a transport
+ * error / non-axios error. Callers narrow the shape themselves (e.g. a `409`
+ * blocked-departure body carrying `blockers` and `expectedBlockerVersion`).
+ */
+export const errorBody = <T = unknown>(error: unknown): T | undefined =>
+  isAxiosError(error) ? (error.response?.data as T | undefined) : undefined

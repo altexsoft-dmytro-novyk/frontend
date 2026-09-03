@@ -4,7 +4,7 @@ import { useChangePeoplePartner } from '@/api/hooks/useChangePeoplePartner'
 import { useRemovePeoplePartner } from '@/api/hooks/useRemovePeoplePartner'
 import { errorCode, httpStatus } from '@/lib/http'
 import type { DerivedCurrent } from '../../../helpers/journalDerived'
-import type { PickerPerson } from '../../PersonPicker/hooks/usePersonPicker'
+import type { PickerPerson } from '@/components/PersonPicker/hooks/usePersonPicker'
 
 interface UsePeoplePartnerSectionArgs {
   routeId: string

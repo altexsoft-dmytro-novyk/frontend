@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Network, TriangleAlert, UserX } from 'lucide-react'
+import { ArrowLeft, LogOut, Network, TriangleAlert, UserX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { StatePanel } from '@/components/StatePanel/StatePanel'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -33,14 +33,24 @@ export const EmployeeProfilePage = () => {
             {t('profile.backToDirectory')}
           </Link>
           {status === 'ready' ? (
-            <Link
-              to={`/employees/${routeId}/organisation`}
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-              data-testid="profile-organisation-link"
-            >
-              <Network className="h-3.5 w-3.5" />
-              {t('profile.organisationLink')}
-            </Link>
+            <>
+              <Link
+                to={`/employees/${routeId}/organisation`}
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                data-testid="profile-organisation-link"
+              >
+                <Network className="h-3.5 w-3.5" />
+                {t('profile.organisationLink')}
+              </Link>
+              <Link
+                to={`/employees/${routeId}/departure`}
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                data-testid="profile-departure-link"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                {t('profile.departureLink')}
+              </Link>
+            </>
           ) : null}
         </div>
       </div>
