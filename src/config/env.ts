@@ -15,7 +15,7 @@ function getEnvVarWithDefault(name: string, defaultValue: string): string {
 
 export const env: EnvironmentConfig = {
   api: {
-    baseUrl: getEnvVarWithDefault('VITE_API_BASE_URL', 'http://localhost:3001'),
+    baseUrl: getEnvVarWithDefault('VITE_API_BASE_URL', 'http://localhost:3001/api/v1'),
     timeout: parseInt(getEnvVarWithDefault('VITE_API_TIMEOUT', '30000'), 10),
   },
 }

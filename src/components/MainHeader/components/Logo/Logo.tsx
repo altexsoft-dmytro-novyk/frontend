@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark/BrandMark'
 
 export const Logo = () => {
   return (
     <Link
       to="/"
-      className="flex h-full items-center px-4 text-2xl font-semibold text-sidebar-foreground hover:opacity-80 transition-opacity"
+      className="flex h-full items-center px-3 text-sidebar-foreground transition-opacity hover:opacity-80"
     >
-      STARTER
+      <BrandMark />
     </Link>
   )
 }

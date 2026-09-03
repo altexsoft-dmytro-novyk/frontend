@@ -9,6 +9,8 @@ interface SideMenuItemProps {
   hint?: string
   counter?: number
   expanded: boolean
+  /** Exact-match active state (default: NavLink's prefix match). */
+  end?: boolean
   onNavigate?: () => void
 }
 
@@ -19,26 +21,28 @@ export const SideMenuItem = ({
   hint,
   counter,
   expanded,
+  end,
   onNavigate,
 }: SideMenuItemProps) => {
   return (
     <NavLink
       to={path}
+      end={end}
       onClick={onNavigate}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-3 px-4 py-3 text-sidebar-foreground transition-colors',
+          'mx-2 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-sidebar-foreground transition-colors',
           'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-          isActive && 'bg-sidebar-primary text-sidebar-primary-foreground font-medium',
+          isActive && 'bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary',
           !expanded && 'justify-center'
         )
       }
       title={hint || label}
     >
-      <Icon className="h-5 w-5 flex-shrink-0" />
-      {expanded && <span className="flex-1 truncate text-sm">{label}</span>}
+      <Icon className="h-4 w-4 flex-shrink-0" />
+      {expanded && <span className="flex-1 truncate">{label}</span>}
       {expanded && counter !== undefined && counter > 0 && (
-        <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
+        <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 font-mono text-xs text-primary-foreground">
           {counter}
         </span>
       )}

@@ -1,7 +1,9 @@
 {
   "home": {
     "title": "Home",
-    "description": "Welcome to the starter. Replace this page with your own content."
+    "description": "This is the PeoplePlatform home. The employee directory is the next thing to land here.",
+    "eyebrow": "Overview",
+    "lead": "Your starting point for PeoplePlatform."
   },
   "error": {
     "title": "Application Error",
@@ -15,5 +17,35 @@
   },
   "sidebar": {
     "home": "Home"
+  },
+  "shell": {
+    "brand": "PeoplePlatform",
+    "searchPlaceholder": "Search people, teams, settings…",
+    "notifications": "Notifications",
+    "accountMenu": "Account menu",
+    "signedIn": "Signed in",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "provenanceTag": "PLATFORM",
+    "login": {
+      "title": "Sign in to PeoplePlatform",
+      "lead": "We'll email you a single-use link — no password needed.",
+      "emailLabel": "Work email",
+      "emailPlaceholder": "you@company.com",
+      "emailInvalid": "Enter a valid email address.",
+      "submit": "Send sign-in link",
+      "submitting": "Sending…",
+      "genericError": "Something went wrong. Please try again.",
+      "checkInboxTitle": "Check your inbox",
+      "checkInboxBody": "If that address matches an account, a sign-in link is on its way. The link expires shortly.",
+      "backToForm": "Use a different email"
+    },
+    "consume": {
+      "verifying": "Signing you in…",
+      "errorTitle": "This sign-in link is invalid or has expired",
+      "errorBody": "Request a fresh link and try again.",
+      "backToLogin": "Back to sign in"
+    }
   }
 }

@@ -4,8 +4,11 @@
 
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/AppLayout/AppLayout'
+import { RequireAuth } from '@/components/RequireAuth/RequireAuth'
 import { HomePage } from '@/pages/HomePage/HomePage'
 import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
+import { LoginPage } from '@/pages/LoginPage/LoginPage'
+import { ConsumeMagicLinkPage } from '@/pages/ConsumeMagicLinkPage/ConsumeMagicLinkPage'
 
 const router = createBrowserRouter([
   // Standalone error page (rendered outside the main layout)
@@ -14,19 +17,36 @@ const router = createBrowserRouter([
     element: <ErrorPage />,
   },
 
-  // Application routes wrapped in the main layout
+  // Public auth routes — no session required, rendered outside AppLayout.
   {
-    path: '/',
-    element: <AppLayout />,
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    // Path is fixed by the backend: the magic-link email points at
+    // `${APP_BASE_URL}/auth/magic-link/consume?token=…`.
+    path: '/auth/magic-link/consume',
+    element: <ConsumeMagicLinkPage />,
+  },
+
+  // Authenticated application shell.
+  {
+    element: <RequireAuth />,
     children: [
       {
-        index: true,
-        element: <HomePage />,
+        path: '/',
+        element: <AppLayout />,
+        children: [
+          {
+            index: true,
+            element: <HomePage />,
+          },
+        ],
       },
     ],
   },
 
-  // Catch-all route
+  // Catch-all: bounce to `/`, which itself redirects to `/login` when unauthed.
   {
     path: '*',
     element: <Navigate to="/" replace />,

@@ -1,20 +1,20 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('App', () => {
-  test('should load homepage successfully', async ({ page }) => {
+  test('renders the app shell and sends anonymous visitors to /login', async ({ page }) => {
     await page.goto('/')
 
     // App container renders without errors
     await expect(page.getByTestId('app-container')).toBeVisible()
 
-    // Home page renders inside the main layout
-    await expect(page.getByTestId('home-title')).toBeVisible()
+    // No session → the protected shell redirects to the login screen
+    await expect(page).toHaveURL('/login')
+    await expect(page.getByRole('button', { name: /send sign-in link/i })).toBeVisible()
   })
 
-  test('should redirect unknown routes to home', async ({ page }) => {
+  test('routes unknown paths back through the guard to /login', async ({ page }) => {
     await page.goto('/some-unknown-route')
 
-    await expect(page).toHaveURL('/')
-    await expect(page.getByTestId('home-title')).toBeVisible()
+    await expect(page).toHaveURL('/login')
   })
 })

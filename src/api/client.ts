@@ -5,6 +5,18 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { env } from '@/config/env'
+import { clearSession, readSession } from '@/lib/session'
+
+const LOGIN_PATH = '/login'
+
+// Unauthenticated magic-link endpoints: a 401 here is a domain outcome the
+// calling page renders itself, never a session-expiry redirect.
+const AUTH_ENDPOINT_SUFFIXES = ['/auth/magic-link', '/auth/magic-link/consume']
+
+const isAuthEndpoint = (url: string): boolean => {
+  const path = url.split('?')[0].replace(/\/+$/, '')
+  return AUTH_ENDPOINT_SUFFIXES.some(suffix => path.endsWith(suffix))
+}
 
 class ApiClient {
   private client: AxiosInstance
@@ -22,15 +34,39 @@ class ApiClient {
   }
 
   private setupInterceptors() {
-    // TODO: attach authentication headers here when the project gets auth
+    // Attach the magic-link session token to every outgoing request.
     this.client.interceptors.request.use(
-      config => config,
+      config => {
+        const token = readSession()
+        if (token) {
+          config.headers.set('Authorization', `Bearer ${token}`)
+        }
+        return config
+      },
       error => Promise.reject(error)
     )
 
+    // A 401 while we hold a session means that session is gone/expired: clear it
+    // and hard-redirect to /login exactly once. The unauthenticated magic-link
+    // endpoints are excluded — a 401 there is a domain outcome the calling page
+    // renders itself (DEC-UM-004).
     this.client.interceptors.response.use(
       response => response,
-      error => Promise.reject(error)
+      error => {
+        const status = axios.isAxiosError(error) ? error.response?.status : undefined
+        const requestUrl = axios.isAxiosError(error) ? (error.config?.url ?? '') : ''
+        if (
+          status === 401 &&
+          !isAuthEndpoint(requestUrl) &&
+          readSession() &&
+          typeof window !== 'undefined' &&
+          window.location.pathname !== LOGIN_PATH
+        ) {
+          clearSession()
+          window.location.assign(LOGIN_PATH)
+        }
+        return Promise.reject(error)
+      }
     )
   }
 
