@@ -7,7 +7,7 @@ const rowFor = (page: Page, name: RegExp) =>
   page.getByRole('row').filter({ has: page.getByRole('link', { name }) })
 
 test.describe('Employee directory', () => {
-  test('default load renders the roster, cells, footer count and a clean request', async ({
+  test('fe-emp-01 · default load renders the roster, cells, footer count and a clean request', async ({
     page,
   }) => {
     const directory = await mockEmployeeDirectory(page, {
@@ -34,7 +34,7 @@ test.describe('Employee directory', () => {
     expect(directory.lastRequest().get('pageSize')).toBe('25')
   })
 
-  test('the sidebar "All Employees" link opens the directory', async ({ page }) => {
+  test('fe-emp-02 · the sidebar "All Employees" link opens the directory', async ({ page }) => {
     await mockEmployeeDirectory(page, { resolve: () => ({ body: ACTIVE_PAGE_1 }) })
     await seedSession(page)
 
@@ -45,7 +45,7 @@ test.describe('Employee directory', () => {
     await expect(page.getByTestId('employees-title')).toBeVisible()
   })
 
-  test('applying a filter reflects it in the URL, refetches, and resets the page', async ({
+  test('fe-emp-03 · applying a filter reflects it in the URL, refetches, and resets the page', async ({
     page,
   }) => {
     const directory = await mockEmployeeDirectory(page, {
@@ -70,7 +70,7 @@ test.describe('Employee directory', () => {
     expect(request.get('page')).toBe('1')
   })
 
-  test('forwards a valid birth-month filter but drops an out-of-range one', async ({ page }) => {
+  test('fe-emp-03 · forwards a valid birth-month filter but drops an out-of-range one', async ({ page }) => {
     const directory = await mockEmployeeDirectory(page, {
       resolve: params => ({ body: params.has('birthMonth') ? POLAND_PAGE_1 : ACTIVE_PAGE_1 }),
     })
@@ -92,7 +92,7 @@ test.describe('Employee directory', () => {
     expect(directory.requests().every(params => params.get('birthMonth') !== '13')).toBe(true)
   })
 
-  test('paginates through the results and disables the pager at the bounds', async ({ page }) => {
+  test('fe-emp-04 · paginates through the results and disables the pager at the bounds', async ({ page }) => {
     await mockEmployeeDirectory(page, {
       resolve: params => ({ body: multiPage(Number(params.get('page') ?? '1')) }),
     })
@@ -114,7 +114,7 @@ test.describe('Employee directory', () => {
     await expect(page.getByRole('button', { name: /next/i })).toBeDisabled()
   })
 
-  test('filtering by dismissed status shows dismissed rows with a badge', async ({ page }) => {
+  test('fe-emp-03 · filtering by dismissed status shows dismissed rows with a badge', async ({ page }) => {
     const directory = await mockEmployeeDirectory(page, {
       resolve: params => ({
         body: params.get('employmentStatus') === 'dismissed' ? DISMISSED_PAGE_1 : ACTIVE_PAGE_1,
@@ -133,7 +133,7 @@ test.describe('Employee directory', () => {
     expect(directory.lastRequest().get('employmentStatus')).toBe('dismissed')
   })
 
-  test('an empty result renders the empty state with a clear-filters action', async ({ page }) => {
+  test('fe-emp-05 · an empty result renders the empty state with a clear-filters action', async ({ page }) => {
     await mockEmployeeDirectory(page, {
       resolve: params => ({ body: params.get('position') ? EMPTY_PAGE : ACTIVE_PAGE_1 }),
     })
@@ -152,7 +152,7 @@ test.describe('Employee directory', () => {
     await expect(page.getByRole('link', { name: /Amelia Rho/ })).toBeVisible()
   })
 
-  test('a 400 keeps the filter bar and shows the bad-request panel without a retry', async ({
+  test('fe-emp-06 · a 400 keeps the filter bar and shows the bad-request panel without a retry', async ({
     page,
   }) => {
     await mockEmployeeDirectory(page, {
@@ -170,7 +170,7 @@ test.describe('Employee directory', () => {
     ).toBeVisible()
   })
 
-  test('a 403 renders the no-access panel with no retry loop', async ({ page }) => {
+  test('fe-emp-06 · a 403 renders the no-access panel with no retry loop', async ({ page }) => {
     const directory = await mockEmployeeDirectory(page, {
       resolve: () => ({ status: 403, body: { statusCode: 403, message: 'Forbidden' } }),
     })
@@ -184,7 +184,7 @@ test.describe('Employee directory', () => {
     expect(directory.callCount()).toBe(1)
   })
 
-  test('a 500 renders the error panel and the retry button refetches', async ({ page }) => {
+  test('fe-emp-06 · a 500 renders the error panel and the retry button refetches', async ({ page }) => {
     let attempt = 0
     const directory = await mockEmployeeDirectory(page, {
       resolve: () => {
@@ -206,7 +206,7 @@ test.describe('Employee directory', () => {
     expect(directory.callCount()).toBeGreaterThan(callsBeforeRetry)
   })
 
-  test('a 401 on the list request triggers the global redirect to /login', async ({ page }) => {
+  test('fe-emp-07 · a 401 on the list request triggers the global redirect to /login', async ({ page }) => {
     await mockEmployeeDirectory(page, {
       resolve: () => ({ status: 401, body: { statusCode: 401, message: 'Unauthorized' } }),
     })

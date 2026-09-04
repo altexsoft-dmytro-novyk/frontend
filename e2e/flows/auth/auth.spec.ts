@@ -14,7 +14,7 @@ const readStoredToken = (page: Page) =>
 const sendLinkButton = (page: Page) => page.getByRole('button', { name: /send sign-in link/i })
 
 test.describe('Magic-link authentication', () => {
-  test('unauthenticated visit to a protected route lands on /login', async ({ page }) => {
+  test('fe-auth-01 · unauthenticated visit to a protected route lands on /login', async ({ page }) => {
     await page.goto('/')
 
     await expect(page).toHaveURL('/login')
@@ -22,7 +22,7 @@ test.describe('Magic-link authentication', () => {
     await expect(page.getByTestId('home-title')).toHaveCount(0)
   })
 
-  test('an expired stored token is treated as logged out', async ({ page }) => {
+  test('fe-auth-02 · an expired stored token is treated as logged out', async ({ page }) => {
     await seedExpiredSession(page)
 
     await page.goto('/')
@@ -31,7 +31,7 @@ test.describe('Magic-link authentication', () => {
     await expect(page.getByTestId('home-title')).toHaveCount(0)
   })
 
-  test('requesting a link shows the enumeration-safe confirmation', async ({ page }) => {
+  test('fe-auth-03 · requesting a link shows the enumeration-safe confirmation', async ({ page }) => {
     await mockMagicLinkRequest(page)
     await page.goto('/login')
 
@@ -44,7 +44,7 @@ test.describe('Magic-link authentication', () => {
     await expect(page.getByLabel('Work email')).toHaveCount(0)
   })
 
-  test('a failed link request shows a generic error and re-enables the form', async ({ page }) => {
+  test('fe-auth-03 · a failed link request shows a generic error and re-enables the form', async ({ page }) => {
     await mockMagicLinkRequest(page, { fail: true })
     await page.goto('/login')
 
@@ -56,7 +56,7 @@ test.describe('Magic-link authentication', () => {
     await expect(page.getByTestId('login-confirmation')).toHaveCount(0)
   })
 
-  test('an invalid email is blocked client-side with no request sent', async ({ page }) => {
+  test('fe-auth-03 · an invalid email is blocked client-side with no request sent', async ({ page }) => {
     const request = await mockMagicLinkRequest(page)
     await page.goto('/login')
 
@@ -67,7 +67,7 @@ test.describe('Magic-link authentication', () => {
     expect(request.wasRequested()).toBe(false)
   })
 
-  test('consuming a valid token establishes a session, lands on Home, and consumes once', async ({
+  test('fe-auth-04 · consuming a valid token establishes a session, lands on Home, and consumes once', async ({
     page,
   }) => {
     const consume = await mockMagicLinkConsume(page, 'success')
@@ -81,7 +81,7 @@ test.describe('Magic-link authentication', () => {
     expect(consume.callCount()).toBe(1)
   })
 
-  test('consuming an invalid token shows one generic error and stores no session', async ({
+  test('fe-auth-04 · consuming an invalid token shows one generic error and stores no session', async ({
     page,
   }) => {
     await mockMagicLinkConsume(page, 'unauthorized')
@@ -97,13 +97,13 @@ test.describe('Magic-link authentication', () => {
     expect(await readStoredToken(page)).toBeNull()
   })
 
-  test('visiting the consume route with no token shows the generic error', async ({ page }) => {
+  test('fe-auth-04 · visiting the consume route with no token shows the generic error', async ({ page }) => {
     await page.goto('/auth/magic-link/consume')
 
     await expect(page.getByTestId('consume-error')).toBeVisible()
   })
 
-  test('a stored, unexpired session survives a reload', async ({ page }) => {
+  test('fe-auth-02 · a stored, unexpired session survives a reload', async ({ page }) => {
     await seedSession(page)
 
     await page.goto('/')
@@ -114,7 +114,7 @@ test.describe('Magic-link authentication', () => {
     await expect(page).toHaveURL('/')
   })
 
-  test('an authenticated user visiting /login is redirected to Home', async ({ page }) => {
+  test('fe-auth-02 · an authenticated user visiting /login is redirected to Home', async ({ page }) => {
     await seedSession(page)
 
     await page.goto('/login')
@@ -123,7 +123,7 @@ test.describe('Magic-link authentication', () => {
     await expect(page.getByTestId('home-title')).toBeVisible()
   })
 
-  test('signing out clears the session and returns to /login', async ({ page }) => {
+  test('fe-auth-05 · signing out clears the session and returns to /login', async ({ page }) => {
     await seedSession(page)
     await page.goto('/')
     await expect(page.getByTestId('home-title')).toBeVisible()

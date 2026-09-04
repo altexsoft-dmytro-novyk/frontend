@@ -32,7 +32,7 @@ const submitAndConfirm = async (page: Page) => {
 }
 
 test.describe('Departure workflow', () => {
-  test('records a clean departure: Idempotency-Key header + body, 201 → status view + ?departure=', async ({
+  test('fe-dep-01 · records a clean departure: Idempotency-Key header + body, 201 → status view + ?departure=', async ({
     page,
   }) => {
     const probe = await mockDeparture(page)
@@ -52,7 +52,7 @@ test.describe('Departure workflow', () => {
     expect(probe.recordKeys()[0]).toBeTruthy()
   })
 
-  test('a past effective date is blocked client-side — no request is sent', async ({ page }) => {
+  test('fe-dep-02 · a past effective date is blocked client-side — no request is sent', async ({ page }) => {
     const probe = await mockDeparture(page)
     await open(page)
 
@@ -63,7 +63,7 @@ test.describe('Departure workflow', () => {
     expect(probe.recordRequests()).toHaveLength(0)
   })
 
-  test('a 409 blocked-by-responsibilities response renders the blocker panel with names', async ({
+  test('fe-dep-03 · a 409 blocked-by-responsibilities response renders the blocker panel with names', async ({
     page,
   }) => {
     await mockDeparture(page, { record: { status: 409, body: blockedBody() } })
@@ -80,7 +80,7 @@ test.describe('Departure workflow', () => {
     await expect(page.getByTestId('departure-reparent-default')).toContainText('Nadia Okoro')
   })
 
-  test('re-parent to the default clears blockers and "record now" resubmits with a NEW key', async ({
+  test('fe-dep-03 · re-parent to the default clears blockers and "record now" resubmits with a NEW key', async ({
     page,
   }) => {
     let recordCalls = 0
@@ -115,7 +115,7 @@ test.describe('Departure workflow', () => {
     expect(keys[1]).not.toEqual(keys[0])
   })
 
-  test('re-parenting that leaves external blockers shows the timetracker message and does not resubmit', async ({
+  test('fe-dep-03 · re-parenting that leaves external blockers shows the timetracker message and does not resubmit', async ({
     page,
   }) => {
     const probe = await mockDeparture(page, {
@@ -133,7 +133,7 @@ test.describe('Departure workflow', () => {
     expect(probe.recordRequests()).toHaveLength(1)
   })
 
-  test('a stale blocker version reloads the blockers (a fresh record POST) and shows a note', async ({
+  test('fe-dep-03 · a stale blocker version reloads the blockers (a fresh record POST) and shows a note', async ({
     page,
   }) => {
     let recordCalls = 0
@@ -159,7 +159,7 @@ test.describe('Departure workflow', () => {
     expect(probe.recordRequests()).toHaveLength(2)
   })
 
-  test('a 409 departure_already_scheduled shows the "already has a scheduled departure" copy', async ({
+  test('fe-dep-06 · a 409 departure_already_scheduled shows the "already has a scheduled departure" copy', async ({
     page,
   }) => {
     await mockDeparture(page, {
@@ -175,7 +175,7 @@ test.describe('Departure workflow', () => {
     )
   })
 
-  test('a retry_wait status shows attempts + last error and "Retry now" calls the retry route', async ({
+  test('fe-dep-05 · a retry_wait status shows attempts + last error and "Retry now" calls the retry route', async ({
     page,
   }) => {
     const probe = await mockDeparture(page, {
@@ -197,7 +197,7 @@ test.describe('Departure workflow', () => {
     await expect.poll(() => probe.retryRequests().length).toBe(1)
   })
 
-  test('an applied status renders the terminal panel with no retry action', async ({ page }) => {
+  test('fe-dep-05 · an applied status renders the terminal panel with no retry action', async ({ page }) => {
     await mockDeparture(page, {
       status: {
         body: departureView({
@@ -215,7 +215,7 @@ test.describe('Departure workflow', () => {
     await expect(page.getByTestId('departure-retry-now')).toHaveCount(0)
   })
 
-  test('a write 403 collapses the form to a permission notice', async ({ page }) => {
+  test('fe-dep-07 · a write 403 collapses the form to a permission notice', async ({ page }) => {
     await mockDeparture(page, { record: { status: 403, body: { statusCode: 403 } } })
     await open(page)
 
@@ -226,7 +226,7 @@ test.describe('Departure workflow', () => {
     await expect(page.getByTestId('departure-submit')).toBeDisabled()
   })
 
-  test('an unknown ?departure= id shows "no longer available" with a path back to the form', async ({
+  test('fe-dep-05 · an unknown ?departure= id shows "no longer available" with a path back to the form', async ({
     page,
   }) => {
     await mockDeparture(page, { status: { status: 404, body: { statusCode: 404 } } })
@@ -239,7 +239,7 @@ test.describe('Departure workflow', () => {
     await expect(page).toHaveURL(DEPARTURE_URL)
   })
 
-  test('the confirm dialog Cancel sends no request', async ({ page }) => {
+  test('fe-dep-02 · the confirm dialog Cancel sends no request', async ({ page }) => {
     const probe = await mockDeparture(page)
     await open(page)
 
@@ -252,7 +252,7 @@ test.describe('Departure workflow', () => {
     expect(probe.recordRequests()).toHaveLength(0)
   })
 
-  test('a 409 idempotency_key_payload_mismatch shows the reload copy', async ({ page }) => {
+  test('fe-dep-04 · a 409 idempotency_key_payload_mismatch shows the reload copy', async ({ page }) => {
     await mockDeparture(page, {
       record: { status: 409, body: { error: 'idempotency_key_payload_mismatch' } },
     })
@@ -264,7 +264,7 @@ test.describe('Departure workflow', () => {
     await expect(page.getByTestId('departure-form-error')).toContainText(/reload the page/i)
   })
 
-  test('the blocker panel "choose someone else" path re-parents to a picked target', async ({
+  test('fe-dep-03 · the blocker panel "choose someone else" path re-parents to a picked target', async ({
     page,
   }) => {
     const probe = await mockDeparture(page, {
@@ -290,7 +290,7 @@ test.describe('Departure workflow', () => {
     })
   })
 
-  test('a re-parent 404 shows the unknown-target copy', async ({ page }) => {
+  test('fe-dep-03 · a re-parent 404 shows the unknown-target copy', async ({ page }) => {
     await mockDeparture(page, {
       record: { status: 409, body: blockedBody() },
       reparent: { status: 404, body: { statusCode: 404 } },
@@ -304,14 +304,14 @@ test.describe('Departure workflow', () => {
     await expect(page.getByTestId('departure-blockers-error')).toContainText(/couldn't be found/i)
   })
 
-  test('a status GET 403 shows the forbidden panel', async ({ page }) => {
+  test('fe-dep-05 · a status GET 403 shows the forbidden panel', async ({ page }) => {
     await mockDeparture(page, { status: { status: 403, body: { statusCode: 403 } } })
     await open(page, `?departure=${DEPARTURE_ID}`)
 
     await expect(page.getByTestId('departure-status-forbidden')).toContainText(/can't view/i)
   })
 
-  test('retry returning departure_not_retryable shows the note and refetches', async ({ page }) => {
+  test('fe-dep-05 · retry returning departure_not_retryable shows the note and refetches', async ({ page }) => {
     const probe = await mockDeparture(page, {
       status: { body: departureView({ state: 'retry_wait', attempts: 1, lastError: 'x' }) },
       retry: { status: 409, body: { error: 'departure_not_retryable' } },
@@ -324,7 +324,7 @@ test.describe('Departure workflow', () => {
     await expect.poll(() => probe.statusRequests().length).toBeGreaterThan(1)
   })
 
-  test('an unchanged resubmit reuses the idempotency key; a changed value mints a new one', async ({
+  test('fe-dep-04 · an unchanged resubmit reuses the idempotency key; a changed value mints a new one', async ({
     page,
   }) => {
     const probe = await mockDeparture(page, {
@@ -347,7 +347,7 @@ test.describe('Departure workflow', () => {
     expect(keys[2]).not.toEqual(keys[1])
   })
 
-  test('a 401 anywhere triggers the global redirect to /login', async ({ page }) => {
+  test('fe-dep-07 · a 401 anywhere triggers the global redirect to /login', async ({ page }) => {
     await mockDeparture(page, { record: { status: 401, body: { statusCode: 401 } } })
     await open(page)
 
@@ -358,7 +358,7 @@ test.describe('Departure workflow', () => {
     expect(await readStoredToken(page)).toBeNull()
   })
 
-  test('the profile screen links through to the Departure screen', async ({ page }) => {
+  test('fe-dep-08 · the profile screen links through to the Departure screen', async ({ page }) => {
     await page.route(/\/users\/[^/]+\/events(?:\?.*)?$/, route =>
       route.fulfill({
         status: 200,

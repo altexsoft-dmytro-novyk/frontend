@@ -23,7 +23,7 @@ const submitAndConfirm = async (page: Page) => {
 }
 
 test.describe('Population import', () => {
-  test('a picked CSV is POSTed as multipart with a single "file" part and the 200 summary renders', async ({
+  test('fe-imp-01 · a picked CSV is POSTed as multipart with a single "file" part and the 200 summary renders', async ({
     page,
   }) => {
     const probe = await mockImport(page, { importResponse: { body: cleanSummary() } })
@@ -50,7 +50,7 @@ test.describe('Population import', () => {
     expect(partNames).toEqual(['file'])
   })
 
-  test('a 200 with skipped rows shows the errors table (with a copy action) and is not an error panel', async ({
+  test('fe-imp-02 · a 200 with skipped rows shows the errors table (with a copy action) and is not an error panel', async ({
     page,
   }) => {
     await mockImport(page, { importResponse: { body: partialSummary() } })
@@ -72,7 +72,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-copy-skipped')).toBeVisible()
   })
 
-  test('a clean 200 shows the "everything imported" copy', async ({ page }) => {
+  test('fe-imp-01 · a clean 200 shows the "everything imported" copy', async ({ page }) => {
     await mockImport(page, { importResponse: { body: cleanSummary() } })
     await openImport(page)
 
@@ -85,7 +85,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-copy-skipped')).toHaveCount(0)
   })
 
-  test('a 400 shows the backend message verbatim, no summary, and the picker stays usable', async ({
+  test('fe-imp-05 · a 400 shows the backend message verbatim, no summary, and the picker stays usable', async ({
     page,
   }) => {
     await mockImport(page, {
@@ -104,7 +104,7 @@ test.describe('Population import', () => {
     await expect(page.getByLabel('Population file')).toBeEnabled()
   })
 
-  test('the fix-and-re-upload loop: picking a corrected file clears the 400 and resubmits to a 200', async ({
+  test('fe-imp-05 · the fix-and-re-upload loop: picking a corrected file clears the 400 and resubmits to a 200', async ({
     page,
   }) => {
     let calls = 0
@@ -128,7 +128,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-result')).toBeVisible()
   })
 
-  test('picking a second, different file replaces the shown selection', async ({ page }) => {
+  test('fe-imp-03 · picking a second, different file replaces the shown selection', async ({ page }) => {
     await mockImport(page)
     await openImport(page)
 
@@ -140,7 +140,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-selected-file')).not.toContainText('first.csv')
   })
 
-  test('a non-.csv name shows the soft hint but still allows submitting', async ({ page }) => {
+  test('fe-imp-03 · a non-.csv name shows the soft hint but still allows submitting', async ({ page }) => {
     await mockImport(page)
     await openImport(page)
 
@@ -149,7 +149,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-submit')).toBeEnabled()
   })
 
-  test('an empty file is blocked before any request', async ({ page }) => {
+  test('fe-imp-03 · an empty file is blocked before any request', async ({ page }) => {
     const probe = await mockImport(page)
     await openImport(page)
 
@@ -164,7 +164,7 @@ test.describe('Population import', () => {
     expect(probe.importCount()).toBe(0)
   })
 
-  test('the confirm dialog: Cancel sends nothing, Confirm proceeds', async ({ page }) => {
+  test('fe-imp-04 · the confirm dialog: Cancel sends nothing, Confirm proceeds', async ({ page }) => {
     const probe = await mockImport(page, { importResponse: { body: cleanSummary() } })
     await openImport(page)
 
@@ -182,7 +182,7 @@ test.describe('Population import', () => {
     expect(probe.importCount()).toBe(1)
   })
 
-  test('a 403 shows the permission notice and disables the upload control', async ({ page }) => {
+  test('fe-imp-06 · a 403 shows the permission notice and disables the upload control', async ({ page }) => {
     await mockImport(page, {
       importResponse: { status: 403, body: { statusCode: 403, message: 'Forbidden' } },
     })
@@ -197,7 +197,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-result')).toHaveCount(0)
   })
 
-  test('a 500 shows the generic server error and re-enables the picker', async ({ page }) => {
+  test('fe-imp-05 · a 500 shows the generic server error and re-enables the picker', async ({ page }) => {
     await mockImport(page, {
       importResponse: { status: 500, body: { message: 'boom' } },
     })
@@ -211,7 +211,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-submit')).toBeEnabled()
   })
 
-  test('a 200 with a malformed body is treated as a server error, not a result', async ({
+  test('fe-imp-05 · a 200 with a malformed body is treated as a server error, not a result', async ({
     page,
   }) => {
     await mockImport(page, {
@@ -226,7 +226,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-result')).toHaveCount(0)
   })
 
-  test('a 401 triggers the global redirect to /login', async ({ page }) => {
+  test('fe-imp-07 · a 401 triggers the global redirect to /login', async ({ page }) => {
     await mockImport(page, {
       importResponse: { status: 401, body: { statusCode: 401 } },
     })
@@ -239,7 +239,7 @@ test.describe('Population import', () => {
     expect(await readStoredToken(page)).toBeNull()
   })
 
-  test('the directory empty state (no filters) leads with the Import population CTA', async ({
+  test('fe-imp-08 · the directory empty state (no filters) leads with the Import population CTA', async ({
     page,
   }) => {
     await mockImport(page)
@@ -257,7 +257,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('import-title')).toBeVisible()
   })
 
-  test('the directory toolbar Import population button routes to the import screen', async ({
+  test('fe-imp-08 · the directory toolbar Import population button routes to the import screen', async ({
     page,
   }) => {
     await mockImport(page)
@@ -268,7 +268,7 @@ test.describe('Population import', () => {
     await expect(page).toHaveURL('/employees/import')
   })
 
-  test('the directory 403 panel hides the toolbar Import population button', async ({ page }) => {
+  test('fe-imp-08 · the directory 403 panel hides the toolbar Import population button', async ({ page }) => {
     await mockImport(page, {
       directory: { status: 403, body: { statusCode: 403, message: 'Forbidden' } },
     })
@@ -279,7 +279,7 @@ test.describe('Population import', () => {
     await expect(page.getByTestId('employees-import-link')).toHaveCount(0)
   })
 
-  test('a successful import invalidates the directory query so the next visit refetches', async ({
+  test('fe-imp-09 · a successful import invalidates the directory query so the next visit refetches', async ({
     page,
   }) => {
     let imported = false

@@ -12,7 +12,7 @@ import {
 } from './fixtures'
 
 test.describe('Employee profile', () => {
-  test('read-only view renders the identity card, dashes for nulls and no edit affordance', async ({
+  test('fe-prof-01 · read-only view renders the identity card, dashes for nulls and no edit affordance', async ({
     page,
   }) => {
     await mockProfile(page, {
@@ -34,7 +34,7 @@ test.describe('Employee profile', () => {
     await expect(page.getByTestId('timeline-error')).toHaveCount(0)
   })
 
-  test('my own profile shows the photo-upload control', async ({ page }) => {
+  test('fe-prof-01 · my own profile shows the photo-upload control', async ({ page }) => {
     await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
       events: { body: eventsResponse([], false) },
@@ -48,7 +48,7 @@ test.describe('Employee profile', () => {
     await expect(page.getByTestId('profile-edit-button')).toHaveCount(0)
   })
 
-  test('an editable card edits one field and PATCHes only the changed key', async ({ page }) => {
+  test('fe-prof-02 · an editable card edits one field and PATCHes only the changed key', async ({ page }) => {
     let current: S1IdentityCard = { ...OWN_CARD }
     const probe = await mockProfile(page, {
       card: () => ({ body: cardResponse(current, true) }),
@@ -75,7 +75,7 @@ test.describe('Employee profile', () => {
     expect(probe.lastPatchBody()).toEqual({ position: 'Staff Engineer' })
   })
 
-  test('a 409 on the email edit shows a conflict error and leaves the card unchanged', async ({
+  test('fe-prof-03 · a 409 on the email edit shows a conflict error and leaves the card unchanged', async ({
     page,
   }) => {
     await mockProfile(page, {
@@ -95,7 +95,7 @@ test.describe('Employee profile', () => {
     await expect(page.getByTestId('profile-edit-form')).toBeVisible()
   })
 
-  test('uploads a valid photo and rejects a bad type client-side', async ({ page }) => {
+  test('fe-prof-05 · uploads a valid photo and rejects a bad type client-side', async ({ page }) => {
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
       events: { body: eventsResponse([], false) },
@@ -123,7 +123,7 @@ test.describe('Employee profile', () => {
     expect(probe.photoRequests()[0].contentType).toMatch(/^multipart\/form-data/)
   })
 
-  test('shows the empty timeline state, then adds an event and refetches', async ({ page }) => {
+  test('fe-prof-06 · shows the empty timeline state, then adds an event and refetches', async ({ page }) => {
     let events: typeof EVENTS = []
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
@@ -157,7 +157,7 @@ test.describe('Employee profile', () => {
     expect(probe.lastCreateBody()).toEqual({ type: 'promotion', eventDate: '2025-01-01' })
   })
 
-  test('deletes an event through the confirm dialog', async ({ page }) => {
+  test('fe-prof-07 · deletes an event through the confirm dialog', async ({ page }) => {
     let events = [...EVENTS]
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
@@ -181,7 +181,7 @@ test.describe('Employee profile', () => {
     expect(probe.deleteEventRequests().length).toBeGreaterThan(0)
   })
 
-  test('a failed delete keeps the row and shows an inline error', async ({ page }) => {
+  test('fe-prof-07 · a failed delete keeps the row and shows an inline error', async ({ page }) => {
     await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
       events: () => ({ body: eventsResponse([...EVENTS], true) }),
@@ -201,7 +201,7 @@ test.describe('Employee profile', () => {
     await expect(page.getByTestId('timeline-list')).toContainText('certification')
   })
 
-  test('a 404 on the card renders the unavailable panel with a link back to the directory', async ({
+  test('fe-prof-08 · a 404 on the card renders the unavailable panel with a link back to the directory', async ({
     page,
   }) => {
     await mockProfile(page, {
@@ -217,7 +217,7 @@ test.describe('Employee profile', () => {
     await expect(backLink).toHaveAttribute('href', '/employees')
   })
 
-  test('a 500 on the card renders the error panel and retry refetches', async ({ page }) => {
+  test('fe-prof-08 · a 500 on the card renders the error panel and retry refetches', async ({ page }) => {
     let attempt = 0
     await mockProfile(page, {
       card: () => {
@@ -236,7 +236,7 @@ test.describe('Employee profile', () => {
     await expect(page.getByTestId('profile-name')).toHaveText('Amelia Rho')
   })
 
-  test('a 403 on the card also renders the unavailable panel', async ({ page }) => {
+  test('fe-prof-08 · a 403 on the card also renders the unavailable panel', async ({ page }) => {
     const probe = await mockProfile(page, {
       card: { status: 403, body: { statusCode: 403, message: 'Forbidden' } },
     })
@@ -249,7 +249,7 @@ test.describe('Employee profile', () => {
     expect(probe.cardRequests()).toHaveLength(1)
   })
 
-  test('the "My profile" account-menu item resolves to /employees/<my user id>', async ({
+  test('fe-prof-10 · the "My profile" account-menu item resolves to /employees/<my user id>', async ({
     page,
   }) => {
     await mockProfile(page, {
@@ -266,7 +266,7 @@ test.describe('Employee profile', () => {
     await expect(page.getByTestId('profile-name')).toHaveText('Amelia Rho')
   })
 
-  test('a 401 anywhere on the profile triggers the global redirect to /login', async ({ page }) => {
+  test('fe-prof-11 · a 401 anywhere on the profile triggers the global redirect to /login', async ({ page }) => {
     await mockProfile(page, {
       card: { status: 401, body: { statusCode: 401, message: 'Unauthorized' } },
     })
@@ -277,7 +277,7 @@ test.describe('Employee profile', () => {
     expect(await readStoredToken(page)).toBeNull()
   })
 
-  test('a timeline 403 is requested exactly once — no retry', async ({ page }) => {
+  test('fe-prof-09 · a timeline 403 is requested exactly once — no retry', async ({ page }) => {
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OTHER_CARD, false) },
       events: { status: 403, body: { statusCode: 403, message: 'Forbidden' } },
@@ -290,7 +290,7 @@ test.describe('Employee profile', () => {
     expect(probe.eventsRequests()).toHaveLength(1)
   })
 
-  test('a 200 with no data body renders the error panel, never a blank screen', async ({
+  test('fe-prof-08 · a 200 with no data body renders the error panel, never a blank screen', async ({
     page,
   }) => {
     await mockProfile(page, {
@@ -311,7 +311,7 @@ test.describe('Employee profile', () => {
       await page.getByTestId('profile-edit-button').click()
     }
 
-    test('a malformed email shows a field error and sends no PATCH', async ({ page }) => {
+    test('fe-prof-04 · a malformed email shows a field error and sends no PATCH', async ({ page }) => {
       const probe = await mockProfile(page, {
         card: { body: cardResponse(OWN_CARD, true) },
         events: { body: eventsResponse([], false) },
@@ -325,7 +325,7 @@ test.describe('Employee profile', () => {
       expect(probe.patchRequests()).toHaveLength(0)
     })
 
-    test('birth month 13 shows a range error and sends no PATCH', async ({ page }) => {
+    test('fe-prof-04 · birth month 13 shows a range error and sends no PATCH', async ({ page }) => {
       const probe = await mockProfile(page, {
         card: { body: cardResponse(OWN_CARD, true) },
         events: { body: eventsResponse([], false) },
@@ -339,7 +339,7 @@ test.describe('Employee profile', () => {
       expect(probe.patchRequests()).toHaveLength(0)
     })
 
-    test('clearing only the birth month shows the pair error and sends no PATCH', async ({
+    test('fe-prof-04 · clearing only the birth month shows the pair error and sends no PATCH', async ({
       page,
     }) => {
       const probe = await mockProfile(page, {
@@ -355,7 +355,7 @@ test.describe('Employee profile', () => {
       expect(probe.patchRequests()).toHaveLength(0)
     })
 
-    test('clearing both birthday halves is blocked with an inline message', async ({ page }) => {
+    test('fe-prof-04 · clearing both birthday halves is blocked with an inline message', async ({ page }) => {
       const probe = await mockProfile(page, {
         card: { body: cardResponse(OWN_CARD, true) },
         events: { body: eventsResponse([], false) },
@@ -372,7 +372,7 @@ test.describe('Employee profile', () => {
     })
   })
 
-  test('editing the birth day PATCHes a numeric value', async ({ page }) => {
+  test('fe-prof-02 · editing the birth day PATCHes a numeric value', async ({ page }) => {
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, true) },
       events: { body: eventsResponse([], false) },
@@ -391,7 +391,7 @@ test.describe('Employee profile', () => {
     expect(typeof body.birthDay).toBe('number')
   })
 
-  test('a 6 MiB photo is rejected client-side with no request', async ({ page }) => {
+  test('fe-prof-05 · a 6 MiB photo is rejected client-side with no request', async ({ page }) => {
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
       events: { body: eventsResponse([], false) },
@@ -409,7 +409,7 @@ test.describe('Employee profile', () => {
     expect(probe.photoRequests()).toHaveLength(0)
   })
 
-  test('a 503 on the photo upload shows the storage-specific message', async ({ page }) => {
+  test('fe-prof-05 · a 503 on the photo upload shows the storage-specific message', async ({ page }) => {
     await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
       events: { body: eventsResponse([], false) },
@@ -427,7 +427,7 @@ test.describe('Employee profile', () => {
     await expect(page.getByTestId('profile-photo-error')).toContainText(/storage is temporarily/i)
   })
 
-  test('invalid JSON in the add-event details blocks the POST', async ({ page }) => {
+  test('fe-prof-06 · invalid JSON in the add-event details blocks the POST', async ({ page }) => {
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },
       events: () => ({ body: eventsResponse([], true) }),
@@ -446,7 +446,7 @@ test.describe('Employee profile', () => {
     expect(probe.createEventRequests()).toHaveLength(0)
   })
 
-  test('valid details JSON is carried in the add-event POST body', async ({ page }) => {
+  test('fe-prof-06 · valid details JSON is carried in the add-event POST body', async ({ page }) => {
     let events: typeof EVENTS = []
     const probe = await mockProfile(page, {
       card: { body: cardResponse(OWN_CARD, false) },

@@ -39,7 +39,7 @@ const managerRow = (targetId: string): AccessJournalRow => ({
 })
 
 test.describe('Organisational relationships', () => {
-  test('renders the journal newest-first with formatted cells and shows the authoritative current manager / PP by name', async ({
+  test('fe-org-01 · renders the journal newest-first with formatted cells and shows the authoritative current manager / PP by name', async ({
     page,
   }) => {
     await mockOrganisation(page)
@@ -65,7 +65,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-remove-manager')).toBeVisible()
   })
 
-  test('shows the loading state for the current value while the relationships read is in flight', async ({
+  test('fe-org-01 · shows the loading state for the current value while the relationships read is in flight', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -80,7 +80,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-manager-derived-current')).toBeVisible()
   })
 
-  test('the subject header shows the person name when the S1 card is readable', async ({
+  test('fe-org-02 · the subject header shows the person name when the S1 card is readable', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -109,7 +109,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-subject-name')).toHaveText('Sam Rivera')
   })
 
-  test('a journal 403 shows the explanatory panel once and the sections fall back to "not available"', async ({
+  test('fe-org-03 · a journal 403 shows the explanatory panel once and the sections fall back to "not available"', async ({
     page,
   }) => {
     const probe = await mockOrganisation(page, {
@@ -131,7 +131,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.relationshipsRequests()).toHaveLength(1)
   })
 
-  test('a journal 404 shows a non-retryable "not found" panel', async ({ page }) => {
+  test('fe-org-03 · a journal 404 shows a non-retryable "not found" panel', async ({ page }) => {
     const probe = await mockOrganisation(page, {
       journal: { status: 404, body: { statusCode: 404, message: 'Not Found' } },
       relationships: { status: 404, body: { statusCode: 404, message: 'Not Found' } },
@@ -145,7 +145,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.journalRequests()).toHaveLength(1)
   })
 
-  test('a malformed journal body (200, no data array) renders the error panel, not the empty state', async ({
+  test('fe-org-03 · a malformed journal body (200, no data array) renders the error panel, not the empty state', async ({
     page,
   }) => {
     await mockOrganisation(page, { journal: { body: { unexpected: true } } })
@@ -155,7 +155,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-journal-empty')).toHaveCount(0)
   })
 
-  test('an empty journal (200, data: []) plus an empty relationships read shows the empty state and "none assigned" hints', async ({
+  test('fe-org-03 · an empty journal (200, data: []) plus an empty relationships read shows the empty state and "none assigned" hints', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -169,7 +169,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-pp-derived-none')).toBeVisible()
   })
 
-  test('a journal 500 renders the error panel and retry refetches', async ({ page }) => {
+  test('fe-org-03 · a journal 500 renders the error panel and retry refetches', async ({ page }) => {
     let attempt = 0
     await mockOrganisation(page, {
       journal: () => {
@@ -184,7 +184,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-journal-table')).toBeVisible()
   })
 
-  test('assigns a manager: POST body is exactly { type, targetId } and the journal refetches', async ({
+  test('fe-org-04 · assigns a manager: POST body is exactly { type, targetId } and the journal refetches', async ({
     page,
   }) => {
     let rows = [...JOURNAL_ROWS]
@@ -206,7 +206,7 @@ test.describe('Organisational relationships', () => {
     await expect.poll(() => probe.journalRequests().length).toBeGreaterThan(1)
   })
 
-  test('the reassign picker excludes the subject and the current manager', async ({ page }) => {
+  test('fe-org-04 · the reassign picker excludes the subject and the current manager', async ({ page }) => {
     await mockOrganisation(page, {
       relationships: {
         body: relationshipsResponse([
@@ -225,7 +225,7 @@ test.describe('Organisational relationships', () => {
     await expect(list.getByRole('button', { name: /Piotr/ })).toHaveCount(0)
   })
 
-  test('a plain 409 on manager assignment shows the "already has a manager" copy', async ({
+  test('fe-org-05 · a plain 409 on manager assignment shows the "already has a manager" copy', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -242,7 +242,7 @@ test.describe('Organisational relationships', () => {
     )
   })
 
-  test('a 409 target_has_scheduled_departure on manager assignment shows its own copy', async ({
+  test('fe-org-05 · a 409 target_has_scheduled_departure on manager assignment shows its own copy', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -259,7 +259,7 @@ test.describe('Organisational relationships', () => {
     )
   })
 
-  test('a non-self 400 on manager assignment shows the generic copy, not the self copy', async ({
+  test('fe-org-05 · a non-self 400 on manager assignment shows the generic copy, not the self copy', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -277,7 +277,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-manager-error')).not.toContainText(/their own/i)
   })
 
-  test('a transport failure on manager assignment shows the network copy and does not refetch the journal', async ({
+  test('fe-org-05 · a transport failure on manager assignment shows the network copy and does not refetch the journal', async ({
     page,
   }) => {
     const probe = await mockOrganisation(page, {
@@ -296,7 +296,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.journalRequests()).toHaveLength(1)
   })
 
-  test('assigns a first People Partner (no current one): no confirm, PUT body { targetId }, journal refetches', async ({
+  test('fe-org-09 · assigns a first People Partner (no current one): no confirm, PUT body { targetId }, journal refetches', async ({
     page,
   }) => {
     let rows = [...MANAGER_ONLY_ROWS]
@@ -334,7 +334,7 @@ test.describe('Organisational relationships', () => {
     await expect.poll(() => probe.journalRequests().length).toBeGreaterThan(1)
   })
 
-  test('replacing an existing People Partner routes through a confirm step', async ({ page }) => {
+  test('fe-org-10 · replacing an existing People Partner routes through a confirm step', async ({ page }) => {
     const probe = await mockOrganisation(page, {
       changePeoplePartner: () => ({ status: 200, body: { id: 'rel-pp-new' } }),
     })
@@ -356,7 +356,7 @@ test.describe('Organisational relationships', () => {
     })
   })
 
-  test('cancelling the People Partner replace confirm sends no PUT', async ({ page }) => {
+  test('fe-org-10 · cancelling the People Partner replace confirm sends no PUT', async ({ page }) => {
     const probe = await mockOrganisation(page)
     await open(page)
 
@@ -371,7 +371,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.changePpRequests()).toHaveLength(0)
   })
 
-  test('removes a People Partner: DELETE is sent and the section shows none', async ({ page }) => {
+  test('fe-org-11 · removes a People Partner: DELETE is sent and the section shows none', async ({ page }) => {
     const probe = await mockOrganisation(page, { removePeoplePartner: { status: 200 } })
     await open(page)
 
@@ -386,7 +386,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.removePpRequests()[0].method).toBe('DELETE')
   })
 
-  test('cancelling the People Partner remove confirm sends no DELETE', async ({ page }) => {
+  test('fe-org-11 · cancelling the People Partner remove confirm sends no DELETE', async ({ page }) => {
     const probe = await mockOrganisation(page)
     await open(page)
 
@@ -400,7 +400,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.removePpRequests()).toHaveLength(0)
   })
 
-  test('a 404 on People Partner removal explains there is nothing to remove', async ({ page }) => {
+  test('fe-org-11 · a 404 on People Partner removal explains there is nothing to remove', async ({ page }) => {
     await mockOrganisation(page, {
       removePeoplePartner: { status: 404, body: { statusCode: 404, message: 'Not Found' } },
     })
@@ -418,7 +418,7 @@ test.describe('Organisational relationships', () => {
   })
 
   test.describe('People Partner assignment errors (no current PP — no confirm)', () => {
-    test('404 → unknown-target copy', async ({ page }) => {
+    test('fe-org-13 · 404 → unknown-target copy', async ({ page }) => {
       await mockOrganisation(page, {
         journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
         relationships: { body: relationshipsResponse([managerEdge()]) },
@@ -430,7 +430,7 @@ test.describe('Organisational relationships', () => {
       await expect(page.getByTestId('organisation-pp-error')).toContainText(/couldn't be found/i)
     })
 
-    test('422 → inactive-target copy', async ({ page }) => {
+    test('fe-org-13 · 422 → inactive-target copy', async ({ page }) => {
       await mockOrganisation(page, {
         journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
         relationships: { body: relationshipsResponse([managerEdge()]) },
@@ -444,7 +444,7 @@ test.describe('Organisational relationships', () => {
       )
     })
 
-    test('plain 409 → generic copy', async ({ page }) => {
+    test('fe-org-13 · plain 409 → generic copy', async ({ page }) => {
       await mockOrganisation(page, {
         journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
         relationships: { body: relationshipsResponse([managerEdge()]) },
@@ -458,7 +458,7 @@ test.describe('Organisational relationships', () => {
       )
     })
 
-    test('409 target_has_scheduled_departure → its own copy', async ({ page }) => {
+    test('fe-org-13 · 409 target_has_scheduled_departure → its own copy', async ({ page }) => {
       await mockOrganisation(page, {
         journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
         relationships: { body: relationshipsResponse([managerEdge()]) },
@@ -475,7 +475,7 @@ test.describe('Organisational relationships', () => {
       )
     })
 
-    test('non-self 400 → generic copy, not the self copy', async ({ page }) => {
+    test('fe-org-13 · non-self 400 → generic copy, not the self copy', async ({ page }) => {
       await mockOrganisation(page, {
         journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
         relationships: { body: relationshipsResponse([managerEdge()]) },
@@ -490,7 +490,7 @@ test.describe('Organisational relationships', () => {
       await expect(page.getByTestId('organisation-pp-error')).not.toContainText(/their own/i)
     })
 
-    test('transport failure → network copy', async ({ page }) => {
+    test('fe-org-13 · transport failure → network copy', async ({ page }) => {
       await mockOrganisation(page, {
         journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
         relationships: { body: relationshipsResponse([managerEdge()]) },
@@ -505,7 +505,7 @@ test.describe('Organisational relationships', () => {
     })
   })
 
-  test('a write 403 on the manager POST disables both sections and shows the permission notice', async ({
+  test('fe-org-14 · a write 403 on the manager POST disables both sections and shows the permission notice', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -525,7 +525,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-journal-table')).toBeVisible()
   })
 
-  test('a write 403 on the People Partner PUT disables both sections', async ({ page }) => {
+  test('fe-org-14 · a write 403 on the People Partner PUT disables both sections', async ({ page }) => {
     await mockOrganisation(page, {
       journal: { body: journalResponse(MANAGER_ONLY_ROWS) },
       relationships: { body: relationshipsResponse([managerEdge()]) },
@@ -541,7 +541,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-assign-pp')).toHaveCount(0)
   })
 
-  test('a write 403 on the People Partner DELETE disables both sections', async ({ page }) => {
+  test('fe-org-14 · a write 403 on the People Partner DELETE disables both sections', async ({ page }) => {
     await mockOrganisation(page, {
       removePeoplePartner: { status: 403, body: { statusCode: 403 } },
     })
@@ -558,7 +558,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-remove-pp')).toHaveCount(0)
   })
 
-  test('a 403 from the directory disables the person picker', async ({ page }) => {
+  test('fe-org-14 · a 403 from the directory disables the person picker', async ({ page }) => {
     await mockOrganisation(page, {
       relationships: { body: relationshipsResponse([]) },
       directory: { status: 403, body: { statusCode: 403, message: 'Forbidden' } },
@@ -569,7 +569,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('person-picker-forbidden')).toBeVisible()
   })
 
-  test('a 401 anywhere triggers the global redirect to /login', async ({ page }) => {
+  test('fe-org-15 · a 401 anywhere triggers the global redirect to /login', async ({ page }) => {
     await mockOrganisation(page, {
       journal: { status: 401, body: { statusCode: 401, message: 'Unauthorized' } },
     })
@@ -579,7 +579,7 @@ test.describe('Organisational relationships', () => {
     expect(await readStoredToken(page)).toBeNull()
   })
 
-  test('the profile screen links through to the Organisation screen and shows the name', async ({
+  test('fe-org-16 · the profile screen links through to the Organisation screen and shows the name', async ({
     page,
   }) => {
     await page.route(/\/users\/[^/]+\/events(?:\?.*)?$/, route =>
@@ -616,7 +616,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-journal-table')).toBeVisible()
   })
 
-  test('reassigns a manager: DELETE (current relationshipId) then POST (new target), and both reads refetch', async ({
+  test('fe-org-06 · reassigns a manager: DELETE (current relationshipId) then POST (new target), and both reads refetch', async ({
     page,
   }) => {
     let journalRows = [...JOURNAL_ROWS]
@@ -644,7 +644,7 @@ test.describe('Organisational relationships', () => {
     await expect.poll(() => probe.journalRequests().length).toBeGreaterThan(1)
   })
 
-  test('a reassignment that fails after the delete shows the recovery copy; retry re-POSTs only', async ({
+  test('fe-org-06 · a reassignment that fails after the delete shows the recovery copy; retry re-POSTs only', async ({
     page,
   }) => {
     let postAttempts = 0
@@ -676,7 +676,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.assignManagerRequests()).toHaveLength(2)
   })
 
-  test('an authoritative manager offers Remove; removing shows "none"', async ({ page }) => {
+  test('fe-org-07 · an authoritative manager offers Remove; removing shows "none"', async ({ page }) => {
     const probe = await mockOrganisation(page, {
       relationships: { body: relationshipsResponse([managerEdge()]) },
       deleteRelationship: { status: 200 },
@@ -694,7 +694,7 @@ test.describe('Organisational relationships', () => {
     expect(probe.deleteEdgeRequests()[0].url).toContain('rel-mgr-1')
   })
 
-  test('relationships 403 falls back to the journal-derived hint (assign only, no reassign)', async ({
+  test('fe-org-08 · relationships 403 falls back to the journal-derived hint (assign only, no reassign)', async ({
     page,
   }) => {
     await mockOrganisation(page, {
@@ -713,7 +713,7 @@ test.describe('Organisational relationships', () => {
     await expect(page.getByTestId('organisation-reassign-manager')).toHaveCount(0)
   })
 
-  test('a People Partner change and removal carry expectedCurrentTargetId', async ({ page }) => {
+  test('fe-org-12 · a People Partner change and removal carry expectedCurrentTargetId', async ({ page }) => {
     const probe = await mockOrganisation(page, {
       changePeoplePartner: () => ({ status: 200, body: { id: 'rel-pp-new' } }),
     })
@@ -735,7 +735,7 @@ test.describe('Organisational relationships', () => {
     })
   })
 
-  test('removing a People Partner sends the expectedCurrentTargetId query param', async ({
+  test('fe-org-12 · removing a People Partner sends the expectedCurrentTargetId query param', async ({
     page,
   }) => {
     const probe = await mockOrganisation(page, { removePeoplePartner: { status: 200 } })
@@ -753,7 +753,7 @@ test.describe('Organisational relationships', () => {
     )
   })
 
-  test('a 409 on a People Partner change shows the stale-token copy with a refresh action', async ({
+  test('fe-org-12 · a 409 on a People Partner change shows the stale-token copy with a refresh action', async ({
     page,
   }) => {
     const probe = await mockOrganisation(page, {
