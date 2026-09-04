@@ -1,12 +1,15 @@
+import { AuthProvider } from '@/contexts/AuthContext'
 import { LayoutProvider } from '@/contexts/LayoutContext'
 import { Router } from '@/router'
 
 const App = () => {
   return (
     <div data-testid="app-container">
-      <LayoutProvider>
-        <Router />
-      </LayoutProvider>
+      <AuthProvider>
+        <LayoutProvider>
+          <Router />
+        </LayoutProvider>
+      </AuthProvider>
     </div>
   )
 }

@@ -5,6 +5,6 @@
 
 export const testEnv = {
   api: {
-    baseUrl: process.env.VITE_API_BASE_URL || 'http://localhost:3001',
+    baseUrl: process.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v1',
   },
 }

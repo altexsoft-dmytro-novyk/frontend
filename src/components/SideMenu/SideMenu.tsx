@@ -1,7 +1,9 @@
-import { Home } from 'lucide-react'
+import type { ParseKeys } from 'i18next'
+import { Home, Users, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useLayout } from '@/contexts/LayoutContext'
 import { SideMenuItem } from './components/SideMenuItem/SideMenuItem'
+import { SideMenuSection } from './components/SideMenuSection/SideMenuSection'
 import { SideMenuToggle } from './components/SideMenuToggle/SideMenuToggle'
 import { cn } from '@/lib/utils'
 
@@ -9,6 +11,35 @@ interface SideMenuProps {
   collapsible?: boolean
   expanded: boolean
 }
+
+interface NavItem {
+  icon: LucideIcon
+  labelKey: ParseKeys
+  path: string
+  end?: boolean
+}
+
+interface NavSection {
+  /** Uppercase group heading (prototype "Administration" treatment). Untitled = top group. */
+  title?: string
+  items: NavItem[]
+}
+
+/**
+ * The untitled top group holds the live product screens. Grouped sections are
+ * wired so later epics (admin screens) drop a `title` + items in without a
+ * refactor — the sidebar only ever shows live nav items, never placeholders.
+ * "All Employees" is always rendered for an authenticated user; the directory
+ * screen enforces the HR-Admin-only access itself via its `403` state.
+ */
+const NAV_SECTIONS: NavSection[] = [
+  {
+    items: [
+      { icon: Home, labelKey: 'sidebar.home', path: '/', end: true },
+      { icon: Users, labelKey: 'sidebar.employees', path: '/employees' },
+    ],
+  },
+]
 
 export const SideMenu = ({ collapsible = true, expanded }: SideMenuProps) => {
   const { t } = useTranslation()
@@ -30,7 +61,7 @@ export const SideMenu = ({ collapsible = true, expanded }: SideMenuProps) => {
 
       <aside
         className={cn(
-          'flex flex-col border-r border-sidebar-border bg-sidebar overflow-auto',
+          'flex flex-col overflow-auto border-r border-sidebar-border bg-sidebar',
           // Mobile: fixed off-canvas drawer, slides in from the left
           'fixed inset-y-0 left-0 z-50 w-64 -translate-x-full transition-transform duration-200 ease-in-out',
           isMobileSidebarOpen && 'translate-x-0',
@@ -39,15 +70,27 @@ export const SideMenu = ({ collapsible = true, expanded }: SideMenuProps) => {
           expanded ? 'md:w-[var(--sidebar-width)]' : 'md:w-[var(--sidebar-collapsed-width)]'
         )}
       >
-        <nav className="flex-1 py-2">
-          <SideMenuItem
-            icon={Home}
-            label={t('sidebar.home')}
-            path="/"
-            hint={t('sidebar.home')}
-            expanded={showLabels}
-            onNavigate={closeMobileSidebar}
-          />
+        <nav className="flex flex-1 flex-col gap-1 py-2">
+          {NAV_SECTIONS.map((section, index) => (
+            <SideMenuSection
+              key={section.title ?? index}
+              title={section.title}
+              showLabels={showLabels}
+            >
+              {section.items.map(item => (
+                <SideMenuItem
+                  key={item.path}
+                  icon={item.icon}
+                  label={t(item.labelKey)}
+                  path={item.path}
+                  hint={t(item.labelKey)}
+                  end={item.end}
+                  expanded={showLabels}
+                  onNavigate={closeMobileSidebar}
+                />
+              ))}
+            </SideMenuSection>
+          ))}
         </nav>
 
         {/* Desktop-only collapse/expand toggle; mobile uses the header hamburger + backdrop instead */}

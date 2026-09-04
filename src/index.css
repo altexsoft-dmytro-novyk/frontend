@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
 
 /*
   Theme: Zinc + Blue (official shadcn/ui combination)
@@ -20,6 +22,31 @@
 
   /* Transitions */
   --transition-sidebar: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /*
+    Prototype "stretch layer" tokens (docs/design/people-platform-prototype).
+    Consumed as Tailwind colour utilities via the "@theme inline" block below —
+    never hardcode these values in components.
+  */
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+  --font-sans: 'Geist Variable', system-ui, -apple-system, sans-serif;
+
+  /* Accent hues that carry meaning (design-notes system move 4) */
+  --accent-amber: oklch(0.58 0.12 66); /* synced surfaces that can go stale */
+  --accent-violet: oklch(0.54 0.17 300); /* access-inspection surfaces */
+
+  /* Provenance tag colour pairs (design-notes system move 3): SYNCED / DERIVED / PLATFORM / ACCESS */
+  --provenance-synced: oklch(0.47 0.1 60);
+  --provenance-synced-foreground: oklch(0.985 0 0);
+  --provenance-derived: oklch(0.47 0.1 160);
+  --provenance-derived-foreground: oklch(0.985 0 0);
+  --provenance-platform: oklch(0.44 0.15 264);
+  --provenance-platform-foreground: oklch(0.985 0 0);
+  --provenance-access: oklch(0.44 0.15 300);
+  --provenance-access-foreground: oklch(0.985 0 0);
+
+  /* Page-header band (design-notes system move 2) */
+  --page-band-tick: 3px;
 
   /* Zinc base colors */
   --background: oklch(1 0 0);
@@ -103,6 +130,18 @@
   --sidebar-accent-foreground: oklch(0.985 0.001 286);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.708 0.012 286);
+
+  /* Prototype stretch-layer tokens — dark variants (lighter, higher chroma) */
+  --accent-amber: oklch(0.72 0.13 66);
+  --accent-violet: oklch(0.68 0.16 300);
+  --provenance-synced: oklch(0.72 0.11 60);
+  --provenance-synced-foreground: oklch(0.145 0.008 286);
+  --provenance-derived: oklch(0.72 0.11 160);
+  --provenance-derived-foreground: oklch(0.145 0.008 286);
+  --provenance-platform: oklch(0.7 0.13 264);
+  --provenance-platform-foreground: oklch(0.145 0.008 286);
+  --provenance-access: oklch(0.7 0.13 300);
+  --provenance-access-foreground: oklch(0.145 0.008 286);
 }
 
 @theme inline {
@@ -140,6 +179,19 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Prototype stretch-layer tokens exposed as utilities */
+  --font-mono: var(--font-mono);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-violet: var(--accent-violet);
+  --color-provenance-synced: var(--provenance-synced);
+  --color-provenance-synced-foreground: var(--provenance-synced-foreground);
+  --color-provenance-derived: var(--provenance-derived);
+  --color-provenance-derived-foreground: var(--provenance-derived-foreground);
+  --color-provenance-platform: var(--provenance-platform);
+  --color-provenance-platform-foreground: var(--provenance-platform-foreground);
+  --color-provenance-access: var(--provenance-access);
+  --color-provenance-access-foreground: var(--provenance-access-foreground);
 }
 
 @layer base {

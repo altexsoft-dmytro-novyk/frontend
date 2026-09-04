@@ -1,7 +1,9 @@
 {
   "home": {
     "title": "Home",
-    "description": "Welcome to the starter. Replace this page with your own content."
+    "description": "This is the PeoplePlatform home. The employee directory is the next thing to land here.",
+    "eyebrow": "Overview",
+    "lead": "Your starting point for PeoplePlatform."
   },
   "error": {
     "title": "Application Error",
@@ -14,6 +16,514 @@
     "notAvailable": "Not available"
   },
   "sidebar": {
-    "home": "Home"
+    "home": "Home",
+    "employees": "All Employees"
+  },
+  "employees": {
+    "eyebrow": "Employees",
+    "provenanceTag": "Access per request",
+    "title": "All Employees",
+    "lead": "Everyone in the company. Every request resolves what you're allowed to see.",
+    "exactMatchHint": "Filters are exact matches — type a full value, not a fragment.",
+    "applyFilters": "Apply filters",
+    "clearFilters": "Clear filters",
+    "backToFirstPage": "Back to first page",
+    "importPopulation": "Import population",
+    "tableCaption": "Employees",
+    "loading": "Loading employees…",
+    "filters": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "position": "Position",
+      "country": "Country",
+      "city": "City",
+      "workEmail": "Work email",
+      "workPhone": "Work phone",
+      "birthDay": "Birth day",
+      "birthMonth": "Birth month",
+      "companyJoinDate": "Join date",
+      "employmentStatus": "Employment status",
+      "statusAny": "Any"
+    },
+    "columns": {
+      "employee": "Employee",
+      "position": "Position",
+      "country": "Country",
+      "city": "City",
+      "workEmail": "Work email",
+      "workPhone": "Work phone",
+      "birthday": "Birthday",
+      "companyJoinDate": "Join date",
+      "employmentStatus": "Status"
+    },
+    "statusActive": "Active",
+    "statusDismissed": "Dismissed",
+    "statusPlaceholder": "Status: active",
+    "footerCount_one": "{{count}} employee · sorted by last name, first name",
+    "footerCount_other": "{{count}} employees · sorted by last name, first name",
+    "pager": {
+      "previous": "Previous",
+      "next": "Next",
+      "position": "Page {{page}} of {{totalPages}}"
+    },
+    "empty": {
+      "title": "No employees match these filters",
+      "body": "Adjust or clear the filters to see more people."
+    },
+    "emptyUnfiltered": {
+      "title": "No employees yet",
+      "body": "Nobody has been imported into the platform. Import the seeded population to get started."
+    },
+    "badRequest": {
+      "title": "That filter value isn't valid",
+      "body": "One of the filters isn't a valid value — adjust it and apply again."
+    },
+    "error": {
+      "title": "Couldn't load the employee directory",
+      "body": "The request failed. Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "forbidden": {
+      "title": "You don't have access to the employee directory",
+      "body": "The directory is available to HR administrators only."
+    }
+  },
+  "import": {
+    "eyebrow": "Employees",
+    "provenanceTag": "Access per request",
+    "directoryLink": "View the directory",
+    "title": "Import population",
+    "lead": "Upload the seeded population export to load everyone into the platform. Good rows are created or updated; problem rows are skipped and listed in the summary.",
+    "fileLabel": "Population file",
+    "expectedFileHint": "A semicolon-delimited export from the timetracker (docs/Accounts_template.csv is the sample). The file is uploaded as-is — no parsing or column mapping happens here.",
+    "selectedFile": "Selected: {{name}}",
+    "csvHint": "That file doesn't end in .csv — upload it anyway if it's the timetracker export; the server checks the contents.",
+    "emptyFileHint": "That file is empty. Choose the populated timetracker export.",
+    "submit": "Import",
+    "submitting": "Importing…",
+    "importAnother": "Import another file",
+    "permissionNotice": "You don't have permission to import the population. This is available to HR administrators only.",
+    "fileError": {
+      "fallback": "The file was rejected. Check that it's the semicolon-delimited timetracker export and try again."
+    },
+    "serverError": "The import didn't complete. Nothing was imported — try again.",
+    "serverErrorTooLarge": "That file is too large. Nothing was imported.",
+    "confirm": {
+      "title": "Import from {{name}}?",
+      "body": "This creates and updates employee records in bulk. Existing employees matched by work email will be updated.",
+      "confirm": "Import",
+      "cancel": "Cancel"
+    },
+    "counts": {
+      "created": "Created",
+      "updated": "Updated",
+      "departmentsCreated": "Departments created",
+      "skipped": "Skipped"
+    },
+    "result": {
+      "titleClean": "Import complete",
+      "titlePartial": "Import complete — some rows skipped",
+      "descriptionClean": "Every row was imported.",
+      "descriptionPartial": "Skipped rows were not imported. Everything else was applied — review the skipped rows below."
+    },
+    "copySkipped": "Copy skipped rows",
+    "copySkippedDone": "Copied",
+    "errors": {
+      "caption": "Rows skipped during the import",
+      "line": "Line",
+      "email": "Email",
+      "reason": "Reason"
+    }
+  },
+  "shell": {
+    "brand": "PeoplePlatform",
+    "searchPlaceholder": "Search people, teams, settings…",
+    "notifications": "Notifications",
+    "accountMenu": "Account menu",
+    "signedIn": "Signed in",
+    "myProfile": "My profile",
+    "signOut": "Sign out"
+  },
+  "profile": {
+    "eyebrow": "Employee",
+    "provenanceTag": "Profile",
+    "backToDirectory": "All employees",
+    "organisationLink": "Organisation",
+    "departureLink": "Departure",
+    "loading": "Loading profile…",
+    "unavailable": {
+      "title": "This profile isn't available",
+      "body": "You may not have access to it, or it no longer exists.",
+      "backToDirectory": "Back to all employees"
+    },
+    "error": {
+      "title": "Couldn't load this profile",
+      "body": "The request failed. Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "header": {
+      "uploadPhoto": "Change photo",
+      "uploading": "Uploading…",
+      "photoError": {
+        "type": "Choose a JPEG, PNG, or WebP image.",
+        "size": "That image is larger than 5 MB.",
+        "upload": "Couldn't upload the photo. Try again.",
+        "storage": "Photo storage is temporarily unavailable — try again."
+      }
+    },
+    "card": {
+      "title": "Identity card",
+      "edit": "Edit",
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "position": "Position",
+        "country": "Country",
+        "city": "City",
+        "workEmail": "Work email",
+        "workPhone": "Work phone",
+        "birthday": "Birthday",
+        "birthDay": "Birth day",
+        "birthMonth": "Birth month",
+        "companyJoinDate": "Company join date",
+        "employeeId": "Employee ID"
+      }
+    },
+    "edit": {
+      "save": "Save changes",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "error": {
+        "required": "This field is required.",
+        "email": "Enter a valid email address.",
+        "emailConflict": "That work email is already in use.",
+        "birthDayRange": "Enter a day between 1 and 31.",
+        "birthMonthRange": "Enter a month between 1 and 12.",
+        "birthdayPair": "Set both the birth day and month, or clear both.",
+        "birthdayCleared": "Birthday can't be cleared here — leave the existing value.",
+        "date": "Enter a valid date.",
+        "permission": "Your access to this profile changed — reload the page.",
+        "network": "Couldn't reach the server. Try again.",
+        "generic": "Couldn't save your changes. Check the fields and try again."
+      }
+    },
+    "timeline": {
+      "title": "Career timeline",
+      "loading": "Loading timeline…",
+      "empty": "No timeline events yet",
+      "forbidden": "Not available at your access level",
+      "noDetails": "—",
+      "sourceManual": "Manual",
+      "sourceSystem": "System",
+      "addEvent": "Add event",
+      "deleteRow": "Delete event",
+      "deleteError": {
+        "permission": "That event is already gone, or your access changed — refresh the list.",
+        "transient": "Couldn't delete that event. Try again."
+      },
+      "error": {
+        "title": "Couldn't load the timeline",
+        "body": "The request failed. Try again.",
+        "retry": "Try again"
+      },
+      "dialog": {
+        "title": "Add a timeline event",
+        "description": "Events can't be edited. To fix one, delete it and add a new one.",
+        "typeLabel": "Event type",
+        "typePlaceholder": "e.g. position_change",
+        "dateLabel": "Event date",
+        "detailsLabel": "Details (optional JSON)",
+        "detailsPlaceholder": "{ \"from\": \"Engineer\", \"to\": \"Senior Engineer\" }",
+        "submit": "Add event",
+        "submitting": "Adding…",
+        "cancel": "Cancel",
+        "error": {
+          "typeRequired": "Enter an event type.",
+          "dateRequired": "Choose a date.",
+          "detailsJson": "Details must be valid JSON.",
+          "detailsObject": "Details must be a JSON object.",
+          "permission": "Your access to this timeline changed — reload the page.",
+          "network": "Couldn't reach the server. Try again.",
+          "generic": "Couldn't add the event. Check the fields and try again."
+        }
+      },
+      "deleteDialog": {
+        "title": "Delete this event?",
+        "description": "This removes the event from the timeline. You can re-add it later.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "organisation": {
+    "eyebrow": "Employee",
+    "provenanceTag": "Organisation",
+    "backToProfile": "Back to profile",
+    "lead": "Reporting line and People Partner for this employee, plus the access-change history. Only the actions the platform can perform today are shown here.",
+    "currentLabel": "Current",
+    "subjectFallback": "Identity details aren't visible to you.",
+    "permissionNotice": "You don't have permission to change organisational relationships.",
+    "notFound": {
+      "title": "Employee not found",
+      "body": "There's no employee at this address, or it was removed.",
+      "backToDirectory": "Back to all employees"
+    },
+    "derived": {
+      "loading": "Loading the current value…",
+      "unavailable": "Current value not available — the change history isn't visible to you.",
+      "none": "None recorded in the change history.",
+      "noneCurrent": "None assigned.",
+      "fromHistory": "From change history",
+      "justAssigned": "Just assigned"
+    },
+    "picker": {
+      "filterLabel": "Filter loaded people by name or email",
+      "filterPlaceholder": "Filter by name or email…",
+      "loading": "Loading people…",
+      "empty": "No people match that filter.",
+      "forbidden": "Directory access is required to choose a person.",
+      "error": "Couldn't load the people directory. Try again.",
+      "truncated": "Showing the first {{shown}} of {{total}} people. Narrow by exact first name, last name or work email.",
+      "exact": {
+        "firstName": "Exact first name",
+        "lastName": "Exact last name",
+        "workEmail": "Exact work email"
+      }
+    },
+    "manager": {
+      "title": "Manager",
+      "assign": "Assign manager",
+      "reassign": "Reassign",
+      "remove": "Remove",
+      "hint": "Assigning, reassigning and removing the reporting-line manager are available when the current relationship is visible to you.",
+      "removedNow": "None — the manager was removed.",
+      "derivedHintNote": "Reassigning or removing needs the authoritative relationships read, which isn't visible to you — only a fresh assignment is available.",
+      "pickerTitle": "Assign a manager",
+      "pickerDescription": "Choose the person this employee reports to.",
+      "reassignPickerTitle": "Reassign the manager",
+      "reassignPickerDescription": "Choose the new person this employee reports to. The current manager is removed first.",
+      "removeDialog": {
+        "title": "Remove the manager?",
+        "description": "This clears the reporting-line manager for this employee.",
+        "confirm": "Remove",
+        "cancel": "Cancel"
+      },
+      "error": {
+        "self": "An employee can't be their own manager.",
+        "alreadyAssigned": "This employee already has a manager — reload the screen to reassign.",
+        "targetDeparting": "That person has a scheduled departure and can't take on reports.",
+        "partialFailure": "The previous manager was removed, but assigning {{name}} failed. Retry to finish.",
+        "retry": "Retry assignment",
+        "noneToRemove": "There is no manager to remove.",
+        "network": "Couldn't reach the server. Try again.",
+        "generic": "Couldn't assign the manager. Try again."
+      }
+    },
+    "peoplePartner": {
+      "title": "People Partner",
+      "assign": "Assign / replace",
+      "remove": "Remove",
+      "staleRefresh": "Refresh",
+      "removedNow": "None — the People Partner was removed.",
+      "pickerTitle": "Assign a People Partner",
+      "pickerDescription": "Choose this employee's People Partner. Assigning replaces any current one.",
+      "replaceDialog": {
+        "title": "Replace the current People Partner?",
+        "description": "This replaces the current People Partner with {{name}}.",
+        "confirm": "Replace",
+        "cancel": "Cancel"
+      },
+      "removeDialog": {
+        "title": "Remove the People Partner?",
+        "description": "This clears the People Partner for this employee.",
+        "confirm": "Remove",
+        "cancel": "Cancel"
+      },
+      "error": {
+        "self": "An employee can't be their own People Partner.",
+        "unknownTarget": "That person couldn't be found.",
+        "inactiveTarget": "That person isn't an active employee.",
+        "targetDeparting": "That person has a scheduled departure and can't be assigned.",
+        "staleToken": "The People Partner changed since this screen loaded. Refresh and try again.",
+        "noneToRemove": "There is no People Partner to remove.",
+        "network": "Couldn't reach the server. Try again.",
+        "generic": "Couldn't update the People Partner. Try again."
+      }
+    },
+    "journal": {
+      "title": "Access journal",
+      "loading": "Loading the access journal…",
+      "caption": "Organisational access changes for this employee, newest first.",
+      "empty": "No organisational changes recorded.",
+      "columns": {
+        "occurredAt": "When",
+        "kind": "Change",
+        "actor": "Actor",
+        "before": "Before",
+        "after": "After"
+      },
+      "kind": {
+        "manager": "Manager",
+        "peoplePartner": "People Partner",
+        "departmentMembership": "Department membership",
+        "departmentManager": "Department manager",
+        "fullProfileGrant": "Full-profile access granted",
+        "fullProfileRevoke": "Full-profile access revoked",
+        "sharedLinkAccess": "Shared-link access"
+      },
+      "forbidden": {
+        "title": "The access history isn't visible to you",
+        "body": "The access history is visible only to this person's current manager or People Partner."
+      },
+      "error": {
+        "title": "Couldn't load the access journal",
+        "body": "The request failed. Check your connection and try again.",
+        "retry": "Try again"
+      }
+    }
+  },
+  "departure": {
+    "eyebrow": "Employee",
+    "provenanceTag": "Departure",
+    "backToProfile": "Back to profile",
+    "subjectFallback": "Identity details aren't visible to you.",
+    "subjectHeaderFallback": "Employee",
+    "lead": "Record this employee's departure: an effective date and a reason. If they still hold responsibilities, you'll reassign those first.",
+    "permissionNotice": "You don't have permission to record a departure for this employee.",
+    "confirm": {
+      "title": "Record this departure?",
+      "body": "This records a departure for {{name}}, effective {{date}}. It can't be undone here.",
+      "cancel": "Cancel",
+      "confirm": "Record departure"
+    },
+    "form": {
+      "title": "Record a departure",
+      "description": "The departure is applied automatically at the start of the effective date.",
+      "effectiveDateLabel": "Effective date",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "Why this employee is leaving",
+      "submit": "Record departure",
+      "submitting": "Recording…",
+      "error": {
+        "reasonRequired": "Enter a reason.",
+        "reasonTooLong": "Keep the reason under 2000 characters.",
+        "dateInvalid": "Enter a valid date.",
+        "dateNotFuture": "The effective date must be in the future.",
+        "dateRejected": "The server rejected that effective date. Pick a later date.",
+        "alreadyScheduled": "This employee already has a scheduled departure.",
+        "keyMismatch": "The form changed since the last attempt — reload the page and resubmit.",
+        "badRequest": "Couldn't record the departure. Check the fields and try again.",
+        "generic": "Couldn't record the departure. Try again.",
+        "noId": "The departure was recorded but its reference is missing. Reload the page to see its status.",
+        "network": "Couldn't reach the server. Try again."
+      }
+    },
+    "blockers": {
+      "title": "Responsibilities are blocking this departure",
+      "description": "Reassign these before the departure can be recorded.",
+      "kind": {
+        "direct_report": "Direct reports",
+        "department_manager": "Department manager",
+        "people_partner": "People Partner assignments"
+      },
+      "reparentToDefault": "Re-parent everything to {{name}}",
+      "reparentToDefaultManager": "Re-parent everything to this employee's manager",
+      "chooseSomeoneElse": "Choose someone else",
+      "backToForm": "Change the departure details",
+      "pickerTitle": "Choose a re-parent target",
+      "pickerDescription": "Every blocking responsibility moves to this person.",
+      "cleared": "Blockers cleared — record the departure now.",
+      "recordNow": "Record the departure now",
+      "reassignedPrefix": "Reassigned:",
+      "reassigned": {
+        "directReports_one": "{{count}} direct report",
+        "directReports_other": "{{count}} direct reports",
+        "peoplePartner_one": "{{count}} People Partner assignment",
+        "peoplePartner_other": "{{count}} People Partner assignments",
+        "departmentManager": "department manager"
+      },
+      "externalRemaining_one": "{{count}} external (timetracker) blocker remains — resolve it in the source system.",
+      "externalRemaining_other": "{{count}} external (timetracker) blockers remain — resolve them in the source system.",
+      "error": {
+        "selfTarget": "The re-parent target can't be the departing employee.",
+        "unknownTarget": "That person couldn't be found.",
+        "inactiveTarget": "That person isn't an active employee.",
+        "versionStale": "The situation changed — the blockers below have been reloaded. Review them and re-parent again.",
+        "stillBlocked": "Some blockers are still present — review the list and re-parent again.",
+        "alreadyScheduled": "This employee already has a scheduled departure.",
+        "network": "Couldn't reach the server. Try again."
+      }
+    },
+    "status": {
+      "title": "Scheduled departure",
+      "loading": "Loading the departure status…",
+      "state": {
+        "scheduled": "Scheduled",
+        "processing": "Processing",
+        "retry_wait": "Retry pending",
+        "applied": "Applied"
+      },
+      "field": {
+        "effectiveDate": "Effective date",
+        "dueAt": "Runs at",
+        "effectiveTimeZone": "Time zone",
+        "reason": "Reason",
+        "createdAt": "Recorded",
+        "attempts": "Attempts",
+        "lastError": "Last error",
+        "appliedAt": "Applied at"
+      },
+      "lastErrorNone": "None",
+      "retryAdvisory": "This departure is still retrying. If it doesn't apply soon, it may need attention.",
+      "applied": {
+        "body": "This employee's departure has been applied. There's nothing more to do here."
+      },
+      "retry": {
+        "now": "Retry now",
+        "retrying": "Retrying…",
+        "requested": "Retry requested — refreshing the status.",
+        "notRetryable": "This departure can no longer be retried — its state just changed.",
+        "forbidden": "You no longer have permission to retry this departure.",
+        "gone": "This departure is no longer available.",
+        "failed": "Couldn't request a retry. Try again."
+      },
+      "gone": {
+        "title": "This departure is no longer available",
+        "body": "It may have been removed. Start again from the record form.",
+        "backToForm": "Back to the record form"
+      },
+      "forbidden": {
+        "title": "You can't view this departure",
+        "body": "Recording and viewing a departure needs the departure capability, which you don't hold.",
+        "back": "Back to profile"
+      },
+      "error": {
+        "title": "Couldn't load the departure status",
+        "body": "The request failed. Check your connection and try again.",
+        "retry": "Try again"
+      }
+    }
+  },
+  "auth": {
+    "provenanceTag": "PLATFORM",
+    "login": {
+      "title": "Sign in to PeoplePlatform",
+      "lead": "We'll email you a single-use link — no password needed.",
+      "emailLabel": "Work email",
+      "emailPlaceholder": "you@company.com",
+      "emailInvalid": "Enter a valid email address.",
+      "submit": "Send sign-in link",
+      "submitting": "Sending…",
+      "genericError": "Something went wrong. Please try again.",
+      "checkInboxTitle": "Check your inbox",
+      "checkInboxBody": "If that address matches an account, a sign-in link is on its way. The link expires shortly.",
+      "backToForm": "Use a different email"
+    },
+    "consume": {
+      "verifying": "Signing you in…",
+      "errorTitle": "This sign-in link is invalid or has expired",
+      "errorBody": "Request a fresh link and try again.",
+      "backToLogin": "Back to sign in"
+    }
   }
 }
