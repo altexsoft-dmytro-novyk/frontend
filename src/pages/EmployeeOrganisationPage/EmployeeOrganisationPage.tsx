@@ -18,8 +18,8 @@ export const EmployeeOrganisationPage = () => {
     notFound,
     journalStatus,
     rows,
-    derivedManager,
-    derivedPeoplePartner,
+    managerState,
+    peoplePartnerState,
     refetchJournal,
     canWrite,
     reportWriteForbidden,
@@ -84,13 +84,13 @@ export const EmployeeOrganisationPage = () => {
           <ManagerSection
             routeId={routeId}
             canWrite={canWrite}
-            derived={derivedManager}
+            state={managerState}
             onWriteForbidden={reportWriteForbidden}
           />
           <PeoplePartnerSection
             routeId={routeId}
             canWrite={canWrite}
-            derived={derivedPeoplePartner}
+            state={peoplePartnerState}
             onWriteForbidden={reportWriteForbidden}
           />
           <AccessJournal status={journalStatus} rows={rows} onRetry={refetchJournal} />

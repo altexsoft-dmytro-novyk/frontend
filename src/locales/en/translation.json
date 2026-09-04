@@ -272,6 +272,7 @@
       "loading": "Loading the current value…",
       "unavailable": "Current value not available — the change history isn't visible to you.",
       "none": "None recorded in the change history.",
+      "noneCurrent": "None assigned.",
       "fromHistory": "From change history",
       "justAssigned": "Just assigned"
     },
@@ -292,13 +293,28 @@
     "manager": {
       "title": "Manager",
       "assign": "Assign manager",
-      "hint": "Only a first assignment is available. Reassigning or removing a manager isn't supported yet.",
+      "reassign": "Reassign",
+      "remove": "Remove",
+      "hint": "Assigning, reassigning and removing the reporting-line manager are available when the current relationship is visible to you.",
+      "removedNow": "None — the manager was removed.",
+      "derivedHintNote": "Reassigning or removing needs the authoritative relationships read, which isn't visible to you — only a fresh assignment is available.",
       "pickerTitle": "Assign a manager",
       "pickerDescription": "Choose the person this employee reports to.",
+      "reassignPickerTitle": "Reassign the manager",
+      "reassignPickerDescription": "Choose the new person this employee reports to. The current manager is removed first.",
+      "removeDialog": {
+        "title": "Remove the manager?",
+        "description": "This clears the reporting-line manager for this employee.",
+        "confirm": "Remove",
+        "cancel": "Cancel"
+      },
       "error": {
         "self": "An employee can't be their own manager.",
-        "alreadyAssigned": "This employee already has a manager; reassignment isn't available yet.",
+        "alreadyAssigned": "This employee already has a manager — reload the screen to reassign.",
         "targetDeparting": "That person has a scheduled departure and can't take on reports.",
+        "partialFailure": "The previous manager was removed, but assigning {{name}} failed. Retry to finish.",
+        "retry": "Retry assignment",
+        "noneToRemove": "There is no manager to remove.",
         "network": "Couldn't reach the server. Try again.",
         "generic": "Couldn't assign the manager. Try again."
       }
@@ -307,6 +323,7 @@
       "title": "People Partner",
       "assign": "Assign / replace",
       "remove": "Remove",
+      "staleRefresh": "Refresh",
       "removedNow": "None — the People Partner was removed.",
       "pickerTitle": "Assign a People Partner",
       "pickerDescription": "Choose this employee's People Partner. Assigning replaces any current one.",
@@ -327,6 +344,7 @@
         "unknownTarget": "That person couldn't be found.",
         "inactiveTarget": "That person isn't an active employee.",
         "targetDeparting": "That person has a scheduled departure and can't be assigned.",
+        "staleToken": "The People Partner changed since this screen loaded. Refresh and try again.",
         "noneToRemove": "There is no People Partner to remove.",
         "network": "Couldn't reach the server. Try again.",
         "generic": "Couldn't update the People Partner. Try again."

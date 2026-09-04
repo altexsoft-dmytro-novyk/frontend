@@ -111,6 +111,41 @@ export const MANAGER_ONLY_ROWS: AccessJournalRow[] = [
 
 export const journalResponse = (rows: AccessJournalRow[]) => ({ data: rows })
 
+/**
+ * `GET /users/:id/relationships` (Story 6.1) — the authoritative current-state
+ * read. Target ids match the newest `manager` / `people_partner` journal rows so
+ * the authoritative and derived views agree in the default fixture.
+ */
+export const SEEDED_MANAGER_TARGET_ID = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd'
+export const SEEDED_PP_TARGET_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+
+interface CurrentEdgeView {
+  relationshipId: string
+  type: 'direct' | 'people_partner'
+  target: { id: string; firstName: string; lastName: string }
+}
+
+export const managerEdge = (overrides: Partial<CurrentEdgeView> = {}): CurrentEdgeView => ({
+  relationshipId: 'rel-mgr-1',
+  type: 'direct',
+  target: { id: SEEDED_MANAGER_TARGET_ID, firstName: 'Dana', lastName: 'Mercer' },
+  ...overrides,
+})
+
+export const ppEdge = (overrides: Partial<CurrentEdgeView> = {}): CurrentEdgeView => ({
+  relationshipId: 'rel-pp-1',
+  type: 'people_partner',
+  target: { id: SEEDED_PP_TARGET_ID, firstName: 'Cora', lastName: 'Pratt' },
+  ...overrides,
+})
+
+/** Default body: the seeded manager + People Partner, `direct` first. */
+export const DEFAULT_RELATIONSHIP_EDGES: CurrentEdgeView[] = [managerEdge(), ppEdge()]
+
+export const relationshipsResponse = (edges: CurrentEdgeView[] = DEFAULT_RELATIONSHIP_EDGES) => ({
+  data: edges,
+})
+
 export const DIRECTORY_ROWS: DirectoryRow[] = [
   {
     id: TARGET_USER_ID,
@@ -167,4 +202,4 @@ export const directoryPage = (rows: DirectoryRow[] = DIRECTORY_ROWS) => ({
   totalPages: 1,
 })
 
-export type { AccessJournalRow, DirectoryRow }
+export type { AccessJournalRow, DirectoryRow, CurrentEdgeView }

@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import type { DerivedCurrent } from '../../helpers/journalDerived'
+import type { CurrentEdgeState } from '../../hooks/useEmployeeOrganisationPage'
 import { DerivedValue } from '../DerivedValue/DerivedValue'
 import { PermissionNotice } from '../PermissionNotice/PermissionNotice'
 import { PersonPicker } from '@/components/PersonPicker/PersonPicker'
@@ -22,14 +22,14 @@ import { usePeoplePartnerSection } from './hooks/usePeoplePartnerSection'
 interface PeoplePartnerSectionProps {
   routeId: string
   canWrite: boolean
-  derived: DerivedCurrent
+  state: CurrentEdgeState
   onWriteForbidden: () => void
 }
 
 export const PeoplePartnerSection = ({
   routeId,
   canWrite,
-  derived,
+  state,
   onWriteForbidden,
 }: PeoplePartnerSectionProps) => {
   const { t } = useTranslation()
@@ -47,19 +47,25 @@ export const PeoplePartnerSection = ({
     confirmReplace,
     cancelReplace,
     error,
+    staleToken,
+    refresh,
     justAssignedName,
     removedNow,
     isBusy,
   } = usePeoplePartnerSection({
     routeId,
-    derived,
+    state,
     onWriteForbidden,
     returnFocus: () => triggerRef.current?.focus(),
   })
 
+  const currentEdge = state.kind === 'authoritative' ? state.edge : null
+
   const excludeIds = [routeId]
-  if (derived.state === 'assigned') {
-    excludeIds.push(derived.targetUserId)
+  if (currentEdge) {
+    excludeIds.push(currentEdge.target.id)
+  } else if (state.kind === 'derived' && state.derived.state === 'assigned') {
+    excludeIds.push(state.derived.targetUserId)
   }
 
   return (
@@ -107,7 +113,7 @@ export const PeoplePartnerSection = ({
             </p>
           ) : (
             <DerivedValue
-              derived={derived}
+              state={state}
               testIdPrefix="organisation-pp-derived"
               justAssignedName={justAssignedName}
             />
@@ -116,7 +122,23 @@ export const PeoplePartnerSection = ({
 
         {!canWrite ? <PermissionNotice testId="organisation-pp-permission-notice" /> : null}
 
-        {error ? (
+        {staleToken ? (
+          <div className="space-y-2" role="alert" data-testid="organisation-pp-stale">
+            <p className="text-sm text-destructive">
+              {t('organisation.peoplePartner.error.staleToken')}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={refresh}
+              disabled={isBusy}
+              data-testid="organisation-pp-refresh"
+            >
+              {t('organisation.peoplePartner.staleRefresh')}
+            </Button>
+          </div>
+        ) : error ? (
           <p className="text-sm text-destructive" role="alert" data-testid="organisation-pp-error">
             {error}
           </p>

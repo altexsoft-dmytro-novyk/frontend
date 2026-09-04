@@ -1,23 +1,24 @@
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { DerivedCurrent } from '../../helpers/journalDerived'
+import type { CurrentEdgeState } from '../../hooks/useEmployeeOrganisationPage'
 
 interface DerivedValueProps {
-  derived: DerivedCurrent
+  state: CurrentEdgeState
   /** Section-scoped so the two sections never share a `data-testid`. */
   testIdPrefix: string
-  /** The name picked during this visit, shown in preference to the journal-derived
-   * id right after a successful mutation. */
+  /** The name picked during this visit, shown in preference to everything else
+   * right after a successful mutation. */
   justAssignedName?: string | null
 }
 
 /**
- * The "current" manager / People Partner value. It is only ever a best-effort
- * hint derived from the access-journal rows (or the just-completed action) —
- * never an authoritative read, so it is always labelled as history-derived.
+ * The "current" manager / People Partner value. When the authoritative
+ * relationships read is available it shows the edge's person by name; otherwise
+ * it falls back to a best-effort hint derived from the access-journal rows,
+ * always labelled as history-derived.
  */
-export const DerivedValue = ({ derived, testIdPrefix, justAssignedName }: DerivedValueProps) => {
+export const DerivedValue = ({ state, testIdPrefix, justAssignedName }: DerivedValueProps) => {
   const { t } = useTranslation()
 
   if (justAssignedName) {
@@ -32,7 +33,9 @@ export const DerivedValue = ({ derived, testIdPrefix, justAssignedName }: Derive
     )
   }
 
-  if (derived.state === 'loading') {
+  const loading =
+    state.kind === 'loading' || (state.kind === 'derived' && state.derived.state === 'loading')
+  if (loading) {
     return (
       <div
         role="status"
@@ -44,6 +47,28 @@ export const DerivedValue = ({ derived, testIdPrefix, justAssignedName }: Derive
     )
   }
 
+  if (state.kind === 'authoritative') {
+    if (state.edge) {
+      return (
+        <p
+          className="flex flex-wrap items-center gap-2 text-sm text-foreground"
+          data-testid={`${testIdPrefix}-current`}
+        >
+          <span className="font-medium">
+            {state.edge.target.firstName} {state.edge.target.lastName}
+          </span>
+        </p>
+      )
+    }
+    return (
+      <p className="text-sm text-muted-foreground" data-testid={`${testIdPrefix}-none`}>
+        {t('organisation.derived.noneCurrent')}
+      </p>
+    )
+  }
+
+  const derived = state.derived
+
   if (derived.state === 'unknown') {
     return (
       <p className="text-sm text-muted-foreground" data-testid={`${testIdPrefix}-unknown`}>
@@ -52,23 +77,23 @@ export const DerivedValue = ({ derived, testIdPrefix, justAssignedName }: Derive
     )
   }
 
-  if (derived.state === 'none') {
+  if (derived.state === 'assigned') {
     return (
-      <p className="text-sm text-muted-foreground" data-testid={`${testIdPrefix}-none`}>
-        {t('organisation.derived.none')}
+      <p
+        className="flex flex-wrap items-center gap-2 text-sm text-foreground"
+        data-testid={`${testIdPrefix}-assigned`}
+      >
+        <span className="font-mono text-xs">{derived.targetUserId}</span>
+        <Badge variant="outline" className="border-provenance-derived text-provenance-derived">
+          {t('organisation.derived.fromHistory')}
+        </Badge>
       </p>
     )
   }
 
   return (
-    <p
-      className="flex flex-wrap items-center gap-2 text-sm text-foreground"
-      data-testid={`${testIdPrefix}-assigned`}
-    >
-      <span className="font-mono text-xs">{derived.targetUserId}</span>
-      <Badge variant="outline" className="border-provenance-derived text-provenance-derived">
-        {t('organisation.derived.fromHistory')}
-      </Badge>
+    <p className="text-sm text-muted-foreground" data-testid={`${testIdPrefix}-none`}>
+      {t('organisation.derived.none')}
     </p>
   )
 }

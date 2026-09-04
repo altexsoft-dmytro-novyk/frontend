@@ -228,6 +228,25 @@ export interface RelationshipEdge {
   reportsToUserId: string | null
 }
 
+// One row of `GET /users/:id/relationships` (Story 6.1) — mirrors backend
+// `CurrentEdgeView`. The authoritative current-state read that supersedes the
+// journal-derived hint. `type` is `'direct'` (the reporting-line manager) or
+// `'people_partner'`. At most one edge of each type; `direct` is ordered first.
+// `relationshipId` is the id to target for a reassignment / hard delete.
+export interface CurrentEdgeView {
+  relationshipId: string
+  type: 'direct' | 'people_partner'
+  target: { id: string; firstName: string; lastName: string }
+}
+
+// `GET /users/:id/relationships` success body — `data: []` when the employee
+// has no current manager and no People Partner. A `403` (same reader gate as
+// the access journal) and a `404` (not an active user) are terminal, never
+// retried.
+export interface RelationshipsResponse {
+  data: CurrentEdgeView[]
+}
+
 // `POST /users/:id/relationships` body (Story 4.1). `type` is `'direct'` only —
 // project edges are TimeTracker-sync-owned, PP has its own `PUT` route.
 export interface AssignManagerPayload {
@@ -235,12 +254,14 @@ export interface AssignManagerPayload {
   targetId: string
 }
 
-// `PUT /users/:id/relationships/people-partner` body (Story 4.2). The optimistic
-// -concurrency token `expectedCurrentTargetId` is intentionally omitted — it
-// needs a current-PP read the backend does not expose yet, so the UI does an
-// unconditional replace (`deferred-work.md`).
+// `PUT /users/:id/relationships/people-partner` body (Story 4.2 + 6.1). Since
+// the current-PP read exists (Story 6.1) the UI sends `expectedCurrentTargetId`
+// — the optimistic-concurrency token — whenever it knows the current People
+// Partner edge's target; the backend answers `409` when it no longer matches.
+// It stays omitted for a first assignment or when the current PP isn't visible.
 export interface ChangePeoplePartnerPayload {
   targetId: string
+  expectedCurrentTargetId?: string
 }
 
 /**

@@ -1,14 +1,15 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useChangePeoplePartner } from '@/api/hooks/useChangePeoplePartner'
 import { useRemovePeoplePartner } from '@/api/hooks/useRemovePeoplePartner'
 import { errorCode, httpStatus } from '@/lib/http'
-import type { DerivedCurrent } from '../../../helpers/journalDerived'
+import type { CurrentEdgeState } from '../../../hooks/useEmployeeOrganisationPage'
 import type { PickerPerson } from '@/components/PersonPicker/hooks/usePersonPicker'
 
 interface UsePeoplePartnerSectionArgs {
   routeId: string
-  derived: DerivedCurrent
+  state: CurrentEdgeState
   onWriteForbidden: () => void
   /** Move keyboard focus back to the "Assign / replace" button. */
   returnFocus: () => void
@@ -18,11 +19,12 @@ const KEY = 'organisation.peoplePartner.error'
 
 export const usePeoplePartnerSection = ({
   routeId,
-  derived,
+  state,
   onWriteForbidden,
   returnFocus,
 }: UsePeoplePartnerSectionArgs) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const changeMutation = useChangePeoplePartner(routeId)
   const removeMutation = useRemovePeoplePartner(routeId)
 
@@ -31,16 +33,27 @@ export const usePeoplePartnerSection = ({
   const [replaceOpen, setReplaceOpen] = useState(false)
   const [pendingPerson, setPendingPerson] = useState<PickerPerson | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [staleToken, setStaleToken] = useState(false)
   const [justAssignedName, setJustAssignedName] = useState<string | null>(null)
   const [removedNow, setRemovedNow] = useState(false)
+
+  const currentEdge = state.kind === 'authoritative' ? state.edge : null
+  const expectedCurrentTargetId = currentEdge?.target.id
+  const hasCurrent =
+    currentEdge !== null || (state.kind === 'derived' && state.derived.state === 'assigned')
 
   const isBusy = changeMutation.isPending || removeMutation.isPending
 
   const fallbackMessage = (status: number | undefined) =>
     status === undefined || status >= 500 ? t(`${KEY}.network`) : t(`${KEY}.generic`)
 
-  const openPicker = () => {
+  const clearMessages = () => {
     setError(null)
+    setStaleToken(false)
+  }
+
+  const openPicker = () => {
+    clearMessages()
     setPickerOpen(true)
   }
 
@@ -49,11 +62,18 @@ export const usePeoplePartnerSection = ({
     returnFocus()
   }
 
+  const refresh = () => {
+    clearMessages()
+    void queryClient.invalidateQueries({ queryKey: ['employee', routeId, 'relationships'] })
+    void queryClient.invalidateQueries({ queryKey: ['employee', routeId, 'access-journal'] })
+    returnFocus()
+  }
+
   const performAssign = async (person: PickerPerson) => {
     setJustAssignedName(null)
-    setError(null)
+    clearMessages()
     try {
-      await changeMutation.mutateAsync(person.id)
+      await changeMutation.mutateAsync({ targetId: person.id, expectedCurrentTargetId })
       setJustAssignedName(person.name)
       setRemovedNow(false)
       returnFocus()
@@ -68,13 +88,14 @@ export const usePeoplePartnerSection = ({
       } else if (status === 422) {
         setError(t(`${KEY}.inactiveTarget`))
       } else if (status === 409) {
-        setError(
-          errorCode(caught) === 'target_has_scheduled_departure'
-            ? t(`${KEY}.targetDeparting`)
-            : t(`${KEY}.generic`)
-        )
+        if (errorCode(caught) === 'target_has_scheduled_departure') {
+          setError(t(`${KEY}.targetDeparting`))
+        } else if (expectedCurrentTargetId !== undefined) {
+          setStaleToken(true)
+        } else {
+          setError(t(`${KEY}.generic`))
+        }
       } else if (status === 400) {
-        // Self is blocked client-side; a server `400` is some other rejection.
         setError(t(`${KEY}.generic`))
       } else {
         setError(fallbackMessage(status))
@@ -86,7 +107,7 @@ export const usePeoplePartnerSection = ({
   const pick = async (person: PickerPerson) => {
     setPickerOpen(false)
     setJustAssignedName(null)
-    setError(null)
+    clearMessages()
 
     if (person.id === routeId) {
       setError(t(`${KEY}.self`))
@@ -95,7 +116,7 @@ export const usePeoplePartnerSection = ({
     }
 
     // Replacing an existing People Partner is a destructive overwrite — confirm.
-    if (derived.state === 'assigned') {
+    if (hasCurrent) {
       setPendingPerson(person)
       setReplaceOpen(true)
       return
@@ -119,10 +140,10 @@ export const usePeoplePartnerSection = ({
   }
 
   const confirmRemove = async () => {
-    setError(null)
+    clearMessages()
     setJustAssignedName(null)
     try {
-      await removeMutation.mutateAsync()
+      await removeMutation.mutateAsync(expectedCurrentTargetId)
       setRemoveOpen(false)
       setRemovedNow(true)
       returnFocus()
@@ -133,7 +154,13 @@ export const usePeoplePartnerSection = ({
         onWriteForbidden()
         return
       }
-      setError(status === 404 ? t(`${KEY}.noneToRemove`) : fallbackMessage(status))
+      if (status === 409 && expectedCurrentTargetId !== undefined) {
+        setStaleToken(true)
+      } else if (status === 404) {
+        setError(t(`${KEY}.noneToRemove`))
+      } else {
+        setError(fallbackMessage(status))
+      }
       returnFocus()
     }
   }
@@ -151,6 +178,8 @@ export const usePeoplePartnerSection = ({
     confirmReplace,
     cancelReplace,
     error,
+    staleToken,
+    refresh,
     justAssignedName,
     removedNow,
     isBusy,

@@ -1,29 +1,69 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAssignManager } from '@/api/hooks/useAssignManager'
+import {
+  ReassignManagerError,
+  useReassignManager,
+  type ReassignManagerVars,
+} from '@/api/hooks/useReassignManager'
+import { useRemoveManager } from '@/api/hooks/useRemoveManager'
 import { errorCode, httpStatus } from '@/lib/http'
 import type { PickerPerson } from '@/components/PersonPicker/hooks/usePersonPicker'
+import type { CurrentEdge, CurrentEdgeState } from '../../../hooks/useEmployeeOrganisationPage'
 
 interface UseManagerSectionArgs {
   routeId: string
+  state: CurrentEdgeState
   onWriteForbidden: () => void
-  /** Move keyboard focus back to the "Assign manager" button. */
+  /** Move keyboard focus back to the section's trigger button. */
   returnFocus: () => void
 }
 
+const KEY = 'organisation.manager.error'
+
+export type ManagerPickerMode = 'assign' | 'reassign'
+
+const authoritativeEdge = (state: CurrentEdgeState): CurrentEdge | null =>
+  state.kind === 'authoritative' ? state.edge : null
+
 export const useManagerSection = ({
   routeId,
+  state,
   onWriteForbidden,
   returnFocus,
 }: UseManagerSectionArgs) => {
   const { t } = useTranslation()
-  const mutation = useAssignManager(routeId)
+  const assignMutation = useAssignManager(routeId)
+  const reassignMutation = useReassignManager(routeId)
+  const removeMutation = useRemoveManager(routeId)
+
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [pickerMode, setPickerMode] = useState<ManagerPickerMode>('assign')
+  const [removeOpen, setRemoveOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [justAssignedName, setJustAssignedName] = useState<string | null>(null)
+  const [removedNow, setRemovedNow] = useState(false)
+  const [pendingReassign, setPendingReassign] = useState<
+    (ReassignManagerVars & { name: string }) | null
+  >(null)
 
-  const openPicker = () => {
+  const edge = authoritativeEdge(state)
+  const isBusy = assignMutation.isPending || reassignMutation.isPending || removeMutation.isPending
+
+  const fallbackMessage = (status: number | undefined) =>
+    status === undefined || status >= 500 ? t(`${KEY}.network`) : t(`${KEY}.generic`)
+
+  const openAssignPicker = () => {
     setError(null)
+    setPickerMode('assign')
+    setPickerOpen(true)
+  }
+
+  const openReassignPicker = () => {
+    setError(null)
+    setPendingReassign(null)
+    reassignMutation.reset()
+    setPickerMode('reassign')
     setPickerOpen(true)
   }
 
@@ -32,22 +72,11 @@ export const useManagerSection = ({
     returnFocus()
   }
 
-  const pick = async (person: PickerPerson) => {
-    setPickerOpen(false)
-    // A stale "just assigned <name>" badge must never sit next to a later error.
-    setJustAssignedName(null)
-    setError(null)
-
-    // Self-assignment is blocked client-side — no request is sent.
-    if (person.id === routeId) {
-      setError(t('organisation.manager.error.self'))
-      returnFocus()
-      return
-    }
-
+  const performAssign = async (person: PickerPerson) => {
     try {
-      await mutation.mutateAsync(person.id)
+      await assignMutation.mutateAsync(person.id)
       setJustAssignedName(person.name)
+      setRemovedNow(false)
       returnFocus()
     } catch (caught) {
       const status = httpStatus(caught)
@@ -58,27 +87,124 @@ export const useManagerSection = ({
       if (status === 409) {
         setError(
           errorCode(caught) === 'target_has_scheduled_departure'
-            ? t('organisation.manager.error.targetDeparting')
-            : t('organisation.manager.error.alreadyAssigned')
+            ? t(`${KEY}.targetDeparting`)
+            : t(`${KEY}.alreadyAssigned`)
         )
-      } else if (status === undefined || status >= 500) {
-        setError(t('organisation.manager.error.network'))
+      } else if (status === 400) {
+        setError(t(`${KEY}.generic`))
       } else {
-        // `400` here is a server rejection other than self (already blocked) —
-        // still just a generic failure.
-        setError(t('organisation.manager.error.generic'))
+        setError(fallbackMessage(status))
       }
+      returnFocus()
+    }
+  }
+
+  const runReassign = async (vars: ReassignManagerVars, name: string) => {
+    try {
+      await reassignMutation.mutateAsync(vars)
+      setJustAssignedName(name)
+      setRemovedNow(false)
+      setPendingReassign(null)
+      returnFocus()
+    } catch (caught) {
+      if (caught instanceof ReassignManagerError && caught.stage === 'delete') {
+        const status = httpStatus(caught.originalError)
+        setPendingReassign(null)
+        if (status === 403) {
+          onWriteForbidden()
+          return
+        }
+        setError(fallbackMessage(status))
+        returnFocus()
+        return
+      }
+      // The assign leg failed: the previous manager is already gone. The section
+      // renders the recovery copy from `partialFailure`; `retryReassign` re-runs
+      // only the POST. Nothing else to set here.
+      returnFocus()
+    }
+  }
+
+  const performReassign = async (person: PickerPerson) => {
+    if (!edge) {
+      return
+    }
+    const vars: ReassignManagerVars = {
+      currentRelationshipId: edge.relationshipId,
+      newTargetId: person.id,
+    }
+    setPendingReassign({ ...vars, name: person.name })
+    await runReassign(vars, person.name)
+  }
+
+  const pick = async (person: PickerPerson) => {
+    setPickerOpen(false)
+    setJustAssignedName(null)
+    setError(null)
+
+    if (person.id === routeId) {
+      setError(t(`${KEY}.self`))
+      returnFocus()
+      return
+    }
+
+    if (pickerMode === 'reassign') {
+      await performReassign(person)
+    } else {
+      await performAssign(person)
+    }
+  }
+
+  const retryReassign = async () => {
+    if (!pendingReassign) {
+      return
+    }
+    const { name, ...vars } = pendingReassign
+    await runReassign(vars, name)
+  }
+
+  const confirmRemove = async () => {
+    if (!edge) {
+      setRemoveOpen(false)
+      return
+    }
+    setError(null)
+    setJustAssignedName(null)
+    try {
+      await removeMutation.mutateAsync(edge.relationshipId)
+      setRemoveOpen(false)
+      setRemovedNow(true)
+      returnFocus()
+    } catch (caught) {
+      setRemoveOpen(false)
+      const status = httpStatus(caught)
+      if (status === 403) {
+        onWriteForbidden()
+        return
+      }
+      setError(status === 404 ? t(`${KEY}.noneToRemove`) : fallbackMessage(status))
       returnFocus()
     }
   }
 
   return {
     pickerOpen,
-    openPicker,
+    pickerMode,
+    openAssignPicker,
+    openReassignPicker,
     closePicker,
     pick,
+    removeOpen,
+    setRemoveOpen,
+    confirmRemove,
     error,
     justAssignedName,
-    isAssigning: mutation.isPending,
+    removedNow,
+    isBusy,
+    /** `true` while the previous manager is removed but the new assignment
+     * hasn't landed — show the recovery copy and the retry action. */
+    partialFailure: reassignMutation.previousManagerRemoved,
+    pendingReassignName: pendingReassign?.name ?? null,
+    retryReassign,
   }
 }
