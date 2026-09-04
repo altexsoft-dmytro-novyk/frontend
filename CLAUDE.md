@@ -50,7 +50,7 @@ E2E tests live in `e2e/` (flows + shared utilities).
 ## Environment
 
 - `.env` is gitignored; `.env.example` is the committed template. Defaults in `config/env.ts` work without a `.env` file
-- Backend is expected at `http://localhost:3001` (`VITE_API_BASE_URL`); no backend exists yet
+- Backend is expected at `http://localhost:3001` (`VITE_API_BASE_URL`)
 
 ## Gotchas
 
