@@ -1,0 +1,1918 @@
+{
+  "consumer": {
+    "name": "people-management-frontend"
+  },
+  "interactions": [
+    {
+      "description": "a People Partner removal carrying the expected current target",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding organisation write access and a current People Partner"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "DELETE",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/relationships/people-partner",
+        "query": {
+          "expectedCurrentTargetId": [
+            "01920000-0000-7000-8000-000000000003"
+          ]
+        }
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "description": "a People Partner replacement carrying the expected current target",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding organisation write access and a current People Partner"
+        }
+      ],
+      "request": {
+        "body": {
+          "expectedCurrentTargetId": "01920000-0000-7000-8000-000000000003",
+          "targetId": "01920000-0000-7000-8000-000000000002"
+        },
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>",
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.expectedCurrentTargetId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.targetId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "PUT",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/relationships/people-partner"
+      },
+      "response": {
+        "body": {
+          "id": "01920000-0000-7000-8000-0000000000a1",
+          "reportsToUserId": "01920000-0000-7000-8000-000000000002",
+          "type": "people_partner",
+          "userId": "01920000-0000-7000-8000-000000000001"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.reportsToUserId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.userId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a career-event deletion",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding timeline write access and a deletable manual event"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "DELETE",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/events/01920000-0000-7000-8000-0000000000e3"
+      },
+      "response": {
+        "status": 204
+      }
+    },
+    {
+      "description": "a departure record request",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding departure write access over an unblocked employee"
+        }
+      ],
+      "request": {
+        "body": {
+          "effectiveDate": "2026-12-31",
+          "reason": "Resignation"
+        },
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "9f1c4d2e-6b7a-4c3d-8e9f-0a1b2c3d4e5f"
+        },
+        "matchingRules": {
+          "body": {
+            "$.effectiveDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.reason": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            },
+            "Idempotency-Key": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/departures"
+      },
+      "response": {
+        "body": {
+          "createdAt": "2026-09-06T12:00:00.000Z",
+          "departureId": "01920000-0000-7000-8000-0000000000d1",
+          "dueAt": "2026-12-31T00:00:00.000Z",
+          "effectiveDate": "2026-12-31",
+          "effectiveTimeZone": "Europe/Warsaw",
+          "reason": "Resignation",
+          "state": "scheduled",
+          "userId": "01920000-0000-7000-8000-000000000001"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})"
+                }
+              ]
+            },
+            "$.departureId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.dueAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})"
+                }
+              ]
+            },
+            "$.effectiveDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.effectiveTimeZone": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.reason": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.state": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "scheduled|processing|retry_wait|applied"
+                }
+              ]
+            },
+            "$.userId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 201
+      }
+    },
+    {
+      "description": "a departure record request for an employee holding responsibilities",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer and an employee whose active responsibilities block departure"
+        }
+      ],
+      "request": {
+        "body": {
+          "effectiveDate": "2026-12-31",
+          "reason": "Resignation"
+        },
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "9f1c4d2e-6b7a-4c3d-8e9f-0a1b2c3d4e5f"
+        },
+        "matchingRules": {
+          "body": {
+            "$.effectiveDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.reason": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            },
+            "Idempotency-Key": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/departures"
+      },
+      "response": {
+        "body": {
+          "blockers": [
+            {
+              "kind": "direct_report",
+              "summary": "2 direct reports"
+            }
+          ],
+          "error": "departure_blocked_by_responsibilities",
+          "expectedBlockerVersion": "sha256:6c1f0a"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.blockers": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.blockers[*].kind": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "direct_report|department_manager|people_partner"
+                }
+              ]
+            },
+            "$.blockers[*].summary": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.expectedBlockerVersion": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 409
+      }
+    },
+    {
+      "description": "a departure retry request",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer and a departure in retry_wait"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/departures/01920000-0000-7000-8000-0000000000d1/retry"
+      },
+      "response": {
+        "status": 202
+      }
+    },
+    {
+      "description": "a departure status request",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer and a departure that has failed at least one attempt"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/departures/01920000-0000-7000-8000-0000000000d1"
+      },
+      "response": {
+        "body": {
+          "attempts": 1,
+          "createdAt": "2026-09-06T12:00:00.000Z",
+          "departureId": "01920000-0000-7000-8000-0000000000d1",
+          "dueAt": "2026-12-31T00:00:00.000Z",
+          "effectiveDate": "2026-12-31",
+          "effectiveTimeZone": "Europe/Warsaw",
+          "lastError": "downstream_unavailable",
+          "reason": "Resignation",
+          "state": "retry_wait",
+          "userId": "01920000-0000-7000-8000-000000000001"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.attempts": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})"
+                }
+              ]
+            },
+            "$.departureId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.dueAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})"
+                }
+              ]
+            },
+            "$.effectiveDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.effectiveTimeZone": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.lastError": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.reason": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.state": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "scheduled|processing|retry_wait|applied"
+                }
+              ]
+            },
+            "$.userId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a directory request filtered by country",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding user-management:list and at least one active employee"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/users",
+        "query": {
+          "country": [
+            "PL"
+          ],
+          "page": [
+            "1"
+          ],
+          "pageSize": [
+            "25"
+          ],
+          "position": [
+            "Contract Engineer"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "items": [
+            {
+              "birthDay": 10,
+              "birthMonth": 5,
+              "city": "Krakow",
+              "companyJoinDate": "2020-01-01",
+              "country": "PL",
+              "employmentStatus": "active",
+              "firstName": "Ada",
+              "id": "01920000-0000-7000-8000-000000000001",
+              "lastName": "Lovelace",
+              "photo": "https://photos.example/ada.jpg",
+              "position": "Engineer",
+              "workEmail": "ada@company.example",
+              "workPhone": "+48 100 200 300"
+            }
+          ],
+          "page": 1,
+          "pageSize": 25,
+          "total": 1,
+          "totalPages": 1
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.items": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.items[*].birthDay": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].birthMonth": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].city": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].companyJoinDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.items[*].country": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].employmentStatus": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "active|dismissed"
+                }
+              ]
+            },
+            "$.items[*].firstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.items[*].lastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].photo": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].position": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].workEmail": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].workPhone": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.page": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.pageSize": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.total": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.totalPages": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a first page request for the employee directory",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding user-management:list and at least one active employee"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/users",
+        "query": {
+          "page": [
+            "1"
+          ],
+          "pageSize": [
+            "25"
+          ],
+          "position": [
+            "Contract Engineer"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "items": [
+            {
+              "birthDay": 10,
+              "birthMonth": 5,
+              "city": "Krakow",
+              "companyJoinDate": "2020-01-01",
+              "country": "PL",
+              "employmentStatus": "active",
+              "firstName": "Ada",
+              "id": "01920000-0000-7000-8000-000000000001",
+              "lastName": "Lovelace",
+              "photo": "https://photos.example/ada.jpg",
+              "position": "Engineer",
+              "workEmail": "ada@company.example",
+              "workPhone": "+48 100 200 300"
+            }
+          ],
+          "page": 1,
+          "pageSize": 25,
+          "total": 1,
+          "totalPages": 1
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.items": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.items[*].birthDay": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].birthMonth": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].city": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].companyJoinDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.items[*].country": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].employmentStatus": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "active|dismissed"
+                }
+              ]
+            },
+            "$.items[*].firstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.items[*].lastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].photo": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].position": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].workEmail": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.items[*].workPhone": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.page": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.pageSize": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.total": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.totalPages": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json.*"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a magic-link request",
+      "providerStates": [
+        {
+          "name": "no session, and the address may or may not belong to an active user"
+        }
+      ],
+      "request": {
+        "body": {
+          "email": "ada@company.example"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.email": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/auth/magic-link"
+      },
+      "response": {
+        "body": {
+          "sent": true
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a manager assignment",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding organisation write access and an assignable target"
+        }
+      ],
+      "request": {
+        "body": {
+          "targetId": "01920000-0000-7000-8000-000000000002",
+          "type": "direct"
+        },
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>",
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.targetId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/relationships"
+      },
+      "response": {
+        "body": {
+          "id": "01920000-0000-7000-8000-0000000000a1",
+          "reportsToUserId": "01920000-0000-7000-8000-000000000002",
+          "type": "direct",
+          "userId": "01920000-0000-7000-8000-000000000001"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.reportsToUserId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.userId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 201
+      }
+    },
+    {
+      "description": "a manager edge deletion",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding organisation write access and an existing manager edge"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "DELETE",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/relationships/01920000-0000-7000-8000-0000000000a1"
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "description": "a manual career-event creation",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding timeline write access over the target employee"
+        }
+      ],
+      "request": {
+        "body": {
+          "eventDate": "2025-06-01",
+          "type": "promotion"
+        },
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>",
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.eventDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/events"
+      },
+      "response": {
+        "body": {
+          "id": "01920000-0000-7000-8000-0000000000e2"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 201
+      }
+    },
+    {
+      "description": "a partial identity-card update",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer holding S1 write access over the target employee"
+        }
+      ],
+      "request": {
+        "body": {
+          "city": "Warsaw",
+          "position": "Senior Engineer"
+        },
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>",
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.city": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.position": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "PATCH",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001"
+      },
+      "response": {
+        "body": {
+          "id": "01920000-0000-7000-8000-000000000001"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for an employee identity card",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer who may read the target employee S1 card"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001"
+      },
+      "response": {
+        "body": {
+          "canEdit": false,
+          "data": {
+            "birthDay": 10,
+            "birthMonth": 5,
+            "city": "Krakow",
+            "companyJoinDate": "2020-01-01",
+            "country": "PL",
+            "firstName": "Ada",
+            "id": "01920000-0000-7000-8000-000000000001",
+            "lastName": "Lovelace",
+            "photo": "https://photos.example/ada.jpg",
+            "position": "Engineer",
+            "workEmail": "ada@company.example",
+            "workPhone": "+48 100 200 300"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.canEdit": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.birthDay": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.birthMonth": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.city": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.companyJoinDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.data.country": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.firstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.data.lastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.photo": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.position": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.workEmail": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.workPhone": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for current organisational relationships",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer who may read the target employee current relationships"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/relationships"
+      },
+      "response": {
+        "body": {
+          "data": [
+            {
+              "relationshipId": "01920000-0000-7000-8000-0000000000a1",
+              "target": {
+                "firstName": "Grace",
+                "id": "01920000-0000-7000-8000-000000000002",
+                "lastName": "Hopper"
+              },
+              "type": "direct"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data[*].relationshipId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.data[*].target.firstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data[*].target.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.data[*].target.lastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data[*].type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "direct|people_partner"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for the access journal",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer who may read the target employee access journal"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/access-journal"
+      },
+      "response": {
+        "body": {
+          "data": [
+            {
+              "actorUserId": "01920000-0000-7000-8000-000000000002",
+              "after": {},
+              "before": null,
+              "id": "01920000-0000-7000-8000-0000000000a1",
+              "kind": "manager",
+              "occurredAt": "2026-01-15T10:30:00.000Z",
+              "subjectUserId": "01920000-0000-7000-8000-000000000001"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data[*].actorUserId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.data[*].after": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data[*].before": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.data[*].kind": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "manager|people_partner|department_membership|department_manager|full_profile_grant|full_profile_revoke|shared_link_access"
+                }
+              ]
+            },
+            "$.data[*].occurredAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})"
+                }
+              ]
+            },
+            "$.data[*].subjectUserId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for the career timeline",
+      "providerStates": [
+        {
+          "name": "an authenticated viewer who may read the target employee timeline"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token:01920000-0000-7000-8000-0000000000f1>"
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer .+"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/api/v1/users/01920000-0000-7000-8000-000000000001/events"
+      },
+      "response": {
+        "body": {
+          "canEdit": false,
+          "data": [
+            {
+              "createdAt": "2024-03-01T09:00:00.000Z",
+              "details": {},
+              "eventDate": "2024-03-01",
+              "id": "01920000-0000-7000-8000-0000000000e1",
+              "source": "system",
+              "type": "position_change"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.canEdit": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data[*].createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})"
+                }
+              ]
+            },
+            "$.data[*].details": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data[*].eventDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}"
+                }
+              ]
+            },
+            "$.data[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                }
+              ]
+            },
+            "$.data[*].source": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "manual|system"
+                }
+              ]
+            },
+            "$.data[*].type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "17.1.3"
+    },
+    "pactRust": {
+      "ffi": "0.5.6",
+      "models": "1.3.14"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "people-management-backend"
+  }
+}
