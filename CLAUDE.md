@@ -1,6 +1,6 @@
-# React Starter
+# People Management Frontend
 
-A clean React starter that will grow into a new product. Detailed per-area conventions live in `.claude/rules/` and load automatically when working with matching files.
+Grown from a clean React starter into the people-management UI. Detailed per-area conventions live in `.claude/rules/` and load automatically when working with matching files.
 
 ## Tech Stack
 
@@ -10,7 +10,9 @@ A clean React starter that will grow into a new product. Detailed per-area conve
 - **Routing**: React Router v7
 - **Data Fetching**: TanStack Query + Axios
 - **i18n**: i18next / react-i18next (English only)
-- **Testing**: Playwright (e2e)
+- **Forms**: react-hook-form + zod via `@hookform/resolvers`
+- **Auth**: magic link; bearer token held in `sessionStorage`
+- **Testing**: Playwright (e2e) + Pact consumer contracts on Vitest
 - **Quality**: ESLint + Prettier
 
 ## Commands
@@ -21,11 +23,12 @@ A clean React starter that will grow into a new product. Detailed per-area conve
 - `npm run lint` / `npm run lint:fix` — ESLint
 - `npm run format` / `npm run format:check` — Prettier
 - `npm run test` — Playwright e2e (starts Vite itself)
+- `npm run test:contract` — Pact consumer contracts (Vitest, jsdom); writes `pacts/`
 
 ## Project Structure (`src/`)
 
 - `api/` — axios client singleton (`client.ts`); TanStack Query hooks go in `api/hooks/`
-- `components/` — shared components, one folder per component (AppLayout, MainLayout, MainHeader, SideMenu); `components/ui/` is shadcn-CLI-managed
+- `components/` — shared components, one folder per component (AppLayout, MainLayout, MainHeader, SideMenu, BrandMark, PersonPicker, RequireAuth, StatePanel); `components/ui/` is shadcn-CLI-managed
 - `config/env.ts` — type-safe env access; all env vars must be `VITE_`-prefixed
 - `contexts/` — React contexts (LayoutContext)
 - `hooks/` — global reusable hooks
@@ -33,8 +36,11 @@ A clean React starter that will grow into a new product. Detailed per-area conve
 - `lib/` — shadcn technical utils (`cn()`); no business logic here, use `helpers/`
 - `pages/` — one folder per page with its own `hooks/` and `components/`
 - `router/` — route configuration (`index.tsx`)
+- `types/` + `@types/` — shared domain types and ambient declarations
 
-E2E tests live in `e2e/` (flows + shared utilities).
+E2E tests live in `e2e/` (flows + shared utilities). Pact consumer specs live in
+`contract/` (`*.pact.spec.ts`), configured by `vitest.contract.config.ts` — kept
+separate so `npm test` and `npm run test:contract` never collect each other's files.
 
 ## Code Style (universal)
 
@@ -45,7 +51,7 @@ E2E tests live in `e2e/` (flows + shared utilities).
 - Never hardcode user-facing text — always use i18n translation keys
 - All code comments in English
 - Don't create empty folders
-- Forms: `react-hook-form` + `zod` are NOT installed yet — add them (`npm i react-hook-form @hookform/resolvers zod`) when the first form appears
+- Forms: `react-hook-form` + `zod` through `@hookform/resolvers` — they are installed; do not hand-roll validation or add a second form library
 
 ## Environment
 
@@ -55,4 +61,7 @@ E2E tests live in `e2e/` (flows + shared utilities).
 ## Gotchas
 
 - tsconfig `paths` works without `baseUrl` (deprecated in TS 6+) — don't re-add `baseUrl`
-- There is no authentication in the starter; the API client has a TODO interceptor stub for when auth arrives
+- Auth is live, not a stub: the request interceptor in `src/api/client.ts` attaches
+  `Authorization: Bearer <token>` from the session, and the response interceptor clears the
+  session and hard-redirects to `/login` on a 401 — except on the unauthenticated magic-link
+  endpoints, where a 401 is a domain outcome the calling page renders itself (DEC-UM-004)
