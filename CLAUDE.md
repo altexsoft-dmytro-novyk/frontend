@@ -12,7 +12,7 @@ Grown from a clean React starter into the people-management UI. Detailed per-are
 - **i18n**: i18next / react-i18next (English only)
 - **Forms**: react-hook-form + zod via `@hookform/resolvers`
 - **Auth**: magic link; bearer token held in `sessionStorage`
-- **Testing**: Playwright (e2e) + Pact consumer contracts on Vitest
+- **Testing**: Playwright (e2e) + Vitest/React Testing Library (unit + component) + Pact consumer contracts on Vitest
 - **Quality**: ESLint + Prettier
 
 ## Commands
@@ -23,6 +23,8 @@ Grown from a clean React starter into the people-management UI. Detailed per-are
 - `npm run lint` / `npm run lint:fix` — ESLint
 - `npm run format` / `npm run format:check` — Prettier
 - `npm run test` — Playwright e2e (starts Vite itself)
+- `npm run test:unit` — unit + component tests (Vitest, jsdom, React Testing Library)
+- `npm run test:unit:watch` — same, in watch mode
 - `npm run test:contract` — Pact consumer contracts (Vitest, jsdom); writes `pacts/`
 
 ## Project Structure (`src/`)
@@ -41,6 +43,11 @@ Grown from a clean React starter into the people-management UI. Detailed per-are
 E2E tests live in `e2e/` (flows + shared utilities). Pact consumer specs live in
 `contract/` (`*.pact.spec.ts`), configured by `vitest.contract.config.ts` — kept
 separate so `npm test` and `npm run test:contract` never collect each other's files.
+Unit and component specs are co-located next to the file they cover as
+`*.test.ts` / `*.test.tsx` (e.g. `hooks/useDebounce.test.ts`,
+`components/BrandMark/BrandMark.test.tsx`), configured by the default
+`vitest.config.ts` and run via `npm run test:unit` — see
+`.claude/rules/react-testing.md`.
 
 ## Code Style (universal)
 
