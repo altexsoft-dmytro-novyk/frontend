@@ -525,5 +525,50 @@
       "errorBody": "Request a fresh link and try again.",
       "backToLogin": "Back to sign in"
     }
+  },
+  "dashboards": {
+    "title": "Unit Manager",
+    "eyebrow": "WORKSPACE / DASHBOARDS",
+    "provenanceTag": "SCOPE RESOLVED LIVE PER REQUEST",
+    "lead": "Operational overview scoped to your live reporting line direct reports.",
+    "presets": {
+      "unitManager": "Unit Manager"
+    },
+    "grouping": {
+      "people": "People"
+    },
+    "headcount": {
+      "title": "Active Headcount",
+      "subtitle": "Direct & transitive reporting line"
+    },
+    "peopleTable": {
+      "title": "Team Roster",
+      "subtitle": "Reporting-line employee directory with live tier projection",
+      "emptyTitle": "No direct reports assigned",
+      "emptyDescription": "You currently have no active direct or transitive reports in your reporting scope.",
+      "columns": {
+        "member": "Member",
+        "position": "Position",
+        "grade": "Grade",
+        "employmentType": "Employment",
+        "project": "Project",
+        "leave": "Leave",
+        "risk": "Risk"
+      }
+    },
+    "navigation": {
+      "title": "Shortcuts",
+      "allEmployees": "All Employees",
+      "savedViews": "Saved Views",
+      "resourcing": "Resourcing",
+      "risks": "Risk Dashboard",
+      "mentorship": "Mentorship Hub",
+      "campaigns": "Campaigns"
+    },
+    "unavailable": "Unavailable",
+    "accessDenied": {
+      "title": "Access denied",
+      "description": "You do not have permission to view the People Management Dashboard. Access is fail-closed."
+    }
   }
 }

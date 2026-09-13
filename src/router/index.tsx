@@ -11,11 +11,18 @@ import { EmployeeImportPage } from '@/pages/EmployeeImportPage/EmployeeImportPag
 import { EmployeeProfilePage } from '@/pages/EmployeeProfilePage/EmployeeProfilePage'
 import { EmployeeOrganisationPage } from '@/pages/EmployeeOrganisationPage/EmployeeOrganisationPage'
 import { EmployeeDeparturePage } from '@/pages/EmployeeDeparturePage/EmployeeDeparturePage'
-import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
+import { DashboardsPage } from '@/pages/DashboardsPage/DashboardsPage'
 import { LoginPage } from '@/pages/LoginPage/LoginPage'
+import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
 import { ConsumeMagicLinkPage } from '@/pages/ConsumeMagicLinkPage/ConsumeMagicLinkPage'
 
 const router = createBrowserRouter([
+  // Standalone login page
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+
   // Standalone error page (rendered outside the main layout)
   {
     path: '/app-error',
@@ -69,6 +76,10 @@ const router = createBrowserRouter([
             element: <EmployeeDeparturePage />,
           },
         ],
+      },
+      {
+        path: 'dashboards',
+        element: <DashboardsPage />,
       },
     ],
   },

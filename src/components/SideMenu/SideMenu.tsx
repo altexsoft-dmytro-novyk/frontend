@@ -1,5 +1,6 @@
 import type { ParseKeys } from 'i18next'
 import { Home, Users, type LucideIcon } from 'lucide-react'
+import { LayoutDashboard } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useLayout } from '@/contexts/LayoutContext'
 import { SideMenuItem } from './components/SideMenuItem/SideMenuItem'
