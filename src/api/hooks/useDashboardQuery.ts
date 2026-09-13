@@ -4,7 +4,6 @@
  */
 
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import type {
   DashboardPreset,
@@ -24,7 +23,6 @@ export function useDashboardQuery<T extends DashboardPreset>(
   preset: T,
   options?: UseDashboardQueryOptions
 ) {
-  const navigate = useNavigate()
   const actorUserId = options?.actorUserId ?? 'current-user'
   const dataSource = options?.dataSource ?? defaultDashboardDataSource
 
@@ -70,10 +68,12 @@ export function useDashboardQuery<T extends DashboardPreset>(
         err.message?.includes('Unauthorized')
       ) {
         clearSession()
-        navigate('/login', { replace: true })
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          window.location.assign('/login')
+        }
       }
     }
-  }, [query.isError, query.error, navigate])
+  }, [query.isError, query.error])
 
   return {
     data: query.data,

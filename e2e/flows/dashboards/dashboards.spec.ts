@@ -100,9 +100,10 @@ test.describe('People Management Dashboards — Unit Manager (Story 2.1 / PMC-E2
       await setupPopulatedDashboard(page)
       await page.goto('/dashboards')
 
-      // Navigation shortcuts
-      await expect(page.getByRole('link', { name: /All Employees/i })).toBeVisible()
-      await expect(page.getByRole('link', { name: /Saved Views/i })).toBeVisible()
+      // Scope navigation shortcuts to the Dashboard content panel
+      const dashboardPanel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      await expect(dashboardPanel.getByRole('link', { name: /All Employees/i })).toBeVisible()
+      await expect(dashboardPanel.getByRole('link', { name: /Saved Views/i })).toBeVisible()
     })
   })
 
