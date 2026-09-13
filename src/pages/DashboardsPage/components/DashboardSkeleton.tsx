@@ -38,6 +38,25 @@ export const DashboardSkeleton = () => {
         </div>
       </div>
 
+      {/* Unavailable Slots Skeleton Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3, 4, 5].map(i => (
+          <div
+            key={i}
+            className="flex flex-col justify-between rounded-xl border border-dashed border-border bg-card/60 p-5 animate-pulse"
+          >
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <div className="h-4 w-28 rounded-sm bg-muted" />
+                <div className="h-4 w-4 rounded-full bg-muted" />
+              </div>
+              <div className="h-4 w-16 rounded-md bg-muted mt-3" />
+              <div className="h-3 w-44 rounded-sm bg-muted mt-2" />
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Table Skeleton */}
       <div className="rounded-xl border border-border bg-card p-5 animate-pulse">
         <div className="flex items-center justify-between pb-4">

@@ -460,3 +460,383 @@ test.describe('People Management Dashboards — Unit Manager (Story 2.1 / PMC-E2
     })
   })
 })
+
+test.describe('People Management Dashboards — Unsourced Widget Slots (Story 2.2 / PMC-E2-S2.2)', () => {
+  test.describe('FE-DASH-09 · Explicit unavailable state rendering for uncovered widget slots with permission-literate messaging', () => {
+    test('renders explicit unavailable card for uncovered risk counts slot (PM-FR-21)', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const riskSlot = panel.locator('[data-slot="riskCounts"]')
+
+      await expect(riskSlot).toBeVisible()
+      await expect(riskSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.riskCounts.missingCapability)).toBeVisible()
+      await expect(riskSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.riskCounts.unavailableReason)).toBeVisible()
+    })
+
+    test('renders explicit unavailable card for uncovered unit action items and my action items slots (PM-FR-19)', async ({
+      page,
+    }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const unitActionSlot = panel.locator('[data-slot="unitActionItems"]')
+      const myActionSlot = panel.locator('[data-slot="myActionItems"]')
+
+      await expect(unitActionSlot).toBeVisible()
+      await expect(unitActionSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.unitActionItems.missingCapability)).toBeVisible()
+      await expect(unitActionSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.unitActionItems.unavailableReason)).toBeVisible()
+
+      await expect(myActionSlot).toBeVisible()
+      await expect(myActionSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.myActionItems.missingCapability)).toBeVisible()
+      await expect(myActionSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.myActionItems.unavailableReason)).toBeVisible()
+    })
+
+    test('renders explicit unavailable card for uncovered resourcing requests slot (PM-FR-23)', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const resourcingSlot = panel.locator('[data-slot="resourcingRequests"]')
+
+      await expect(resourcingSlot).toBeVisible()
+      await expect(resourcingSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.resourcingRequests.missingCapability)).toBeVisible()
+      await expect(resourcingSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.resourcingRequests.unavailableReason)).toBeVisible()
+    })
+
+    test('renders explicit unavailable card for uncovered open campaigns slot (PM-FR-20)', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const campaignsSlot = panel.locator('[data-slot="openCampaigns"]')
+
+      await expect(campaignsSlot).toBeVisible()
+      await expect(campaignsSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.openCampaigns.missingCapability)).toBeVisible()
+      await expect(campaignsSlot.getByText(mockPopulatedUnitManagerDashboard.widgets.openCampaigns.unavailableReason)).toBeVisible()
+    })
+
+    test('displays missing capability name and explanation without apologetic or motivational filler across all unavailable slots', async ({
+      page,
+    }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const slotKeys = ['riskCounts', 'unitActionItems', 'myActionItems', 'resourcingRequests', 'openCampaigns'] as const
+
+      for (const key of slotKeys) {
+        const slot = panel.locator(`[data-slot="${key}"]`)
+        await expect(slot).toBeVisible()
+        await expect(slot.getByText(/sorry/i)).not.toBeVisible()
+        await expect(slot.getByText(/coming soon/i)).not.toBeVisible()
+        await expect(slot.getByText(/we('?re| are) working on this/i)).not.toBeVisible()
+      }
+    })
+  })
+
+  test.describe('FE-DASH-10 · Prevention of fake zero, dashes, blank space, empty charts, or fabricated data in unavailable slots', () => {
+    test('unavailable risk slot does not render numeric 0, trend arrows, or fake risk chips', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const riskSlot = panel.locator('[data-slot="riskCounts"]')
+
+      await expect(riskSlot).toBeVisible()
+
+      // Negative assertions: no numeric counters, fake 0, trend arrows, or risk chips
+      await expect(riskSlot.locator('.data-stat')).not.toBeVisible()
+      await expect(riskSlot.getByText('0', { exact: true })).not.toBeVisible()
+      await expect(riskSlot.getByText('—', { exact: true })).not.toBeVisible()
+      await expect(riskSlot.locator('.rchip, .trend-arrow, [data-trend]')).not.toBeVisible()
+      await expect(riskSlot.getByText(/low risk|medium risk|high risk/i)).not.toBeVisible()
+    })
+
+    test('unavailable action items slots do not render numeric 0, dashes, or blank list containers', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const unitActionSlot = panel.locator('[data-slot="unitActionItems"]')
+      const myActionSlot = panel.locator('[data-slot="myActionItems"]')
+
+      for (const slot of [unitActionSlot, myActionSlot]) {
+        await expect(slot).toBeVisible()
+        await expect(slot.locator('.data-stat')).not.toBeVisible()
+        await expect(slot.getByText('0', { exact: true })).not.toBeVisible()
+        await expect(slot.getByText('—', { exact: true })).not.toBeVisible()
+        await expect(slot.locator('.task-item, [data-action-item]')).not.toBeVisible()
+      }
+    })
+
+    test('unavailable resourcing slot does not render numeric 0, dashes, or empty chart visualizations', async ({
+      page,
+    }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const resourcingSlot = panel.locator('[data-slot="resourcingRequests"]')
+
+      await expect(resourcingSlot).toBeVisible()
+      await expect(resourcingSlot.locator('.data-stat')).not.toBeVisible()
+      await expect(resourcingSlot.getByText('0', { exact: true })).not.toBeVisible()
+      await expect(resourcingSlot.getByText('—', { exact: true })).not.toBeVisible()
+      // Prohibit chart canvases, SVG chart graphics, and empty visualization containers (while allowing standard status icons)
+      await expect(resourcingSlot.locator('canvas, .recharts-surface, [data-chart], .chart-container, svg.chart')).not.toBeVisible()
+    })
+
+    test('unavailable campaigns slot does not render numeric 0, dashes, or synthetic items', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const campaignsSlot = panel.locator('[data-slot="openCampaigns"]')
+
+      await expect(campaignsSlot).toBeVisible()
+      await expect(campaignsSlot.locator('.data-stat')).not.toBeVisible()
+      await expect(campaignsSlot.getByText('0', { exact: true })).not.toBeVisible()
+      await expect(campaignsSlot.getByText('—', { exact: true })).not.toBeVisible()
+      await expect(campaignsSlot.locator('.campaign-item, [data-campaign-item]')).not.toBeVisible()
+    })
+  })
+
+  test.describe('FE-DASH-11 · Multi-widget coexistence and independent slot metadata isolation', () => {
+    test('renders all five unavailable widget slots coexisting alongside available headcount and people table widgets', async ({
+      page,
+    }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+
+      // Available widgets from Story 2.1
+      await expect(panel.getByTestId('dashboard-headcount-widget').or(panel.locator('[data-widget="headcount"]'))).toBeVisible()
+      await expect(panel.getByTestId('dashboard-people-table-widget').or(panel.locator('[data-widget="people-table"]'))).toBeVisible()
+
+      // All 5 unavailable slots coexist using canonical [data-slot="..."] identity
+      await expect(panel.locator('[data-slot="riskCounts"]')).toBeVisible()
+      await expect(panel.locator('[data-slot="unitActionItems"]')).toBeVisible()
+      await expect(panel.locator('[data-slot="myActionItems"]')).toBeVisible()
+      await expect(panel.locator('[data-slot="resourcingRequests"]')).toBeVisible()
+      await expect(panel.locator('[data-slot="openCampaigns"]')).toBeVisible()
+    })
+
+    test('each unavailable widget slot renders from its own dedicated read-model property', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+
+      const riskSlot = panel.locator('[data-slot="riskCounts"]')
+      const resourcingSlot = panel.locator('[data-slot="resourcingRequests"]')
+      const campaignsSlot = panel.locator('[data-slot="openCampaigns"]')
+
+      await expect(riskSlot).toBeVisible()
+      await expect(resourcingSlot).toBeVisible()
+      await expect(campaignsSlot).toBeVisible()
+
+      // Each distinct slot displays its own metadata
+      await expect(riskSlot).toContainText(mockPopulatedUnitManagerDashboard.widgets.riskCounts.missingCapability)
+      await expect(resourcingSlot).toContainText(mockPopulatedUnitManagerDashboard.widgets.resourcingRequests.missingCapability)
+      await expect(campaignsSlot).toContainText(mockPopulatedUnitManagerDashboard.widgets.openCampaigns.missingCapability)
+    })
+
+    test('displays metadata supplied by each corresponding property without cross-slot substitution (allowing identical metadata where legitimately shared, such as PM-FR-19 action items)', async ({
+      page,
+    }) => {
+      // Supply typed custom metadata to verify property-to-slot mapping integrity
+      await setupPopulatedDashboard(page, {
+        widgets: {
+          riskCounts: {
+            status: 'unavailable',
+            missingCapability: 'Risk Intelligence',
+            sourceFr: 'PM-FR-21',
+            unavailableReason: 'Custom risk engine reason',
+          },
+          unitActionItems: {
+            status: 'unavailable',
+            missingCapability: 'Action Items Hub',
+            sourceFr: 'PM-FR-19',
+            unavailableReason: 'Shared action items explanation',
+          },
+          myActionItems: {
+            status: 'unavailable',
+            missingCapability: 'Action Items Hub',
+            sourceFr: 'PM-FR-19',
+            unavailableReason: 'Shared action items explanation',
+          },
+          resourcingRequests: {
+            status: 'unavailable',
+            missingCapability: 'Resourcing Pipeline',
+            sourceFr: 'PM-FR-23',
+            unavailableReason: 'Custom resourcing reason',
+          },
+          openCampaigns: {
+            status: 'unavailable',
+            missingCapability: 'Organizational Campaigns',
+            sourceFr: 'PM-FR-20',
+            unavailableReason: 'Custom campaigns reason',
+          },
+        },
+      })
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+
+      const riskSlot = panel.locator('[data-slot="riskCounts"]')
+      const unitActionSlot = panel.locator('[data-slot="unitActionItems"]')
+      const myActionSlot = panel.locator('[data-slot="myActionItems"]')
+      const resourcingSlot = panel.locator('[data-slot="resourcingRequests"]')
+      const campaignsSlot = panel.locator('[data-slot="openCampaigns"]')
+
+      await expect(riskSlot).toBeVisible()
+      await expect(unitActionSlot).toBeVisible()
+      await expect(myActionSlot).toBeVisible()
+      await expect(resourcingSlot).toBeVisible()
+      await expect(campaignsSlot).toBeVisible()
+
+      // Verify riskSlot received its specific metadata and NOT resourcing metadata
+      await expect(riskSlot).toContainText('Risk Intelligence')
+      await expect(riskSlot).toContainText('Custom risk engine reason')
+      await expect(riskSlot).not.toContainText('Resourcing Pipeline')
+
+      // Verify unitActionSlot and myActionSlot both display the shared PM-FR-19 metadata without error
+      await expect(unitActionSlot).toContainText('Action Items Hub')
+      await expect(unitActionSlot).toContainText('Shared action items explanation')
+      await expect(myActionSlot).toContainText('Action Items Hub')
+      await expect(myActionSlot).toContainText('Shared action items explanation')
+
+      // Verify resourcingSlot and campaignsSlot received their specific metadata
+      await expect(resourcingSlot).toContainText('Resourcing Pipeline')
+      await expect(resourcingSlot).toContainText('Custom resourcing reason')
+      await expect(campaignsSlot).toContainText('Organizational Campaigns')
+      await expect(campaignsSlot).toContainText('Custom campaigns reason')
+    })
+  })
+
+  test.describe('FE-DASH-12 · State disambiguation across unavailable source, legitimate measured zero, empty scope, loading skeleton, and access denial', () => {
+    test('unavailable widget slots render unavailable cards and never display .emptyst empty state or numeric 0', async ({
+      page,
+    }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const riskSlot = panel.locator('[data-slot="riskCounts"]')
+
+      await expect(riskSlot).toBeVisible()
+      // Unavailable cards must NOT use the empty-state styling or data-stat counters
+      await expect(riskSlot.locator('.emptyst, [data-testid="dashboard-empty-state"]')).not.toBeVisible()
+      await expect(riskSlot.locator('.data-stat')).not.toBeVisible()
+    })
+
+    test('legitimate zero headcount (FE-DASH-03) does not render an unavailable card in headcount slot', async ({ page }) => {
+      await setupZeroHeadcountDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const headcountCard = panel.getByTestId('dashboard-headcount-widget').or(panel.locator('[data-widget="headcount"]'))
+
+      await expect(headcountCard).toBeVisible()
+      await expect(headcountCard.locator('.data-stat').or(headcountCard.getByText('0', { exact: true }))).toBeVisible()
+      // Headcount widget must NOT be marked or rendered as an unavailable card
+      await expect(headcountCard.locator('[data-slot="riskCounts"], [data-slot="unitActionItems"], [data-slot="myActionItems"]')).not.toBeVisible()
+      await expect(headcountCard.getByText(/unavailable|not implemented/i)).not.toBeVisible()
+    })
+
+    test('empty reporting scope (FE-DASH-03) renders .emptyst empty-state component and does not replace the table with an unavailable card', async ({
+      page,
+    }) => {
+      await setupZeroHeadcountDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const peopleTableSection = panel.getByTestId('dashboard-people-table-widget').or(panel.locator('[data-widget="people-table"]'))
+
+      await expect(peopleTableSection).toBeVisible()
+      // Empty scope renders .emptyst component
+      const emptyState = peopleTableSection.locator('.emptyst, [data-testid="dashboard-empty-state"]')
+      await expect(emptyState).toBeVisible()
+      // Table container must NOT be replaced with an unavailable card
+      await expect(peopleTableSection.locator('[data-slot="riskCounts"], [data-slot="unitActionItems"], [data-slot="myActionItems"], [data-slot="resourcingRequests"], [data-slot="openCampaigns"]')).not.toBeVisible()
+    })
+  })
+
+  test.describe('FE-DASH-13 · Semantic structure, accessibility, responsive layout, and lack of customization for unavailable widget cards', () => {
+    test('unavailable widget cards have semantic structure and accessible headings readable by screen readers', async ({
+      page,
+    }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const riskSlot = panel.locator('[data-slot="riskCounts"]')
+
+      await expect(riskSlot).toBeVisible()
+      // Must contain an accessible heading (h3, h4, or element with heading role)
+      const heading = riskSlot.getByRole('heading').or(riskSlot.locator('h3, h4'))
+      await expect(heading.first()).toBeVisible()
+      await expect(heading.first()).toHaveText(/Risk/i)
+    })
+
+    test('unavailable widget cards maintain responsive grid layout without layout shifts or overflow', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const riskSlot = panel.locator('[data-slot="riskCounts"]')
+
+      await expect(riskSlot).toBeVisible()
+
+      // Bounding box must fit within container client width (no horizontal overflow)
+      const isLayoutStable = await riskSlot.evaluate((el) => {
+        const rect = el.getBoundingClientRect()
+        return rect.width > 0 && rect.height > 0 && el.scrollWidth <= el.clientWidth + 2
+      })
+      expect(isLayoutStable).toBe(true)
+    })
+
+    test('unavailable widget cards do not introduce interactive focus traps or unexpected tabbable descendants', async ({
+      page,
+    }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const slotKeys = ['riskCounts', 'unitActionItems', 'myActionItems', 'resourcingRequests', 'openCampaigns'] as const
+
+      // All five cards must exist and not contain focusable/tabbable interactive descendants
+      for (const key of slotKeys) {
+        const card = panel.locator(`[data-slot="${key}"]`)
+        await expect(card).toBeVisible()
+
+        const focusableDescendants = card.locator('button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])')
+        await expect(focusableDescendants).toHaveCount(0)
+      }
+    })
+
+    test('no customize handles, drag affordances, or remove buttons exist on unavailable cards', async ({ page }) => {
+      await setupPopulatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const panel = page.getByRole('tabpanel').or(page.locator('#preset-panel-unit-manager, main'))
+      const slotKeys = ['riskCounts', 'unitActionItems', 'myActionItems', 'resourcingRequests', 'openCampaigns'] as const
+
+      for (const key of slotKeys) {
+        const card = panel.locator(`[data-slot="${key}"]`)
+        await expect(card).toBeVisible()
+
+        // Customization handles must be absent from unavailable cards (PM/AD-33, SD-1)
+        await expect(card.locator('.drag, .drag-handle, [data-drag-handle]')).not.toBeVisible()
+        await expect(card.locator('.rm, .remove-handle, [data-remove-widget]')).not.toBeVisible()
+        await expect(card.getByRole('button', { name: /Add widget|Add to dashboard|Remove/i })).not.toBeVisible()
+      }
+    })
+  })
+})
+
+
