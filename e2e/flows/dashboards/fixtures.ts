@@ -3,6 +3,11 @@
  * Conforms to UnitManagerDashboardReadModel in _bmad-output/specs/spec-dashboards/dashboard-api-contract.md
  */
 
+export const SESSION_STORAGE_KEY = 'pp.session'
+
+export const SEEDED_SESSION_JWT =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTQyMjItODIyMi0yMjIyMjIyMjIyMjIiLCJpYXQiOjE3MDAwMDAwMDAsImV4cCI6NDEwMjQ0NDgwMH0.test-signature-not-verified-client-side'
+
 export interface UnavailableColumnState {
   status: 'unavailable'
   sourceFr: string

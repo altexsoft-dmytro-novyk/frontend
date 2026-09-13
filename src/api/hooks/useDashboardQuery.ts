@@ -13,6 +13,7 @@ import type {
   PeoplePartnerDashboardReadModel,
 } from '@/types/dashboards'
 import { defaultDashboardDataSource } from '@/api/dashboards/dataSource'
+import { clearSession } from '@/lib/session'
 
 export interface UseDashboardQueryOptions {
   actorUserId?: string
@@ -68,6 +69,7 @@ export function useDashboardQuery<T extends DashboardPreset>(
         err.message?.includes('401') ||
         err.message?.includes('Unauthorized')
       ) {
+        clearSession()
         navigate('/login', { replace: true })
       }
     }

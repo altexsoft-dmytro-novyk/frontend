@@ -4,6 +4,8 @@ import {
   mockZeroHeadcountUnitManagerDashboard,
   mockOmittedColumnsUnitManagerDashboard,
   type UnitManagerDashboardReadModel,
+  SESSION_STORAGE_KEY,
+  SEEDED_SESSION_JWT,
 } from './fixtures'
 
 /**
@@ -46,7 +48,8 @@ export async function setupPopulatedDashboard(page: Page, data?: Partial<UnitMan
 
   await page.unrouteAll({ behavior: 'ignoreErrors' })
   await page.addInitScript(
-    ({ scenarioKey, dataKey, scenario, mockData }) => {
+    ({ scenarioKey, dataKey, scenario, mockData, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
       sessionStorage.setItem(scenarioKey, scenario)
       if (mockData) {
         sessionStorage.setItem(dataKey, JSON.stringify(mockData))
@@ -59,6 +62,8 @@ export async function setupPopulatedDashboard(page: Page, data?: Partial<UnitMan
       dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
       scenario: 'populated' as DashboardTestScenario,
       mockData: data ? payload : null,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
     }
   )
 }
@@ -67,7 +72,8 @@ export async function setupPopulatedDashboard(page: Page, data?: Partial<UnitMan
 export async function setupLoadingDashboard(page: Page): Promise<void> {
   await page.unrouteAll({ behavior: 'ignoreErrors' })
   await page.addInitScript(
-    ({ scenarioKey, dataKey, scenario }) => {
+    ({ scenarioKey, dataKey, scenario, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
       sessionStorage.setItem(scenarioKey, scenario)
       sessionStorage.removeItem(dataKey)
     },
@@ -75,6 +81,8 @@ export async function setupLoadingDashboard(page: Page): Promise<void> {
       scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
       dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
       scenario: 'loading' as DashboardTestScenario,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
     }
   )
 }
@@ -83,7 +91,8 @@ export async function setupLoadingDashboard(page: Page): Promise<void> {
 export async function setupZeroHeadcountDashboard(page: Page): Promise<void> {
   await page.unrouteAll({ behavior: 'ignoreErrors' })
   await page.addInitScript(
-    ({ scenarioKey, dataKey, scenario, mockData }) => {
+    ({ scenarioKey, dataKey, scenario, mockData, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
       sessionStorage.setItem(scenarioKey, scenario)
       sessionStorage.setItem(dataKey, JSON.stringify(mockData))
     },
@@ -92,6 +101,8 @@ export async function setupZeroHeadcountDashboard(page: Page): Promise<void> {
       dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
       scenario: 'zero-headcount' as DashboardTestScenario,
       mockData: mockZeroHeadcountUnitManagerDashboard,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
     }
   )
 }
@@ -100,7 +111,8 @@ export async function setupZeroHeadcountDashboard(page: Page): Promise<void> {
 export async function setupOmittedColumnsDashboard(page: Page): Promise<void> {
   await page.unrouteAll({ behavior: 'ignoreErrors' })
   await page.addInitScript(
-    ({ scenarioKey, dataKey, scenario, mockData }) => {
+    ({ scenarioKey, dataKey, scenario, mockData, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
       sessionStorage.setItem(scenarioKey, scenario)
       sessionStorage.setItem(dataKey, JSON.stringify(mockData))
     },
@@ -109,6 +121,8 @@ export async function setupOmittedColumnsDashboard(page: Page): Promise<void> {
       dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
       scenario: 'omitted-columns' as DashboardTestScenario,
       mockData: mockOmittedColumnsUnitManagerDashboard,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
     }
   )
 }
@@ -117,7 +131,8 @@ export async function setupOmittedColumnsDashboard(page: Page): Promise<void> {
 export async function setupAccessDeniedDashboard(page: Page): Promise<void> {
   await page.unrouteAll({ behavior: 'ignoreErrors' })
   await page.addInitScript(
-    ({ scenarioKey, dataKey, scenario }) => {
+    ({ scenarioKey, dataKey, scenario, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
       sessionStorage.setItem(scenarioKey, scenario)
       sessionStorage.removeItem(dataKey)
     },
@@ -125,6 +140,8 @@ export async function setupAccessDeniedDashboard(page: Page): Promise<void> {
       scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
       dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
       scenario: 'forbidden' as DashboardTestScenario,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
     }
   )
 }
@@ -133,7 +150,8 @@ export async function setupAccessDeniedDashboard(page: Page): Promise<void> {
 export async function setupUnauthenticatedDashboard(page: Page): Promise<void> {
   await page.unrouteAll({ behavior: 'ignoreErrors' })
   await page.addInitScript(
-    ({ scenarioKey, dataKey, scenario }) => {
+    ({ scenarioKey, dataKey, scenario, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
       sessionStorage.setItem(scenarioKey, scenario)
       sessionStorage.removeItem(dataKey)
     },
@@ -141,6 +159,8 @@ export async function setupUnauthenticatedDashboard(page: Page): Promise<void> {
       scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
       dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
       scenario: 'unauthenticated' as DashboardTestScenario,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
     }
   )
 }

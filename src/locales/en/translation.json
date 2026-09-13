@@ -17,7 +17,8 @@
   },
   "sidebar": {
     "home": "Home",
-    "employees": "All Employees"
+    "employees": "All Employees",
+    "dashboards": "Dashboards"
   },
   "employees": {
     "eyebrow": "Employees",

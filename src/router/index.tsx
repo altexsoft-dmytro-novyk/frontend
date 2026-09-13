@@ -17,12 +17,6 @@ import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
 import { ConsumeMagicLinkPage } from '@/pages/ConsumeMagicLinkPage/ConsumeMagicLinkPage'
 
 const router = createBrowserRouter([
-  // Standalone login page
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
-
   // Standalone error page (rendered outside the main layout)
   {
     path: '/app-error',
@@ -75,11 +69,11 @@ const router = createBrowserRouter([
             path: 'employees/:id/departure',
             element: <EmployeeDeparturePage />,
           },
+          {
+            path: 'dashboards',
+            element: <DashboardsPage />,
+          },
         ],
-      },
-      {
-        path: 'dashboards',
-        element: <DashboardsPage />,
       },
     ],
   },
