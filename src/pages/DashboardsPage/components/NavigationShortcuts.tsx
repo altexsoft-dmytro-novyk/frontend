@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   GraduationCap,
   Megaphone,
+  UserMinus,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -13,51 +14,80 @@ interface NavigationShortcutsProps {
   navigation?: {
     allEmployeesUrl: string
     savedViewsUrl: string
-    resourcingUrl: string
-    riskDashboardUrl: string
-    mentorshipHubUrl: string
+    resourcingUrl?: string
+    riskDashboardUrl?: string
+    mentorshipHubUrl?: string
     campaignsUrl: string
+    departuresUrl?: string
   }
 }
 
 export const NavigationShortcuts = ({ navigation }: NavigationShortcutsProps) => {
   const { t } = useTranslation()
 
-  const shortcuts = [
-    {
+  const shortcuts = []
+
+  if (navigation?.allEmployeesUrl) {
+    shortcuts.push({
       name: t('dashboards.navigation.allEmployees'),
-      url: navigation?.allEmployeesUrl ?? '/employees',
+      url: navigation.allEmployeesUrl,
       icon: Users,
-    },
-    {
+    })
+  }
+
+  if (navigation?.savedViewsUrl) {
+    shortcuts.push({
       name: t('dashboards.navigation.savedViews'),
-      url: navigation?.savedViewsUrl ?? '/employees/views',
+      url: navigation.savedViewsUrl,
       icon: Bookmark,
-    },
-    {
+    })
+  }
+
+  if (navigation?.resourcingUrl) {
+    shortcuts.push({
       name: t('dashboards.navigation.resourcing'),
-      url: navigation?.resourcingUrl ?? '/resourcing',
+      url: navigation.resourcingUrl,
       icon: Briefcase,
-    },
-    {
+    })
+  }
+
+  if (navigation?.riskDashboardUrl) {
+    shortcuts.push({
       name: t('dashboards.navigation.risks'),
-      url: navigation?.riskDashboardUrl ?? '/risks',
+      url: navigation.riskDashboardUrl,
       icon: AlertTriangle,
-    },
-    {
+    })
+  }
+
+  if (navigation?.mentorshipHubUrl) {
+    shortcuts.push({
       name: t('dashboards.navigation.mentorship'),
-      url: navigation?.mentorshipHubUrl ?? '/mentorship',
+      url: navigation.mentorshipHubUrl,
       icon: GraduationCap,
-    },
-    {
+    })
+  }
+
+  if (navigation?.campaignsUrl) {
+    shortcuts.push({
       name: t('dashboards.navigation.campaigns'),
-      url: navigation?.campaignsUrl ?? '/campaigns',
+      url: navigation.campaignsUrl,
       icon: Megaphone,
-    },
-  ]
+    })
+  }
+
+  if (navigation?.departuresUrl) {
+    shortcuts.push({
+      name: t('dashboards.navigation.departures'),
+      url: navigation.departuresUrl,
+      icon: UserMinus,
+    })
+  }
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 shadow-xs">
+    <div
+      data-slot="navigationShortcuts"
+      className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 shadow-xs"
+    >
       <div>
         <h3 className="text-sm font-medium text-muted-foreground mb-3">
           {t('dashboards.navigation.title')}

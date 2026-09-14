@@ -2,15 +2,35 @@ import { useRef, type KeyboardEvent } from 'react'
 import { Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import type { DashboardPreset } from '@/types/dashboards'
 
-export const PresetTabStrip = () => {
+interface PresetTabStripProps {
+  activePreset?: DashboardPreset
+  onSelectPreset?: (preset: DashboardPreset) => void
+}
+
+export const PresetTabStrip = ({
+  activePreset = 'unit-manager',
+  onSelectPreset,
+}: PresetTabStripProps) => {
   const { t } = useTranslation()
-  const tabRef = useRef<HTMLButtonElement>(null)
+  const umTabRef = useRef<HTMLButtonElement>(null)
+  const ppTabRef = useRef<HTMLButtonElement>(null)
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'Home' || e.key === 'End') {
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>, currentPreset: DashboardPreset) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
       e.preventDefault()
-      tabRef.current?.focus()
+      if (currentPreset === 'unit-manager') {
+        ppTabRef.current?.focus()
+      } else {
+        umTabRef.current?.focus()
+      }
+    } else if (e.key === 'Home') {
+      e.preventDefault()
+      umTabRef.current?.focus()
+    } else if (e.key === 'End') {
+      e.preventDefault()
+      ppTabRef.current?.focus()
     }
   }
 
@@ -23,19 +43,41 @@ export const PresetTabStrip = () => {
         className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground"
       >
         <button
-          ref={tabRef}
+          ref={umTabRef}
           role="tab"
           id="preset-tab-unit-manager"
-          aria-selected="true"
+          aria-selected={activePreset === 'unit-manager'}
           aria-controls="preset-panel-unit-manager"
-          tabIndex={0}
-          onKeyDown={handleKeyDown}
+          tabIndex={activePreset === 'unit-manager' ? 0 : -1}
+          onClick={() => onSelectPreset?.('unit-manager')}
+          onKeyDown={e => handleKeyDown(e, 'unit-manager')}
           className={cn(
             'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-xs md:text-sm font-medium ring-offset-background transition-all',
-            'bg-background text-foreground shadow-xs'
+            activePreset === 'unit-manager'
+              ? 'bg-background text-foreground shadow-xs'
+              : 'text-muted-foreground hover:text-foreground'
           )}
         >
           {t('dashboards.presets.unitManager')}
+        </button>
+
+        <button
+          ref={ppTabRef}
+          role="tab"
+          id="preset-tab-people-partner"
+          aria-selected={activePreset === 'people-partner'}
+          aria-controls="preset-panel-people-partner"
+          tabIndex={activePreset === 'people-partner' ? 0 : -1}
+          onClick={() => onSelectPreset?.('people-partner')}
+          onKeyDown={e => handleKeyDown(e, 'people-partner')}
+          className={cn(
+            'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-xs md:text-sm font-medium ring-offset-background transition-all',
+            activePreset === 'people-partner'
+              ? 'bg-background text-foreground shadow-xs'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          {t('dashboards.presets.peoplePartner')}
         </button>
       </div>
 

@@ -3,7 +3,11 @@ import {
   mockPopulatedUnitManagerDashboard,
   mockZeroHeadcountUnitManagerDashboard,
   mockOmittedColumnsUnitManagerDashboard,
+  mockPopulatedPeoplePartnerDashboard,
+  mockZeroHeadcountPeoplePartnerDashboard,
+  mockUnavailableIncompleteProfilesPeoplePartnerDashboard,
   type UnitManagerDashboardReadModel,
+  type PeoplePartnerDashboardReadModel,
   SESSION_STORAGE_KEY,
   SEEDED_SESSION_JWT,
 } from './fixtures'
@@ -15,15 +19,19 @@ import {
 export const DASHBOARD_STORAGE_KEYS = {
   SCENARIO: 'dashboard:scenario',
   MOCK_DATA: 'dashboard:mock-data',
+  MOCK_DATA_PP: 'dashboard:mock-data-pp',
 } as const
 
 export type DashboardTestScenario =
   | 'populated'
   | 'loading'
+  | 'loading-pp'
   | 'zero-headcount'
   | 'omitted-columns'
   | 'forbidden'
+  | 'forbidden-pp'
   | 'unauthenticated'
+  | 'unauthenticated-pp'
 
 /**
  * Test setup helpers for People Management Dashboards E2E tests.
@@ -159,6 +167,169 @@ export async function setupUnauthenticatedDashboard(page: Page): Promise<void> {
       scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
       dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
       scenario: 'unauthenticated' as DashboardTestScenario,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
+    }
+  )
+}
+
+/** Configures the test scenario for a populated People Partner dashboard */
+export async function setupPopulatedPeoplePartnerDashboard(
+  page: Page,
+  data?: Partial<PeoplePartnerDashboardReadModel>
+): Promise<void> {
+  const payload: PeoplePartnerDashboardReadModel = {
+    ...mockPopulatedPeoplePartnerDashboard,
+    ...data,
+  }
+
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+  await page.addInitScript(
+    ({ scenarioKey, dataPpKey, scenario, mockData, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
+      sessionStorage.setItem(scenarioKey, scenario)
+      sessionStorage.setItem(dataPpKey, JSON.stringify(mockData))
+    },
+    {
+      scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
+      dataPpKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA_PP,
+      scenario: 'populated' as DashboardTestScenario,
+      mockData: payload,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
+    }
+  )
+}
+
+/** Configures the test scenario for a legitimate zero-headcount People Partner dashboard */
+export async function setupZeroHeadcountPeoplePartnerDashboard(page: Page): Promise<void> {
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+  await page.addInitScript(
+    ({ scenarioKey, dataPpKey, scenario, mockData, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
+      sessionStorage.setItem(scenarioKey, scenario)
+      sessionStorage.setItem(dataPpKey, JSON.stringify(mockData))
+    },
+    {
+      scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
+      dataPpKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA_PP,
+      scenario: 'zero-headcount' as DashboardTestScenario,
+      mockData: mockZeroHeadcountPeoplePartnerDashboard,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
+    }
+  )
+}
+
+/** Configures the test scenario with unavailable incompleteProfiles HR widget */
+export async function setupUnavailableIncompleteProfilesPeoplePartnerDashboard(page: Page): Promise<void> {
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+  await page.addInitScript(
+    ({ scenarioKey, dataPpKey, scenario, mockData, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
+      sessionStorage.setItem(scenarioKey, scenario)
+      sessionStorage.setItem(dataPpKey, JSON.stringify(mockData))
+    },
+    {
+      scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
+      dataPpKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA_PP,
+      scenario: 'populated' as DashboardTestScenario,
+      mockData: mockUnavailableIncompleteProfilesPeoplePartnerDashboard,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
+    }
+  )
+}
+
+/** Configures a dual-preset dashboard scenario enabling both Unit Manager and People Partner data */
+export async function setupDualPresetDashboard(
+  page: Page,
+  options?: {
+    umData?: Partial<UnitManagerDashboardReadModel>
+    ppData?: Partial<PeoplePartnerDashboardReadModel>
+  }
+): Promise<void> {
+  const umPayload: UnitManagerDashboardReadModel = {
+    ...mockPopulatedUnitManagerDashboard,
+    ...options?.umData,
+  }
+  const ppPayload: PeoplePartnerDashboardReadModel = {
+    ...mockPopulatedPeoplePartnerDashboard,
+    ...options?.ppData,
+  }
+
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+  await page.addInitScript(
+    ({ scenarioKey, dataKey, dataPpKey, scenario, umMockData, ppMockData, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
+      sessionStorage.setItem(scenarioKey, scenario)
+      sessionStorage.setItem(dataKey, JSON.stringify(umMockData))
+      sessionStorage.setItem(dataPpKey, JSON.stringify(ppMockData))
+    },
+    {
+      scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
+      dataKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA,
+      dataPpKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA_PP,
+      scenario: 'populated' as DashboardTestScenario,
+      umMockData: umPayload,
+      ppMockData: ppPayload,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
+    }
+  )
+}
+
+/** Configures the test scenario for a pending/loading People Partner dashboard */
+export async function setupPeoplePartnerLoadingDashboard(page: Page): Promise<void> {
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+  await page.addInitScript(
+    ({ scenarioKey, dataPpKey, scenario, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
+      sessionStorage.setItem(scenarioKey, scenario)
+      sessionStorage.removeItem(dataPpKey)
+    },
+    {
+      scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
+      dataPpKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA_PP,
+      scenario: 'loading-pp' as DashboardTestScenario,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
+    }
+  )
+}
+
+/** Configures the test scenario for 403 Forbidden access denial on People Partner query */
+export async function setupPeoplePartnerAccessDeniedDashboard(page: Page): Promise<void> {
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+  await page.addInitScript(
+    ({ scenarioKey, dataPpKey, scenario, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
+      sessionStorage.setItem(scenarioKey, scenario)
+      sessionStorage.removeItem(dataPpKey)
+    },
+    {
+      scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
+      dataPpKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA_PP,
+      scenario: 'forbidden-pp' as DashboardTestScenario,
+      sessionKey: SESSION_STORAGE_KEY,
+      sessionJwt: SEEDED_SESSION_JWT,
+    }
+  )
+}
+
+/** Configures the test scenario for 401 Unauthorized access on People Partner query */
+export async function setupPeoplePartnerUnauthenticatedDashboard(page: Page): Promise<void> {
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+  await page.addInitScript(
+    ({ scenarioKey, dataPpKey, scenario, sessionKey, sessionJwt }) => {
+      sessionStorage.setItem(sessionKey, sessionJwt)
+      sessionStorage.setItem(scenarioKey, scenario)
+      sessionStorage.removeItem(dataPpKey)
+    },
+    {
+      scenarioKey: DASHBOARD_STORAGE_KEYS.SCENARIO,
+      dataPpKey: DASHBOARD_STORAGE_KEYS.MOCK_DATA_PP,
+      scenario: 'unauthenticated-pp' as DashboardTestScenario,
       sessionKey: SESSION_STORAGE_KEY,
       sessionJwt: SEEDED_SESSION_JWT,
     }

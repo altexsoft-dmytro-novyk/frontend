@@ -6,8 +6,20 @@ import {
   setupOmittedColumnsDashboard,
   setupAccessDeniedDashboard,
   setupUnauthenticatedDashboard,
+  setupPopulatedPeoplePartnerDashboard,
+  setupZeroHeadcountPeoplePartnerDashboard,
+  setupUnavailableIncompleteProfilesPeoplePartnerDashboard,
+  setupDualPresetDashboard,
+  setupPeoplePartnerLoadingDashboard,
+  setupPeoplePartnerAccessDeniedDashboard,
+  setupPeoplePartnerUnauthenticatedDashboard,
 } from './helpers'
-import { mockPopulatedUnitManagerDashboard } from './fixtures'
+import {
+  mockPopulatedUnitManagerDashboard,
+  mockPopulatedPeoplePartnerDashboard,
+  mockZeroHeadcountPeoplePartnerDashboard,
+  mockUnavailableIncompleteProfilesPeoplePartnerDashboard,
+} from './fixtures'
 
 test.describe('People Management Dashboards — Unit Manager (Story 2.1 / PMC-E2-S2.1)', () => {
   test.describe('FE-DASH-01 · Populated state with live scope, headcount, and people table', () => {
@@ -33,24 +45,9 @@ test.describe('People Management Dashboards — Unit Manager (Story 2.1 / PMC-E2
       await expect(umTab).toHaveAttribute('aria-selected', 'true')
 
       // Grouping dimension control has People active with aria / data-state verification
-      const peopleGrouping = page
-        .getByRole('button', { name: /People/i })
-        .or(page.getByRole('tab', { name: /People/i }))
-        .or(page.getByRole('radio', { name: /People/i }))
-        .or(page.locator('[data-grouping="people"]'))
+      const peopleGrouping = page.locator('[data-grouping="people"]')
       await expect(peopleGrouping).toBeVisible()
-
-      const isGroupingActive = await peopleGrouping.evaluate((el) => {
-        return (
-          el.getAttribute('aria-pressed') === 'true' ||
-          el.getAttribute('aria-selected') === 'true' ||
-          el.getAttribute('aria-checked') === 'true' ||
-          el.getAttribute('data-state') === 'active' ||
-          el.getAttribute('data-state') === 'on' ||
-          el.classList.contains('active')
-        )
-      })
-      expect(isGroupingActive).toBe(true)
+      await expect(peopleGrouping).toHaveAttribute('aria-pressed', 'true')
     })
 
     test('renders active headcount in data-stat mono with .wscope footer', async ({ page }) => {
@@ -344,22 +341,23 @@ test.describe('People Management Dashboards — Unit Manager (Story 2.1 / PMC-E2
   })
 
   test.describe('FE-DASH-08 · Preset navigation, keyboard accessibility, motion, and no customization', () => {
-    test('preset tab strip displays Unit Manager preset only and is arrow-key navigable', async ({ page }) => {
+    test('default Unit Manager preset remains selected and keyboard focusable', async ({ page }) => {
       await setupPopulatedDashboard(page)
       await page.goto('/dashboards')
 
       const tabList = page.getByRole('tablist')
       await expect(tabList).toBeVisible()
 
-      // Only Unit Manager tab present in Epic 2 Story 2.1 scope (no DM/PM tabs)
-      await expect(page.getByRole('tab', { name: /Unit Manager/i })).toBeVisible()
+      // Unit Manager tab present and selected by default (no DM/PM tabs)
+      const umTab = page.getByRole('tab', { name: /Unit Manager/i })
+      await expect(umTab).toBeVisible()
+      await expect(umTab).toHaveAttribute('aria-selected', 'true')
+      await expect(umTab).toHaveAttribute('tabindex', '0')
       await expect(page.getByRole('tab', { name: /Delivery Manager/i })).not.toBeVisible()
       await expect(page.getByRole('tab', { name: /Project Manager/i })).not.toBeVisible()
 
-      // Arrow-key navigable
-      const umTab = page.getByRole('tab', { name: /Unit Manager/i })
+      // Preset tab strip is keyboard focusable
       await umTab.focus()
-      await page.keyboard.press('ArrowRight')
       await expect(umTab).toBeFocused()
     })
 
@@ -367,24 +365,9 @@ test.describe('People Management Dashboards — Unit Manager (Story 2.1 / PMC-E2
       await setupPopulatedDashboard(page)
       await page.goto('/dashboards')
 
-      const peopleGrouping = page
-        .getByRole('button', { name: /People/i })
-        .or(page.getByRole('tab', { name: /People/i }))
-        .or(page.getByRole('radio', { name: /People/i }))
-        .or(page.locator('[data-grouping="people"]'))
+      const peopleGrouping = page.locator('[data-grouping="people"]')
       await expect(peopleGrouping).toBeVisible()
-
-      const isGroupingActive = await peopleGrouping.evaluate((el) => {
-        return (
-          el.getAttribute('aria-pressed') === 'true' ||
-          el.getAttribute('aria-selected') === 'true' ||
-          el.getAttribute('aria-checked') === 'true' ||
-          el.getAttribute('data-state') === 'active' ||
-          el.getAttribute('data-state') === 'on' ||
-          el.classList.contains('active')
-        )
-      })
-      expect(isGroupingActive).toBe(true)
+      await expect(peopleGrouping).toHaveAttribute('aria-pressed', 'true')
     })
 
     test('prefers-reduced-motion disables transitions and animations', async ({ page }) => {
@@ -838,5 +821,731 @@ test.describe('People Management Dashboards — Unsourced Widget Slots (Story 2.
     })
   })
 })
+
+test.describe('People Management Dashboards — People Partner (Story 2.3 / PMC-E2-S2.3)', () => {
+  test.describe('FE-DASH-14 · Populated People Partner dashboard state with live direct PP assignment scope, headcount, people table, and HR widgets', () => {
+    test('selecting People Partner preset renders .pghd band, .prov tag, and people grouping active', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      // People Partner preset tab exists and can be selected
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+      await expect(ppTab).toHaveAttribute('aria-selected', 'true')
+
+      // .pghd band & eyebrow
+      const header = page.locator('.pghd')
+      await expect(header).toBeVisible()
+      await expect(header).toContainText('WORKSPACE / DASHBOARDS')
+
+      // .prov tag stating live resolution scoped to dashboard header
+      const provTag = header.locator('.prov')
+      await expect(provTag).toBeVisible()
+      await expect(provTag).toContainText('SCOPE RESOLVED LIVE PER REQUEST')
+
+      // Grouping dimension control has People active with aria / data-state verification
+      const peopleGrouping = page.locator('#preset-panel-people-partner [data-grouping="people"]')
+      await expect(peopleGrouping).toBeVisible()
+      await expect(peopleGrouping).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    test('renders active caseload headcount in data-stat mono with .wscope footer (SCOPE: PEOPLE_PARTNER_ASSIGNMENT)', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const panel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const headcountCard = panel.locator('[data-slot="headcount"]').or(panel.locator('section:has-text("Headcount")'))
+      await expect(headcountCard).toBeVisible()
+
+      // Count rendered in data-stat mono
+      const stat = headcountCard.locator('.data-stat, .tabular-nums, [data-stat]').first()
+      await expect(stat).toBeVisible()
+      await expect(stat).toHaveText('3')
+
+      // Scope footer stating direct People Partner assignment
+      const scopeFooter = headcountCard.locator('.wscope, [data-wscope]')
+      await expect(scopeFooter).toBeVisible()
+      await expect(scopeFooter).toHaveText('SCOPE: PEOPLE_PARTNER_ASSIGNMENT')
+    })
+
+    test('renders tier-projected people table rows for PP-assigned employees with .wscope footer', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const panel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const table = panel.getByRole('table').or(panel.locator('table'))
+      await expect(table).toBeVisible()
+
+      // Verify each PP fixture employee is rendered in the table
+      const expectedRows = mockPopulatedPeoplePartnerDashboard.peopleTable.data.rows
+      for (const row of expectedRows) {
+        const rowLocator = table.locator(`tr:has-text("${row.firstName} ${row.lastName}")`)
+        await expect(rowLocator).toBeVisible()
+        if (row.position) {
+          await expect(rowLocator).toContainText(row.position)
+        }
+        if (row.grade) {
+          await expect(rowLocator).toContainText(row.grade)
+        }
+      }
+
+      // People table .wscope footer
+      const tableScopeFooter = panel.locator('[data-slot="peopleTable"] .wscope, [data-slot="peopleTable"] [data-wscope], table + .wscope, .table-container .wscope').first()
+      await expect(tableScopeFooter).toBeVisible()
+      await expect(tableScopeFooter).toHaveText('SCOPE: PEOPLE_PARTNER_ASSIGNMENT')
+    })
+
+    test('displays People Partner navigation shortcuts (including departures and excluding resourcing)', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const panel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const navContainer = panel.locator('[data-slot="navigationShortcuts"]').or(panel.locator('section:has-text("Shortcuts"), div:has-text("Shortcuts")')).first()
+      await expect(navContainer).toBeVisible()
+
+      // Required PP shortcuts
+      await expect(navContainer.getByRole('link', { name: /All Employees/i })).toHaveAttribute('href', '/employees')
+      await expect(navContainer.getByRole('link', { name: /Saved Views/i })).toHaveAttribute('href', '/employees/views')
+      await expect(navContainer.getByRole('link', { name: /Campaigns/i })).toHaveAttribute('href', '/campaigns')
+      await expect(navContainer.getByRole('link', { name: /Departures/i })).toHaveAttribute('href', '/departures')
+
+      // Resourcing shortcut must NOT exist in PP navigation shortcuts
+      await expect(navContainer.getByRole('link', { name: /Resourcing/i })).toHaveCount(0)
+      await expect(navContainer.locator('a[href*="/resourcing"]')).toHaveCount(0)
+    })
+
+    test('renders available incomplete profiles HR widget with data-stat mono and .wscope footer', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const panel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const incompleteCard = panel.locator('[data-slot="incompleteProfiles"]')
+      await expect(incompleteCard).toBeVisible()
+
+      // Metric count rendered in data-stat mono
+      const stat = incompleteCard.locator('.data-stat, .tabular-nums, [data-stat]').first()
+      await expect(stat).toBeVisible()
+      await expect(stat).toHaveText('1')
+
+      // .wscope footer stating direct People Partner assignment
+      const scopeFooter = incompleteCard.locator('.wscope, [data-wscope]')
+      await expect(scopeFooter).toBeVisible()
+      await expect(scopeFooter).toHaveText('SCOPE: PEOPLE_PARTNER_ASSIGNMENT')
+    })
+  })
+
+  test.describe('FE-DASH-15 · Complete absence of resourcing functionality by construction in People Partner preset', () => {
+    test('resourcing widget slot is completely absent from the People Partner dashboard preset panel by construction', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      await expect(ppPanel).toBeVisible()
+
+      // Absolute absence of resourcing slot in PP panel
+      await expect(ppPanel.locator('[data-slot="resourcingRequests"]')).toHaveCount(0)
+      await expect(ppPanel.locator('[data-widget="resourcing"]')).toHaveCount(0)
+    })
+
+    test('no resourcing card, counter, unavailable placeholder, or reserved slot exists in the PP widget grid', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      await expect(ppPanel).toBeVisible()
+
+      // No element inside PP panel displays a Resourcing heading or card
+      await expect(ppPanel.getByRole('heading', { name: /Resourcing/i })).toHaveCount(0)
+      await expect(ppPanel.locator('section:has-text("Resourcing")')).toHaveCount(0)
+
+      // Verified approved PP widget identities exist in the PP widget grid
+      await expect(ppPanel.locator('[data-slot="incompleteProfiles"]')).toBeVisible()
+      await expect(ppPanel.locator('[data-slot="riskCounts"]')).toBeVisible()
+      await expect(ppPanel.locator('[data-slot="assignedActionItems"]')).toBeVisible()
+      await expect(ppPanel.locator('[data-slot="cdsMilestones"]')).toBeVisible()
+      await expect(ppPanel.locator('[data-slot="campaignCompletion"]')).toBeVisible()
+
+      // Unit-Manager-only and resourcing slots must NOT exist in the PP widget grid
+      await expect(ppPanel.locator('[data-slot="unitActionItems"]')).toHaveCount(0)
+      await expect(ppPanel.locator('[data-slot="myActionItems"]')).toHaveCount(0)
+      await expect(ppPanel.locator('[data-slot="openCampaigns"]')).toHaveCount(0)
+      await expect(ppPanel.locator('[data-slot="resourcingRequests"]')).toHaveCount(0)
+    })
+
+    test('People Partner navigation shortcuts container does not render a link or shortcut to resourcing', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const navContainer = ppPanel.locator('[data-slot="navigationShortcuts"]').or(ppPanel.locator('section:has-text("Shortcuts"), div:has-text("Shortcuts")')).first()
+      await expect(navContainer).toBeVisible()
+
+      await expect(navContainer.getByRole('link', { name: /Resourcing/i })).toHaveCount(0)
+      await expect(navContainer.locator('a[href*="/resourcing"]')).toHaveCount(0)
+    })
+  })
+
+  test.describe('FE-DASH-16 · People Partner scope isolation and non-merging with reporting-line direct reports', () => {
+    test('People Partner people table renders exactly the PP rows supplied by the read model', async ({
+      page,
+    }) => {
+      await setupDualPresetDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const panel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const table = panel.getByRole('table').or(panel.locator('table'))
+      await expect(table).toBeVisible()
+
+      // Exactly the PP fixture rows must be rendered
+      const expectedRows = mockPopulatedPeoplePartnerDashboard.peopleTable.data.rows
+      for (const row of expectedRows) {
+        await expect(table.locator(`tbody tr:has-text("${row.firstName} ${row.lastName}")`)).toBeVisible()
+      }
+
+      // Verify exact data-row count in tbody equals supplied PP fixture row count (excluding header rows)
+      const dataRows = table.locator('tbody tr')
+      await expect(dataRows).toHaveCount(expectedRows.length)
+    })
+
+    test('reporting-line fixture employees do not appear in the People Partner people table', async ({
+      page,
+    }) => {
+      await setupDualPresetDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const panel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const table = panel.getByRole('table').or(panel.locator('table'))
+      await expect(table).toBeVisible()
+
+      // Reporting-line direct reports from UM fixture must NOT appear in PP table
+      await expect(table.locator('tr:has-text("Alice Smith")')).toHaveCount(0)
+      await expect(table.locator('tr:has-text("Bob Jones")')).toHaveCount(0)
+      await expect(table.locator('tr:has-text("Charlie Brown")')).toHaveCount(0)
+      await expect(table.locator('tr:has-text("Diana Prince")')).toHaveCount(0)
+    })
+
+    test('displayed People Partner headcount faithfully renders the count supplied by the read model without client-side merging', async ({
+      page,
+    }) => {
+      await setupDualPresetDashboard(page, {
+        ppData: {
+          headcount: {
+            status: 'available',
+            data: {
+              count: 17,
+              wscope: 'SCOPE: PEOPLE_PARTNER_ASSIGNMENT',
+            },
+          },
+        },
+      })
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const panel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const headcountCard = panel.locator('[data-slot="headcount"]').or(panel.locator('section:has-text("Headcount")'))
+      await expect(headcountCard).toBeVisible()
+
+      // Faithfully matches distinctive supplied PP count (17), not PP row count (3), UM headcount (3), or combined count (20)
+      const stat = headcountCard.locator('.data-stat, .tabular-nums, [data-stat]').first()
+      await expect(stat).toBeVisible()
+      await expect(stat).toHaveText('17')
+
+      const scopeFooter = headcountCard.locator('.wscope, [data-wscope]')
+      await expect(scopeFooter).toBeVisible()
+      await expect(scopeFooter).toHaveText('SCOPE: PEOPLE_PARTNER_ASSIGNMENT')
+    })
+  })
+
+  test.describe('FE-DASH-17 · Dashboard preset navigation, multi-preset switching, and ARIA tab semantics', () => {
+    test('preset tab strip renders both Unit Manager and People Partner preset tabs with proper ARIA tab semantics', async ({
+      page,
+    }) => {
+      await setupDualPresetDashboard(page)
+      await page.goto('/dashboards')
+
+      const tablist = page.getByRole('tablist', { name: /Dashboard Presets/i }).or(page.locator('[role="tablist"]'))
+      await expect(tablist).toBeVisible()
+
+      const umTab = tablist.getByRole('tab', { name: /Unit Manager/i })
+      const ppTab = tablist.getByRole('tab', { name: /People Partner/i })
+
+      await expect(umTab).toBeVisible()
+      await expect(ppTab).toBeVisible()
+
+      // ARIA tab semantics
+      await expect(umTab).toHaveAttribute('aria-selected', 'true')
+      await expect(ppTab).toHaveAttribute('aria-selected', 'false')
+
+      await expect(umTab).toHaveAttribute('aria-controls', /preset-panel-unit-manager|unit-manager/)
+      await expect(ppTab).toHaveAttribute('aria-controls', /preset-panel-people-partner|people-partner/)
+    })
+
+    test('switching from Unit Manager to People Partner preset renders PP read model with direct PP scope and no resourcing', async ({
+      page,
+    }) => {
+      await setupDualPresetDashboard(page)
+      await page.goto('/dashboards')
+
+      const tablist = page.getByRole('tablist', { name: /Dashboard Presets/i }).or(page.locator('[role="tablist"]'))
+      const umTab = tablist.getByRole('tab', { name: /Unit Manager/i })
+      const ppTab = tablist.getByRole('tab', { name: /People Partner/i })
+
+      // Initial state: Unit Manager active
+      await expect(umTab).toHaveAttribute('aria-selected', 'true')
+      await expect(page.locator('.wscope').first()).toHaveText('SCOPE: REPORTING_LINE')
+
+      // Switch to People Partner
+      await ppTab.click()
+
+      await expect(ppTab).toHaveAttribute('aria-selected', 'true')
+      await expect(umTab).toHaveAttribute('aria-selected', 'false')
+
+      // People Partner scope is rendered
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const headcountCard = ppPanel.locator('[data-slot="headcount"]').or(ppPanel.locator('section:has-text("Headcount")'))
+      await expect(headcountCard.locator('.wscope, [data-wscope]')).toHaveText('SCOPE: PEOPLE_PARTNER_ASSIGNMENT')
+
+      // PP people table rendered
+      const table = ppPanel.getByRole('table').or(ppPanel.locator('table'))
+      await expect(table.locator('tr:has-text("Elena Rostova")')).toBeVisible()
+
+      // Resourcing slot is absent in active PP panel
+      await expect(ppPanel.locator('[data-slot="resourcingRequests"]')).toHaveCount(0)
+    })
+
+    test('switching back to Unit Manager preset preserves Unit Manager reporting-line scope and Story 2.1/2.2 widgets', async ({
+      page,
+    }) => {
+      await setupDualPresetDashboard(page)
+      await page.goto('/dashboards')
+
+      const tablist = page.getByRole('tablist', { name: /Dashboard Presets/i }).or(page.locator('[role="tablist"]'))
+      const umTab = tablist.getByRole('tab', { name: /Unit Manager/i })
+      const ppTab = tablist.getByRole('tab', { name: /People Partner/i })
+
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+      await expect(ppTab).toHaveAttribute('aria-selected', 'true')
+
+      // Switch back to Unit Manager
+      await umTab.click()
+      await expect(umTab).toHaveAttribute('aria-selected', 'true')
+      await expect(ppTab).toHaveAttribute('aria-selected', 'false')
+
+      // Unit Manager content restored
+      const umPanel = page.locator('#preset-panel-unit-manager').or(page.getByRole('tabpanel'))
+      const headcountCard = umPanel.locator('[data-slot="headcount"]').or(umPanel.locator('section:has-text("Headcount")'))
+      await expect(headcountCard.locator('.wscope, [data-wscope]')).toHaveText('SCOPE: REPORTING_LINE')
+
+      // UM people table restored
+      const table = umPanel.getByRole('table').or(umPanel.locator('table'))
+      await expect(table.locator('tr:has-text("Alice Smith")')).toBeVisible()
+
+      // UM resourcing slot restored
+      await expect(umPanel.locator('[data-slot="resourcingRequests"]')).toBeVisible()
+    })
+
+    test('preset tab strip supports keyboard arrow navigation (ArrowLeft, ArrowRight, Home, End)', async ({
+      page,
+    }) => {
+      await setupDualPresetDashboard(page)
+      await page.goto('/dashboards')
+
+      const tablist = page.getByRole('tablist', { name: /Dashboard Presets/i }).or(page.locator('[role="tablist"]'))
+      const umTab = tablist.getByRole('tab', { name: /Unit Manager/i })
+      const ppTab = tablist.getByRole('tab', { name: /People Partner/i })
+
+      // Focus UM tab
+      await umTab.focus()
+      await expect(umTab).toBeFocused()
+
+      // ArrowRight moves focus to PP tab
+      await page.keyboard.press('ArrowRight')
+      await expect(ppTab).toBeFocused()
+
+      // ArrowLeft moves focus back to UM tab
+      await page.keyboard.press('ArrowLeft')
+      await expect(umTab).toBeFocused()
+
+      // End key moves to last tab (PP tab)
+      await page.keyboard.press('End')
+      await expect(ppTab).toBeFocused()
+
+      // Home key moves to first tab (UM tab)
+      await page.keyboard.press('Home')
+      await expect(umTab).toBeFocused()
+    })
+  })
+
+  test.describe('FE-DASH-18 · People Partner explicit unavailable HR widget slots and honest availability rendering', () => {
+    test('renders explicit unavailable card for uncovered PP risk counts slot (PM-FR-21)', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const card = ppPanel.locator('[data-slot="riskCounts"]')
+      await expect(card).toBeVisible()
+
+      // Missing capability heading and unavailable badge
+      await expect(card.getByRole('heading', { name: /Risk Tracking/i })).toBeVisible()
+      await expect(card.getByText('Unavailable', { exact: true })).toBeVisible()
+      await expect(card).toContainText('PM-FR-21 risk engine is uncovered')
+
+      // Scope footer must NOT be rendered on unavailable cards
+      await expect(card.locator('.wscope, [data-wscope]')).toHaveCount(0)
+    })
+
+    test('renders explicit unavailable card for uncovered assigned action items slot (PM-FR-19)', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const card = ppPanel.locator('[data-slot="assignedActionItems"]')
+      await expect(card).toBeVisible()
+
+      await expect(card.getByRole('heading', { name: /Assigned Action Items/i })).toBeVisible()
+      await expect(card.getByText('Unavailable', { exact: true })).toBeVisible()
+      await expect(card).toContainText('PM-FR-19 action item lifecycle is uncovered')
+
+      await expect(card.locator('.wscope, [data-wscope]')).toHaveCount(0)
+    })
+
+    test('renders explicit unavailable card for uncovered CDS milestones slot (PM-FR-30)', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const card = ppPanel.locator('[data-slot="cdsMilestones"]')
+      await expect(card).toBeVisible()
+
+      await expect(card.getByRole('heading', { name: /CDS Milestones/i })).toBeVisible()
+      await expect(card.getByText('Unavailable', { exact: true })).toBeVisible()
+      await expect(card).toContainText('PM-FR-30 career development service is uncovered')
+
+      await expect(card.locator('.wscope, [data-wscope]')).toHaveCount(0)
+    })
+
+    test('renders explicit unavailable card for uncovered HR form campaigns completion slot (PM-FR-20)', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const card = ppPanel.locator('[data-slot="campaignCompletion"]')
+      await expect(card).toBeVisible()
+
+      await expect(card.getByRole('heading', { name: /Campaign Completion/i })).toBeVisible()
+      await expect(card.getByText('Unavailable', { exact: true })).toBeVisible()
+      await expect(card).toContainText('PM-FR-20 campaigns lifecycle is uncovered')
+
+      await expect(card.locator('.wscope, [data-wscope]')).toHaveCount(0)
+    })
+
+    test('renders incomplete profiles widget as an explicit unavailable card without .wscope footer when marked unavailable', async ({
+      page,
+    }) => {
+      await setupUnavailableIncompleteProfilesPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const card = ppPanel.locator('[data-slot="incompleteProfiles"]')
+      await expect(card).toBeVisible()
+
+      await expect(card.getByRole('heading', { name: /Incomplete Profiles/i })).toBeVisible()
+      await expect(card.getByText('Unavailable', { exact: true })).toBeVisible()
+      await expect(card).toContainText('Profile completion calculation is uncovered')
+
+      // Scope footer must NOT be rendered when incompleteProfiles is unavailable
+      await expect(card.locator('.wscope, [data-wscope]')).toHaveCount(0)
+    })
+
+    test('prevents fake zero, dashes, blank containers, or chart DOM in PP unavailable slots', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const unavailableSlots = ['riskCounts', 'assignedActionItems', 'cdsMilestones', 'campaignCompletion'] as const
+
+      for (const slot of unavailableSlots) {
+        const card = ppPanel.locator(`[data-slot="${slot}"]`)
+        await expect(card).toBeVisible()
+
+        // No fake zero in numeric stat display
+        const stat = card.locator('.data-stat, .tabular-nums')
+        await expect(stat).toHaveCount(0)
+
+        // No dashes standing in for zero (exact text matches to avoid matching hyphens in copy or requirement identifiers)
+        await expect(card.getByText('—', { exact: true })).toHaveCount(0)
+        await expect(card.getByText('-', { exact: true })).toHaveCount(0)
+
+        // No fake chart visualization canvases or svg charts
+        await expect(card.locator('canvas, svg.chart, [data-chart]')).toHaveCount(0)
+
+        // No synthetic list or fake chips
+        await expect(card.locator('ul, ol, .chip, [data-chip]')).toHaveCount(0)
+      }
+    })
+
+    test('renders distinct PP HR widget slots coexisting in the grid without metadata cross-contamination', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+
+      // All contract slots must coexist in the grid
+      const riskCard = ppPanel.locator('[data-slot="riskCounts"]')
+      const actionItemsCard = ppPanel.locator('[data-slot="assignedActionItems"]')
+      const cdsCard = ppPanel.locator('[data-slot="cdsMilestones"]')
+      const campaignsCard = ppPanel.locator('[data-slot="campaignCompletion"]')
+      const incompleteCard = ppPanel.locator('[data-slot="incompleteProfiles"]')
+
+      await expect(riskCard).toBeVisible()
+      await expect(actionItemsCard).toBeVisible()
+      await expect(cdsCard).toBeVisible()
+      await expect(campaignsCard).toBeVisible()
+      await expect(incompleteCard).toBeVisible()
+
+      // Verify each slot displays its own unique metadata
+      await expect(riskCard.getByRole('heading', { name: /Risk Tracking/i })).toBeVisible()
+      await expect(actionItemsCard.getByRole('heading', { name: /Assigned Action Items/i })).toBeVisible()
+      await expect(cdsCard.getByRole('heading', { name: /CDS Milestones/i })).toBeVisible()
+      await expect(campaignsCard.getByRole('heading', { name: /Campaign Completion/i })).toBeVisible()
+    })
+  })
+
+  test.describe('FE-DASH-19 · People Partner legitimate zero headcount, empty scope, loading skeletons, and access denial', () => {
+    test('renders legitimate zero caseload headcount as 0 in data-stat mono with .wscope footer', async ({
+      page,
+    }) => {
+      await setupZeroHeadcountPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const headcountCard = ppPanel.locator('[data-slot="headcount"]').or(ppPanel.locator('section:has-text("Headcount")'))
+      await expect(headcountCard).toBeVisible()
+
+      // Numeric 0 rendered in data-stat mono
+      const stat = headcountCard.locator('.data-stat, .tabular-nums, [data-stat]').first()
+      await expect(stat).toBeVisible()
+      await expect(stat).toHaveText('0')
+
+      // Scope footer is present
+      const scopeFooter = headcountCard.locator('.wscope, [data-wscope]')
+      await expect(scopeFooter).toBeVisible()
+      await expect(scopeFooter).toHaveText('SCOPE: PEOPLE_PARTNER_ASSIGNMENT')
+
+      // Zero headcount is NOT rendered as an unavailable card
+      await expect(headcountCard.getByText('Unavailable', { exact: true })).toHaveCount(0)
+    })
+
+    test('renders .emptyst empty-state component for zero assigned employees in PP people table', async ({
+      page,
+    }) => {
+      await setupZeroHeadcountPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const emptyState = ppPanel.locator('.emptyst, [data-slot="empty-state"]')
+      await expect(emptyState).toBeVisible()
+
+      // No employee data rows rendered
+      const table = ppPanel.locator('table')
+      await expect(table.locator('tbody tr')).toHaveCount(0)
+    })
+
+    test('renders layout-matching Skeleton placeholders during pending load for People Partner preset', async ({
+      page,
+    }) => {
+      await setupPeoplePartnerLoadingDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      // Skeletons must be rendered
+      const skeletons = page.locator('[data-slot="skeleton"], .skeleton, [class*="animate-pulse"]')
+      await expect(skeletons.first()).toBeVisible()
+
+      // No raw NaN or undefined text displayed during loading
+      await expect(page.getByText('NaN')).not.toBeVisible()
+      await expect(page.getByText('undefined')).not.toBeVisible()
+    })
+
+    test('renders fail-closed AccessDeniedPanel when dashboard permission is missing for People Partner preset', async ({
+      page,
+    }) => {
+      await setupPeoplePartnerAccessDeniedDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      // AccessDeniedPanel must be rendered
+      const accessDenied = page.getByTestId('access-denied-panel')
+      await expect(accessDenied).toBeVisible()
+    })
+
+    test('triggers global unauthenticated redirect handler when API returns 401 Unauthorized on People Partner query', async ({
+      page,
+    }) => {
+      await setupPeoplePartnerUnauthenticatedDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      await page.waitForURL('**/login')
+      expect(page.url()).toContain('/login')
+    })
+  })
+
+  test.describe('FE-DASH-20 · Grouping dimension boundary on People Partner preset', () => {
+    test('grouping dimension control displays People grouping as active on People Partner preset', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+      const peopleGrouping = ppPanel.locator('[data-grouping="people"]')
+
+      await expect(peopleGrouping).toBeVisible()
+      await expect(peopleGrouping).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    test('department grouping and project grouping are absent from interactive Story 2.3 grouping controls', async ({
+      page,
+    }) => {
+      await setupPopulatedPeoplePartnerDashboard(page)
+      await page.goto('/dashboards')
+
+      const ppTab = page.getByRole('tab', { name: /People Partner/i })
+      await expect(ppTab).toBeVisible()
+      await ppTab.click()
+
+      const ppPanel = page.locator('#preset-panel-people-partner').or(page.getByRole('tabpanel'))
+
+      // Department & Project groupings are completely absent from PP controls
+      await expect(ppPanel.getByRole('button', { name: /Department/i })).toHaveCount(0)
+      await expect(ppPanel.getByRole('button', { name: /Project/i })).toHaveCount(0)
+      await expect(ppPanel.locator('[data-grouping="department"]')).toHaveCount(0)
+      await expect(ppPanel.locator('[data-grouping="project"]')).toHaveCount(0)
+
+      // No mock department tree rendered in PP panel
+      await expect(ppPanel.locator('.dept-tree, [data-dept-tree]')).toHaveCount(0)
+    })
+  })
+})
+
 
 

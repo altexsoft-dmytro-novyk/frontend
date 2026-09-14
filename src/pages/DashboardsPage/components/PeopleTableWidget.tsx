@@ -7,13 +7,15 @@ interface PeopleTableWidgetProps {
   peopleTable: AvailableWidgetState<{
     rows: DashboardPersonRow[]
     totalCount: number
-    wscope: 'SCOPE: REPORTING_LINE'
+    wscope: 'SCOPE: REPORTING_LINE' | 'SCOPE: PEOPLE_PARTNER_ASSIGNMENT'
   }>
 }
 
 export const PeopleTableWidget = ({ peopleTable }: PeopleTableWidgetProps) => {
   const { t } = useTranslation()
   const { rows, totalCount, wscope } = peopleTable.data
+
+  const isPpScope = wscope === 'SCOPE: PEOPLE_PARTNER_ASSIGNMENT'
 
   // Uncovered capability columns are rendered only if present; otherwise omitted entirely
   const hasProjectColumn = rows.some(r => r.project !== undefined)
@@ -24,6 +26,7 @@ export const PeopleTableWidget = ({ peopleTable }: PeopleTableWidgetProps) => {
     <section
       data-testid="dashboard-people-table-widget"
       data-widget="people-table"
+      data-slot="peopleTable"
       className="rounded-xl border border-border bg-card p-5 shadow-xs"
     >
       <div className="flex flex-wrap items-center justify-between gap-2 pb-4">
@@ -32,7 +35,9 @@ export const PeopleTableWidget = ({ peopleTable }: PeopleTableWidgetProps) => {
             {t('dashboards.peopleTable.title')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {t('dashboards.peopleTable.subtitle')}
+            {isPpScope
+              ? t('dashboards.peopleTable.ppSubtitle')
+              : t('dashboards.peopleTable.subtitle')}
           </p>
         </div>
         <span className="text-xs font-mono font-medium text-muted-foreground">
@@ -43,16 +48,21 @@ export const PeopleTableWidget = ({ peopleTable }: PeopleTableWidgetProps) => {
       {rows.length === 0 ? (
         <div
           data-testid="dashboard-empty-state"
+          data-slot="empty-state"
           className="emptyst flex flex-col items-center justify-center p-8 text-center"
         >
           <div className="rounded-full bg-muted p-3 mb-3">
             <Users className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
           </div>
           <h3 className="text-sm font-semibold text-foreground">
-            {t('dashboards.peopleTable.emptyTitle')}
+            {isPpScope
+              ? t('dashboards.peopleTable.emptyPpTitle')
+              : t('dashboards.peopleTable.emptyTitle')}
           </h3>
           <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-            {t('dashboards.peopleTable.emptyDescription')}
+            {isPpScope
+              ? t('dashboards.peopleTable.emptyPpDescription')
+              : t('dashboards.peopleTable.emptyDescription')}
           </p>
         </div>
       ) : (

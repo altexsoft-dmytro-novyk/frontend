@@ -108,7 +108,7 @@ export interface PeoplePartnerDashboardReadModel {
     departuresUrl: string
   }
   widgets: {
-    incompleteProfiles?:
+    incompleteProfiles:
       | AvailableWidgetState<{
           count: number
           wscope: 'SCOPE: PEOPLE_PARTNER_ASSIGNMENT'

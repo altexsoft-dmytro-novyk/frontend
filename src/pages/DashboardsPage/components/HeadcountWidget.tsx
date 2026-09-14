@@ -6,17 +6,19 @@ import { WidgetScopeFooter } from './WidgetScopeFooter'
 interface HeadcountWidgetProps {
   headcount: AvailableWidgetState<{
     count: number
-    wscope: 'SCOPE: REPORTING_LINE'
+    wscope: 'SCOPE: REPORTING_LINE' | 'SCOPE: PEOPLE_PARTNER_ASSIGNMENT'
   }>
+  subtitle?: string
 }
 
-export const HeadcountWidget = ({ headcount }: HeadcountWidgetProps) => {
+export const HeadcountWidget = ({ headcount, subtitle }: HeadcountWidgetProps) => {
   const { t } = useTranslation()
 
   return (
     <div
       data-testid="dashboard-headcount-widget"
       data-widget="headcount"
+      data-slot="headcount"
       className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 shadow-xs"
     >
       <div>
@@ -32,7 +34,10 @@ export const HeadcountWidget = ({ headcount }: HeadcountWidgetProps) => {
           </span>
         </div>
         <p className="text-xs text-muted-foreground mt-1">
-          {t('dashboards.headcount.subtitle')}
+          {subtitle ??
+            (headcount.data.wscope === 'SCOPE: PEOPLE_PARTNER_ASSIGNMENT'
+              ? t('dashboards.headcount.ppSubtitle')
+              : t('dashboards.headcount.subtitle'))}
         </p>
       </div>
 

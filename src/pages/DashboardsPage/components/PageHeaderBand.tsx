@@ -4,9 +4,11 @@ import type { DashboardHeaderMetadata } from '@/types/dashboards'
 
 interface PageHeaderBandProps {
   header?: DashboardHeaderMetadata
+  title?: string
+  lead?: string
 }
 
-export const PageHeaderBand = ({ header }: PageHeaderBandProps) => {
+export const PageHeaderBand = ({ header, title, lead }: PageHeaderBandProps) => {
   const { t } = useTranslation()
 
   const eyebrow = header?.eyebrow ?? t('dashboards.eyebrow')
@@ -24,10 +26,10 @@ export const PageHeaderBand = ({ header }: PageHeaderBandProps) => {
         </span>
       </div>
       <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
-        {t('dashboards.title')}
+        {title ?? t('dashboards.title')}
       </h1>
       <p className="text-xs md:text-sm text-muted-foreground mt-1">
-        {t('dashboards.lead')}
+        {lead ?? t('dashboards.lead')}
       </p>
     </header>
   )

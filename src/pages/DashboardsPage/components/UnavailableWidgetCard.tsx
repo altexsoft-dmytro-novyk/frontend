@@ -1,8 +1,19 @@
 import { AlertCircle, type LucideIcon } from 'lucide-react'
 import type { UnavailableWidgetState } from '@/types/dashboards'
 
+export type UnavailableWidgetSlot =
+  | 'riskCounts'
+  | 'unitActionItems'
+  | 'myActionItems'
+  | 'resourcingRequests'
+  | 'openCampaigns'
+  | 'incompleteProfiles'
+  | 'assignedActionItems'
+  | 'cdsMilestones'
+  | 'campaignCompletion'
+
 interface UnavailableWidgetCardProps {
-  slot: 'riskCounts' | 'unitActionItems' | 'myActionItems' | 'resourcingRequests' | 'openCampaigns'
+  slot: UnavailableWidgetSlot
   state: UnavailableWidgetState
   icon?: LucideIcon
 }

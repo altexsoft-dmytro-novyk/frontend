@@ -529,24 +529,31 @@
   },
   "dashboards": {
     "title": "Unit Manager",
+    "ppTitle": "People Partner",
     "eyebrow": "WORKSPACE / DASHBOARDS",
     "provenanceTag": "SCOPE RESOLVED LIVE PER REQUEST",
     "lead": "Operational overview scoped to your live reporting line direct reports.",
+    "ppLead": "Operational overview scoped to your direct People Partner assigned employee caseload.",
     "presets": {
-      "unitManager": "Unit Manager"
+      "unitManager": "Unit Manager",
+      "peoplePartner": "People Partner"
     },
     "grouping": {
       "people": "People"
     },
     "headcount": {
       "title": "Active Headcount",
-      "subtitle": "Direct & transitive reporting line"
+      "subtitle": "Direct & transitive reporting line",
+      "ppSubtitle": "Direct People Partner caseload"
     },
     "peopleTable": {
       "title": "Team Roster",
       "subtitle": "Reporting-line employee directory with live tier projection",
+      "ppSubtitle": "People Partner caseload directory with live tier projection",
       "emptyTitle": "No direct reports assigned",
       "emptyDescription": "You currently have no active direct or transitive reports in your reporting scope.",
+      "emptyPpTitle": "No employees assigned",
+      "emptyPpDescription": "You currently have no active employees in your People Partner caseload.",
       "columns": {
         "member": "Member",
         "position": "Position",
@@ -564,7 +571,12 @@
       "resourcing": "Resourcing",
       "risks": "Risk Dashboard",
       "mentorship": "Mentorship Hub",
-      "campaigns": "Campaigns"
+      "campaigns": "Campaigns",
+      "departures": "Departures"
+    },
+    "widgets": {
+      "incompleteProfiles": "Incomplete Profiles",
+      "incompleteProfilesSubtitle": "Caseload profiles requiring completion"
     },
     "unavailable": "Unavailable",
     "accessDenied": {
