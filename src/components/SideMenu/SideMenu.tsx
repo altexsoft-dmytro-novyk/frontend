@@ -1,5 +1,5 @@
 import type { ParseKeys } from 'i18next'
-import { Home, Users, type LucideIcon } from 'lucide-react'
+import { Home, Users, LayoutDashboard, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useLayout } from '@/contexts/LayoutContext'
 import { SideMenuItem } from './components/SideMenuItem/SideMenuItem'
@@ -37,6 +37,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { icon: Home, labelKey: 'sidebar.home', path: '/', end: true },
       { icon: Users, labelKey: 'sidebar.employees', path: '/employees' },
+      { icon: LayoutDashboard, labelKey: 'sidebar.dashboards', path: '/dashboards' },
     ],
   },
 ]

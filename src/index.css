@@ -9,7 +9,7 @@
   Accent: Blue (vibrant blue for primary actions)
   
   To switch themes via JavaScript:
-  document.documentElement.setAttribute('data-theme', 'green')  // Future themes
+    document.documentElement.setAttribute('data-theme', 'green')  // Future themes
 */
 
 :root {
@@ -89,6 +89,14 @@
   --sidebar-accent-foreground: oklch(0.205 0.008 286);
   --sidebar-border: oklch(0.898 0.003 286);
   --sidebar-ring: oklch(0.398 0.045 286);
+
+  /* Stretch pass tokens (DESIGN.md) */
+  --stretch-blue: oklch(0.52 0.20 264);
+  --ink-2: oklch(0.44 0.008 286);
+  --ink-3: oklch(0.57 0.010 286);
+  --line: oklch(0.898 0.003 286);
+  --prov-access-bg: oklch(0.968 0.03 264);
+  --prov-access-fg: oklch(0.44 0.15 264);
 }
 
 .dark {
@@ -142,6 +150,8 @@
   --provenance-platform-foreground: oklch(0.145 0.008 286);
   --provenance-access: oklch(0.7 0.13 300);
   --provenance-access-foreground: oklch(0.145 0.008 286);
+  --prov-access-bg: oklch(0.25 0.04 264);
+  --prov-access-fg: oklch(0.75 0.15 264);
 }
 
 @theme inline {
@@ -192,6 +202,10 @@
   --color-provenance-platform-foreground: var(--provenance-platform-foreground);
   --color-provenance-access: var(--provenance-access);
   --color-provenance-access-foreground: var(--provenance-access-foreground);
+  --color-stretch-blue: var(--stretch-blue);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
 }
 
 @layer base {
@@ -200,5 +214,81 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Data stat typography */
+.data-stat {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* Page header band */
+.pghd {
+  position: relative;
+  padding-left: 15px;
+}
+
+.pghd::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--stretch-blue, oklch(0.52 0.20 264));
+}
+
+/* Provenance tags */
+.prov {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.4375rem 0.125rem 0.375rem;
+  border-radius: 5px;
+  border-left: 2px solid currentColor;
+  white-space: nowrap;
+  background: var(--prov-access-bg, oklch(0.968 0.03 264));
+  color: var(--prov-access-fg, oklch(0.44 0.15 264));
+}
+
+/* Widget scope footer */
+.wscope {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--border);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Empty state */
+.emptyst {
+  border: 1px dashed var(--border);
+  border-radius: 11px;
+}
+
+/* Reduced motion support (WCAG 2.2 AA / FE-DASH-08) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

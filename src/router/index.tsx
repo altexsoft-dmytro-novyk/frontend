@@ -11,8 +11,9 @@ import { EmployeeImportPage } from '@/pages/EmployeeImportPage/EmployeeImportPag
 import { EmployeeProfilePage } from '@/pages/EmployeeProfilePage/EmployeeProfilePage'
 import { EmployeeOrganisationPage } from '@/pages/EmployeeOrganisationPage/EmployeeOrganisationPage'
 import { EmployeeDeparturePage } from '@/pages/EmployeeDeparturePage/EmployeeDeparturePage'
-import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
+import { DashboardsPage } from '@/pages/DashboardsPage/DashboardsPage'
 import { LoginPage } from '@/pages/LoginPage/LoginPage'
+import { ErrorPage } from '@/pages/ErrorPage/ErrorPage'
 import { ConsumeMagicLinkPage } from '@/pages/ConsumeMagicLinkPage/ConsumeMagicLinkPage'
 
 const router = createBrowserRouter([
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
           {
             path: 'employees/:id/departure',
             element: <EmployeeDeparturePage />,
+          },
+          {
+            path: 'dashboards',
+            element: <DashboardsPage />,
           },
         ],
       },
